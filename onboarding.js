@@ -365,7 +365,15 @@
   function openWizard() {
     if (overlayEl) return;
     step = 1;
-    data = { teamName: '', ageClass: '', playerNames: [], rawPlayerText: '', usedExamples: false };
+    var existingPlayers = (window.players && window.players.length > 0);
+    data = {
+      teamName: '',
+      ageClass: '',
+      playerNames: [],
+      rawPlayerText: '',
+      usedExamples: false,
+      isRerun: existingPlayers  // true = team already has players, protect existing data
+    };
     busy = false;
     _events = [];
 
@@ -521,19 +529,37 @@
       return '<option value="' + c + '"' + (data.ageClass === c ? ' selected' : '') + '>' + c + '</option>';
     }).join('');
 
+    // Re-run: pre-fill team name from current team, show as context
+    var currentTeamName = '';
+    if (data.isRerun) {
+      try {
+        var bridge = window.__BF_onboarding;
+        if (bridge && bridge.getCurrentTeamName) currentTeamName = bridge.getCurrentTeamName();
+      } catch (_) {}
+    }
+
+    var titleText = data.isRerun ? 'Oppdater aldersklasse' : 'Velkommen!';
+    var subtitleText = data.isRerun
+      ? 'Velg riktig aldersklasse for ' + esc(currentTeamName || 'laget ditt') + ', s\u00e5 justerer vi kampdag-innstillingene.'
+      : 'Fortell oss litt om laget ditt, s\u00e5 setter vi opp alt for deg.';
+
+    var teamNameField = data.isRerun
+      ? '' // Skip team name on re-run
+      : '<div class="ob-field">' +
+          '<label class="ob-label" for="obTeamName">Hva heter laget?</label>' +
+          '<input type="text" id="obTeamName" class="ob-input" placeholder="F.eks. Steinkjer G10" maxlength="40" value="' + esc(data.teamName) + '" autocomplete="off">' +
+        '</div>';
+
     overlayEl.innerHTML =
       '<div class="ob-card">' +
         progressHTML(1) +
         '<div class="ob-header">' +
           '<div class="ob-emoji">\u26BD</div>' +
-          '<h2 class="ob-title" id="obTitle">Velkommen!</h2>' +
-          '<p class="ob-subtitle">Fortell oss litt om laget ditt, s\u00e5 setter vi opp alt for deg.</p>' +
+          '<h2 class="ob-title" id="obTitle">' + titleText + '</h2>' +
+          '<p class="ob-subtitle">' + subtitleText + '</p>' +
         '</div>' +
         '<div class="ob-body"><div class="ob-step-inner">' +
-          '<div class="ob-field">' +
-            '<label class="ob-label" for="obTeamName">Hva heter laget?</label>' +
-            '<input type="text" id="obTeamName" class="ob-input" placeholder="F.eks. Steinkjer G10" maxlength="40" value="' + esc(data.teamName) + '" autocomplete="off">' +
-          '</div>' +
+          teamNameField +
           '<div class="ob-field">' +
             '<label class="ob-label" for="obAgeClass">Aldersklasse</label>' +
             '<select id="obAgeClass" class="ob-select">' +
@@ -554,7 +580,10 @@
     var select = $('obAgeClass');
     var hint = $('obFormatHint');
 
-    setTimeout(function () { if (nameInput) nameInput.focus(); }, 180);
+    setTimeout(function () {
+      if (nameInput) nameInput.focus();
+      else if (select) select.focus();
+    }, 180);
 
     function updateHint() {
       var rule = getRule(select ? select.value : '');
@@ -595,15 +624,15 @@
     // "Ikke nå" = soft close (wizard will return next login)
     $('obSkip').addEventListener('click', function () { softClose(); });
 
-    // Next: validate both fields
+    // Next: validate fields
     $('obNext').addEventListener('click', function () {
       var name = (nameInput ? nameInput.value : '').trim();
       var age = select ? select.value : '';
       var valid = true;
 
-      if (!name) {
-        nameInput.classList.add('ob-error');
-        if (valid) nameInput.focus();
+      if (!data.isRerun && !name) {
+        if (nameInput) nameInput.classList.add('ob-error');
+        if (valid && nameInput) nameInput.focus();
         valid = false;
       }
       if (!age) {
@@ -615,8 +644,8 @@
 
       data.teamName = name;
       data.ageClass = age;
-      trackEvent('step1', { ageClass: age });
-      step = 2;
+      trackEvent('step1', { ageClass: age, isRerun: !!data.isRerun });
+      step = data.isRerun ? 3 : 2; // Skip player entry on re-run
       renderStep();
     });
   }
@@ -742,10 +771,20 @@
   //  STEP 3: Demo substitution plan (the WOW moment)
   // ══════════════════════════════════════════════════════════════
   function renderStep3() {
-    var plan = generateDemoPlan(data.playerNames, data.ageClass, data.teamName);
+    // Re-run: use existing player names for demo
+    var demoNames = data.playerNames;
+    if (data.isRerun && demoNames.length === 0) {
+      var existing = window.players || [];
+      demoNames = existing.map(function (p) { return p.name; });
+      if (demoNames.length === 0) {
+        demoNames = EXAMPLE_NAMES.slice(0, getRule(data.ageClass) ? getRule(data.ageClass).format + 3 : 10);
+      }
+    }
+
+    var plan = generateDemoPlan(demoNames, data.ageClass, data.teamName || 'lag');
     if (!plan) { step = 2; renderStep(); return; }
 
-    var names = data.playerNames;
+    var names = demoNames;
 
     // Build period cards
     var periodsHtml = '';
@@ -883,7 +922,7 @@
     }, 120);
 
     $('obBack').addEventListener('click', function () {
-      step = 2;
+      step = data.isRerun ? 1 : 2;
       renderStep();
     });
 
@@ -904,11 +943,19 @@
           fireConfetti(rect.left + rect.width / 2, rect.top);
         } catch (_) {}
 
-        var msg = data.usedExamples
-          ? data.teamName + ' er opprettet! Legg til spillerne dine i spillerlisten.'
-          : data.teamName + ' er klart! G\u00e5 til Kampdag for \u00e5 lage din f\u00f8rste bytteplan \u26BD';
+        var msg;
+        var shouldSwitchToKampdag = false;
 
-        var shouldSwitchToKampdag = !data.usedExamples && data.playerNames.length >= 3;
+        if (data.isRerun) {
+          // Re-run: only age class was updated
+          msg = 'Aldersklasse oppdatert til ' + data.ageClass + '! Kampdag-innstillinger er justert.';
+          shouldSwitchToKampdag = true;
+        } else if (data.usedExamples) {
+          msg = data.teamName + ' er opprettet! Legg til spillerne dine i spillerlisten.';
+        } else {
+          msg = data.teamName + ' er klart! G\u00e5 til Kampdag for \u00e5 lage din f\u00f8rste bytteplan \u26BD';
+          shouldSwitchToKampdag = data.playerNames.length >= 3;
+        }
 
         completeClose(function () {
           // Switch to Kampdag tab if user added real players (they've seen the demo, now do it for real)
@@ -976,20 +1023,23 @@
     var bridge = window.__BF_onboarding;
     if (!bridge) throw new Error('Bridge API not available');
 
-    // 1. Rename team (async, can be slow on mobile)
-    if (data.teamName) {
-      await bridge.renameCurrentTeam(data.teamName);
+    // Re-run: don't touch existing team name or players
+    if (!data.isRerun) {
+      // 1. Rename team (async, can be slow on mobile)
+      if (data.teamName) {
+        await bridge.renameCurrentTeam(data.teamName);
+      }
+
+      // Bail if a newer attempt was started (timeout + retry scenario)
+      if (gen !== _applyGen) return;
+
+      // 2. Add players (only if user provided real names, not examples)
+      if (!data.usedExamples && data.playerNames.length > 0) {
+        bridge.bulkAddPlayers(data.playerNames);
+      }
     }
 
-    // Bail if a newer attempt was started (timeout + retry scenario)
-    if (gen !== _applyGen) return;
-
-    // 2. Add players (only if user provided real names, not examples)
-    if (!data.usedExamples && data.playerNames.length > 0) {
-      bridge.bulkAddPlayers(data.playerNames);
-    }
-
-    // 3. Store age class for kampdag/season defaults
+    // 3. Store age class for kampdag/season defaults (always useful)
     if (data.ageClass) {
       safeLS('set', 'bf_ob_ageclass', data.ageClass);
       try {

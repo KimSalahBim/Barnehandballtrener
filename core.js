@@ -2126,6 +2126,10 @@
 
     // Onboarding wizard bridge API (used by onboarding.js)
     window.__BF_onboarding = {
+      getCurrentTeamName: function() {
+        var team = state.teams.find(function(t) { return t.id === state.currentTeamId; });
+        return team ? team.name : '';
+      },
       renameCurrentTeam: async function(newName) {
         var team = state.teams.find(function(t) { return t.id === state.currentTeamId; });
         if (!team) return;
