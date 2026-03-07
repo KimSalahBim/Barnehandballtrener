@@ -763,6 +763,239 @@
       ]}
     },
 
+    // ═══════════════════════════════
+    // 🆕 TIER 1: NYE ØVELSER (egenprodusert innhold)
+    // ═══════════════════════════════
+
+    // --- Ballsisten (leik med ball, 6-7 fokus) ---
+    {
+      key: 'ball_tag', label: 'Ballsisten', defaultMin: 8, category: 'oppvarming',
+      ages: ['6-7', '8-9'], players: '6-20',
+      equipment: '1 ball per spiller, kjegler til bane',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling'], nffPhases: ['noytral'],
+      learningGoals: ['Hold ballen nær foten mens du ser deg rundt', 'Retningsforandring for å unngå fanger', 'Bruk kroppen til å skjerme ballen'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 20 }, equipmentTags: ['ball', 'kjegler'],
+      description: 'Sistenlek der alle har egen ball. Fangeren fører sin ball samtidig som den prøver å ta de andre. Kombinerer ballkontroll med bevegelse og romforståelse.',
+      setup: 'Avgrens et område (15x15 til 20x20m). Alle spillere har egen ball. Velg 1-2 fangere (vester).',
+      steps: [
+        'Alle fører ball innenfor området.',
+        'Fangerne (med vest) prøver å ta de andre ved å berøre dem.',
+        'Blir du tatt, stopp og gjør 5 fotbytter på ballen. Så er du fri igjen.',
+        'Bytt fangere hvert 2. minutt.'
+      ],
+      coaching: [
+        'Hold ballen nær foten — korte, raske touch',
+        'Løft blikket! Se hvor fangeren er',
+        'Bruk retningsforandring for å stikke unna',
+        'Fangere: ikke bare jag — avskjær!'
+      ],
+      variations: [
+        'Tatt = bli fanger selv (siste spiller igjen vinner)',
+        'Fangere uten ball — sparker andres ball ut av området'
+      ],
+      diagram: { width:200, height:200, field:'none', elements:[
+        {type:'cone',x:10,y:10},{type:'cone',x:190,y:10},{type:'cone',x:10,y:190},{type:'cone',x:190,y:190},
+        {type:'player',x:60,y:80,team:'a',label:''},{type:'ball',x:68,y:76},
+        {type:'player',x:140,y:60,team:'a',label:''},{type:'ball',x:148,y:56},
+        {type:'player',x:90,y:150,team:'a',label:''},{type:'ball',x:98,y:146},
+        {type:'player',x:50,y:40,team:'b',label:'F'},{type:'ball',x:58,y:36},
+        {type:'arrow',from:[55,45],to:[80,70],style:'run'}
+      ]}
+    },
+
+    // --- Press på ballfører (forsvarsspill) ---
+    {
+      key: 'defend_press', label: 'Press på ballfører', defaultMin: 12, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '6-16',
+      equipment: 'Kjegler, vester, baller, småmål eller store mål',
+      nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill', '1v1_duell'], nffPhases: ['forsvar_vinne_ball'],
+      learningGoals: ['Komme tett i press med riktig fart og kroppsstilling', 'Tving ballfører til én side', 'Stå mellom ballfører og mål'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 16 }, equipmentTags: ['kjegler', 'vester', 'ball', 'smaamaal'],
+      description: 'Dedikert forsvarsøvelse der forsvareren øver på å presse ballfører kontrollert. Fokus på posisjonering, fart inn i press, og å tvinge ballfører dit forsvareren vil.',
+      setup: 'Bane 12x18m med mål i én ende. Angripere starter ved midten, forsvarere fra siden.',
+      steps: [
+        'Angriper mottar ball fra trener og fører mot mål.',
+        'Forsvarer starter fra siden og løper i posisjon mellom angriper og mål.',
+        'Forsvarer presser kontrollert: tving til side, ikke stup inn.',
+        'Angriper prøver å score. Forsvarer prøver å vinne ball eller tvinge skudd utenfra.',
+        'Bytt roller etter 3 forsøk.'
+      ],
+      coaching: [
+        'Forsvarer: stå på tå, sidelengs, lav tyngdepunkt',
+        'Ikke stup inn! Vent på angriperens feil',
+        'Tving angriperen mot sidelinja, vekk fra mål',
+        'Angriper: bruk finter og fart for å komme forbi'
+      ],
+      variations: [
+        '2v1: legg til en medangriper for å øve samarbeid i forsvar',
+        'Gi forsvareren poeng for å tvinge skudd utenfor 16-meter'
+      ],
+      diagram: { width:220, height:160, field:'none', elements:[
+        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
+        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
+        {type:'player',x:40,y:80,team:'b',label:'F'},
+        {type:'arrow',from:[110,120],to:[110,40],style:'run'},
+        {type:'arrow',from:[45,80],to:[95,65],style:'run'}
+      ]}
+    },
+
+    // --- Smålagsspill med betingelser ---
+    {
+      key: 'ssg_theme', label: 'Spill med betingelser', defaultMin: 18, category: 'smalagsspill',
+      ages: ['8-9', '10-12', '13-16'], players: '8-16',
+      equipment: 'Vester, baller, mål (store eller småmål), kjegler',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Tilpass spillet til betingelsen', 'Samarbeid for å oppfylle kravet', 'Les spillet og finn løsninger'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Vanlig smålagsspill med én betingelse som forsterker øktens tema. Betingelsen styrer hva spillerne må gjøre for å score, og gir treneren kontroll over læringsfokuset.',
+      setup: 'Tilpass bane til antall (4v4: 25x35m, 5v5: 30x45m). To mål. Del i to lag med vester.',
+      steps: [
+        'Vanlige spilleregler, men med én betingelse for scoring.',
+        'Eksempler på betingelser:',
+        '• Alle på angripende lag over midtlinjen før scoring teller',
+        '• Mål teller dobbelt etter veggspill/kombinasjon',
+        '• Scoring kun etter maks 3 berøringer på siste spiller',
+        'Bytt betingelse halvveis for variasjon.'
+      ],
+      coaching: [
+        'Forklar betingelsen tydelig FØR start',
+        'La spillet gå — stopp kun kort for å forsterke tema',
+        'Ros lagspill og løsninger, ikke bare mål',
+        'Tilpass betingelsen hvis den er for lett eller vanskelig'
+      ],
+      variations: [
+        'Jokere: 1-2 spillere alltid med angripende lag (overtall)',
+        'Tidsbetingelse: scoringen teller bare i første 3 min av hver periode'
+      ],
+      diagram: { width:240, height:160, field:'half', elements:[
+        {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
+        {type:'player',x:55,y:40,team:'a',label:''},{type:'player',x:55,y:120,team:'a',label:''},
+        {type:'player',x:95,y:80,team:'a',label:''},{type:'player',x:80,y:55,team:'a',label:''},
+        {type:'player',x:145,y:40,team:'b',label:''},{type:'player',x:145,y:120,team:'b',label:''},
+        {type:'player',x:185,y:80,team:'b',label:''},{type:'player',x:160,y:55,team:'b',label:''},
+        {type:'ball',x:100,y:74}
+      ]}
+    },
+
+    // --- Omstillingsspill ---
+    {
+      key: 'transition', label: 'Omstillingsspill', defaultMin: 15, category: 'smalagsspill',
+      ages: ['10-12', '13-16'], players: '8-16',
+      equipment: 'Vester (3 farger), baller, 2 mål, kjegler',
+      nffCategory: 'smalagsspill', themes: ['omstilling'], nffPhases: ['angrep_fremover', 'angrep_avslutning', 'forsvar_vinne_ball'],
+      learningGoals: ['Ved balltap: raskt tilbake, flest mulig på rett side av ball', 'Ved ballvinning: se fremover umiddelbart', 'Første forsvarer presser, resten organiserer'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Tre lag roterer: ett angriper, ett forsvarer, ett venter. Ved scoring eller ballvinning bytter lagene roller. Trener konstant omstilling mellom angrep og forsvar.',
+      setup: 'Bane 25x35m med mål i begge ender. Tre lag à 3-5 spillere. Lag A angriper mot Lag B. Lag C venter bak ene målet.',
+      steps: [
+        'Lag A angriper mot Lag B sitt mål.',
+        'Scorer Lag A: Lag B ut, Lag C inn som nytt forsvarslag. Lag A snur og angriper andre veien.',
+        'Vinner Lag B ballen: Lag B angriper umiddelbart mot Lag C sitt mål. Lag A ut, Lag C forsvarer.',
+        'Laget som er ute venter maks 30 sek, deretter byttes det uansett.',
+        'Poengsystem: 1 poeng per mål, 1 ekstrapoeng for scoring innen 8 sekunder etter ballvinning.'
+      ],
+      coaching: [
+        'OMSTILLING er nøkkelen: hodet opp i det ballen bytter lag!',
+        'Forsvarende lag: raskt tilbake mellom ball og mål',
+        'Angripende lag: se fremover FØR du tar kontroll',
+        'Ros rask omstilling, ikke bare mål'
+      ],
+      variations: [
+        'Uten 3. lag: etter scoring starter motstanderlaget med ball fra keeper',
+        'Krav om maks 10 sek fra ballvinning til avslutning'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'goal',x:223,y:65,w:12,h:50,vertical:true},
+        {type:'player',x:60,y:50,team:'a',label:''},{type:'player',x:60,y:130,team:'a',label:''},
+        {type:'player',x:100,y:90,team:'a',label:''},{type:'ball',x:108,y:86},
+        {type:'player',x:160,y:50,team:'b',label:''},{type:'player',x:160,y:130,team:'b',label:''},
+        {type:'player',x:190,y:90,team:'b',label:''},
+        {type:'arrow',from:[108,86],to:[200,70],style:'pass'}
+      ]}
+    },
+
+    // --- Veggspill / gi-og-gå ---
+    {
+      key: 'wall_pass', label: 'Veggspill', defaultMin: 12, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '6-14',
+      equipment: 'Kjegler, baller, småmål eller store mål',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'angrep_avslutning'],
+      learningGoals: ['Spill pasning og løp forbi forsvarer i samme bevegelse', 'Medspiller: rask returrpasning i rom bak forsvarer', 'Timing mellom pasning og løp er avgjørende'],
+      intensity: 'medium', hasOpposition: true,
+      playerCount: { min: 6, max: 14 }, equipmentTags: ['kjegler', 'ball', 'smaamaal'],
+      description: 'Øver på gi-og-gå: spill pasning til medspiller, løp forbi forsvareren, motta returen i rom. Den mest effektive kombinasjonen for å bryte gjennom forsvar.',
+      setup: 'Bane 15x20m med mål i ene enden. Tre køer: angripere sentralt, veggspillere på siden, forsvarere ved mål.',
+      steps: [
+        'Angriper fører ball mot forsvarer.',
+        'Angriper spiller veggpasning til medspiller på siden.',
+        'Angriper løper forbi forsvarer (gi-og-gå).',
+        'Medspiller spiller ballen tilbake i rommet bak forsvareren.',
+        'Angriper avslutter på mål. Bytt roller.'
+      ],
+      coaching: [
+        'Pasning FØRST, løp umiddelbart etterpå',
+        'Medspiller: spill ballen i rommet, ikke i beina',
+        'Trekk forsvareren mot deg FØR du spiller vegg',
+        'Fart etter pasningen — ikke stopp og se!'
+      ],
+      variations: [
+        'Dobbelt veggspill: to pasninger før avslutning',
+        'Legg til aktiv forsvarer som prøver å stoppe kombinasjonen'
+      ],
+      diagram: { width:220, height:150, field:'none', elements:[
+        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
+        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
+        {type:'player',x:40,y:70,team:'a',label:'V'},
+        {type:'player',x:110,y:65,team:'b',label:'F'},
+        {type:'arrow',from:[115,115],to:[50,75],style:'pass'},
+        {type:'arrow',from:[115,115],to:[115,50],style:'run'},
+        {type:'arrow',from:[50,65],to:[110,40],style:'pass'}
+      ]}
+    },
+
+    // --- Avslutning med medspiller ---
+    {
+      key: 'finish_assist', label: 'Avslutning med medspiller', defaultMin: 12, category: 'avslutning',
+      ages: ['8-9', '10-12', '13-16'], players: '6-14',
+      equipment: 'Mål med keeper, baller, kjegler',
+      nffCategory: 'scoringstrening', themes: ['avslutning', 'samarbeidsspill'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Tverrpasning eller tilbakelegg til medspiller i skuddposisjon', 'Avslutt på direkten eller med færrest mulig touch', 'Beveg deg inn i scoringsposisjon med riktig timing'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
+      description: 'Avslutningsøvelse der to spillere samarbeider om å score. Øver på tverrballer, tilbakelegg og direkte avslutning — mer realistisk enn å skyte alene.',
+      setup: 'Spillere i par. Kø sentralt og på høyre/venstre side, 20m fra mål. Keeper i mål.',
+      steps: [
+        'Spiller A fører ball langs siden mot dødlinja.',
+        'Spiller B løper inn i boksen fra sentralt.',
+        'A slår tverrball eller tilbakelegg til B.',
+        'B avslutter på mål — helst på direkten.',
+        'Bytt sider og roller. Varier mellom høyre og venstre.'
+      ],
+      coaching: [
+        'Innlegger: løft blikket, finn medspillerens løp',
+        'Avslutter: timing! Ikke stå stille — løp inn i ballen',
+        'Avslutt raskt, keeper skal ikke rekke å flytte seg',
+        'Plassering i det ledige hjørnet, ikke rett på keeper'
+      ],
+      variations: [
+        'Legg til en forsvarer som prøver å blokkere tverrballen',
+        'Varier: tilbakelegg fra dødlinja, tverrball fra 16m, gjennombrudd sentralt'
+      ],
+      diagram: { width:220, height:160, field:'none', elements:[
+        {type:'goal',x:60,y:5,w:100,h:18},{type:'keeper',x:110,y:20},
+        {type:'player',x:190,y:110,team:'a',label:'A'},{type:'ball',x:198,y:106},
+        {type:'player',x:110,y:100,team:'a',label:'B'},
+        {type:'arrow',from:[190,105],to:[185,40],style:'run'},
+        {type:'arrow',from:[185,40],to:[120,50],style:'pass'},
+        {type:'arrow',from:[115,95],to:[120,55],style:'run'},
+        {type:'arrow',from:[120,55],to:[100,20],style:'shot'}
+      ]}
+    },
+
     // ── EGENDEFINERT (alltid nederst) ──
     { key: 'custom', label: 'Skriv inn selv', defaultMin: 10, isCustom: true, category: 'special',
       nffCategory: 'sjef_over_ballen', themes: [], nffPhases: [], learningGoals: [],
@@ -858,6 +1091,7 @@
     '6-7':  ['foering_dribling', 'avslutning', '1v1_duell'],
     '8-9':  ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill'],
     '10-12': ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'omstilling', 'spilloppbygging', 'keeper'],
+    '13-16': ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'omstilling', 'spilloppbygging', 'keeper'],
   };
 
   // Anbefalt tidsfordeling per aldersgruppe (prosent av total økttid, ekskl. drikkepause)
@@ -865,6 +1099,7 @@
     '6-7':  { sjef_over_ballen: 35, spille_med_og_mot: 5,  smalagsspill: 50, scoringstrening: 10 },
     '8-9':  { sjef_over_ballen: 20, spille_med_og_mot: 20, smalagsspill: 45, scoringstrening: 15 },
     '10-12': { sjef_over_ballen: 15, spille_med_og_mot: 25, smalagsspill: 45, scoringstrening: 15 },
+    '13-16': { sjef_over_ballen: 15, spille_med_og_mot: 35, smalagsspill: 40, scoringstrening: 10 },
   };
 
   // Læringsmomenter per tema per aldersgruppe (egne formuleringer)
@@ -873,43 +1108,53 @@
       '6-7':  ['Hold ballen nær foten med korte touch', 'Bruk ulike deler av foten (innside, utside, såle)', 'Løft blikket mens du fører ballen'],
       '8-9':  ['Fart i føringen: tett ball i press, lengre touch i åpent rom', 'Bruk kroppen til å skjerme ballen', 'Se fremover og ta valg: føre, drible eller spille'],
       '10-12': ['Føring i fart med retningsforandring under press', 'Velg riktig teknikk for situasjonen', 'Retningsbestemt føring mot ledig rom'],
+      '13-16': ['Korte hurtige touch med begge føtter for å utnytte rom', 'Beholde oversikt med ball i beina, kunne ombestemme valg', 'Fartsvariasjon og retningsforandring for å skape overtall'],
     },
     'vendinger_mottak': {
       '8-9':  ['Sjekk over skulderen FØR ballen kommer', 'Åpne kroppen mot dit du vil vende', 'Førstetouch i retning du skal spille'],
       '10-12': ['Mottak under press med skjermingskontakt', 'Varier vendeteknikk etter situasjonen', 'Retningsbestemt mottak med begge føtter'],
+      '13-16': ['Ro med ball, åpne i førstetouch, true med blikk og fot', 'Mottak med fart: første touch setter opp neste handling', 'Vende i press for å utnytte rom bak motstander'],
     },
     'pasning_samspill': {
       '6-7':  ['Spark ballen med innsiden av foten', 'Pek støttefoten mot den du sender til'],
       '8-9':  ['Orientert førsteberøring: se mot mål før mottak', 'Beveg deg etter pasning (slå og gå)', 'Gjør deg spillbar: finn rom, ut av pasningsskygge'],
       '10-12': ['Spill med færrest mulig berøringer under press', 'Veggspill og kombinasjoner', 'Les medspillerens bevegelse, spill i rom'],
+      '13-16': ['Spille kontrollert fremover, søke igjennom framfor rundt', 'Skape nye rom med pasninger i riktig fart til riktig fot', 'Prinsipper: opp-tilbake-igjennom, fra trangt til ledig'],
     },
     'avslutning': {
       '6-7':  ['Plassering foran kraft: sikte mot mål', 'Tørr å skyte!'],
       '8-9':  ['Plassering i hjørnene, lav avslutning', 'Avslutt raskt, ikke nøl', 'Følg opp skuddet, vær klar for retur'],
       '10-12': ['Avslutning under press (tidskrav, forsvarer)', 'Les keeper: velg hjørne', 'Avslutning fra ulike vinkler og avstander'],
+      '13-16': ['Kort tid mellom nest siste touch og avslutning', 'True 1. stolpe, bakre stolpe og 45 med bevegelse', 'Se på keeper, så på ball — plassering framfor kraft'],
     },
     '1v1_duell': {
       '6-7':  ['Tørr å utfordre motspilleren', 'Bruk kroppen for å beskytte ballen'],
       '8-9':  ['Angriper: brems opp, bruk finter', 'Forsvarer: stå sidelengs, vær tålmodig', 'Lav tyngdepunkt for rask retningsendring'],
       '10-12': ['Les forsvarerens kropp: angrip den svake siden', 'Fartsvariasjon: brems-akseler', 'Forsvarer: tving til svak fot, steng rom mot mål'],
+      '13-16': ['Utnytte dårlige, lange og for mange touch hos motstander', 'Aktiv armbruk ved duellspill og kroppskontakt', 'Ta rommet mellom ballfører og ball før du tar ball'],
     },
     'samarbeidsspill': {
       '8-9':  ['Angriper med ball: trekk forsvarer FØR pasning', 'Angriper uten ball: hold avstand og vinkel', 'Timing: spill pasning i riktig øyeblikk'],
       '10-12': ['Trekantspill: spill og beveg deg til ny posisjon', 'Veggspill: gi-og-gå forbi forsvarer', 'Les medspiller, tilpass fart og vinkel'],
+      '13-16': ['Bevegelse for å skape og utnytte overtall sammen med ballfører', 'Flere bevegelser etter hverandre for å åpne rom', 'Spillbarhet med riktig avstand og vinkel i alle situasjoner'],
     },
     'forsvarsspill': {
       '8-9':  ['Tett opp i ballfører, press!', 'Stå mellom ballfører og eget mål', 'Alle tilbake raskt ved balltap'],
       '10-12': ['Steng pasningslinjer, tving til side', 'Beveg dere som enhet (soneprinsipp)', 'Omstilling: første forsvarer presser, andre sikrer'],
+      '13-16': ['Komme tett i press med riktig fart, korte ned stegene', 'Lese presseøyeblikk: støttepasning, dårlig touch, feilvendt spiller', 'Soneforsvar: posisjonering ift ball og medspillere, sideforskyvning og pumping'],
     },
     'omstilling': {
       '10-12': ['Raskt tilbake ved balltap', 'Første forsvarer presser, resten organiserer', 'Ved ballvinning: se fremover umiddelbart'],
+      '13-16': ['Ved balltap: fortest mulig flest mulig på rett side av ball', 'Ved ballvinning: identifiser balanseforhold — kontring eller kontroll?', 'Hurtig samlet reaksjon på definerte press-signaler'],
     },
     'spilloppbygging': {
       '10-12': ['Keeper/back starter rolig, bygg opp bakfra', 'Finn den frie spilleren mellom linjene', 'Tålmodighet: ikke slå lange baller i panikk'],
+      '13-16': ['Ro med ball, åpne i førstetouch, true med blikk og fot', 'Unngå å gi bort presseøyeblikk — kontrollert oppspill', 'Fra små rom til store rom, opp og ned, inn og ut'],
     },
     'keeper': {
       '8-9':  ['Grunnstilling: føtter i skulderbredde, lett på tå', 'W-grep, fingre spredt', 'Fall til siden, ikke bakover'],
       '10-12': ['Les angriperens kropp: forutse skuddretning', 'Utkast/utspark for rask omstilling', 'Kommuniser med forsvarslinja'],
+      '13-16': ['Posisjonering i forhold til forsvar og motstander', 'Pasningsalternativ for vending av spill', 'Kommunikasjon: styre leddet foran, tetthet og pumping'],
     },
   };
 
@@ -922,7 +1167,7 @@
     if (!themeGoals) return [];
     if (themeGoals[ageGroup]) return themeGoals[ageGroup];
     // Fallback: prøv eldre aldersgrupper
-    const fallback = ['6-7', '8-9', '10-12'];
+    const fallback = ['6-7', '8-9', '10-12', '13-16'];
     const idx = fallback.indexOf(ageGroup);
     for (let i = idx - 1; i >= 0; i--) {
       if (themeGoals[fallback[i]]) return themeGoals[fallback[i]];
