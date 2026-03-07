@@ -1327,31 +1327,36 @@
             <i class="fas fa-plus"></i> Legg til ny øvelse
           </button>
 
-          <div class="wo-btn-row" style="margin-top:14px;">
-            <button id="woExportBtn" class="btn-primary" type="button">
-              <i class="fas fa-file-pdf"></i> Eksporter
+          <div class="wo-actions">
+            <button id="woExportBtn" class="btn-primary wo-act-full" type="button">
+              <i class="fas fa-file-pdf"></i> Eksporter PDF
             </button>
-            <button id="woSaveWorkoutBtn" class="btn-secondary" type="button">
-              <i class="fas fa-bookmark"></i> Lagre
-            </button>
+            <label class="wo-export-detail-label">
+              <input id="woExportDetailToggle" type="checkbox" checked>
+              <span>Inkluder beskrivelser og diagrammer</span>
+            </label>
+            <div class="wo-act-pair">
+              <button id="woSaveWorkoutBtn" class="btn-secondary" type="button">
+                <i class="fas fa-bookmark"></i> Lagre økta
+              </button>
+              <button id="woShareBtn" class="btn-secondary" type="button">
+                <i class="fas fa-share-from-square"></i> Del med medtrener
+              </button>
+            </div>
             <div class="wo-more-wrap">
-              <button id="woMoreBtn" class="btn-secondary" type="button">
+              <button id="woMoreBtn" class="btn-secondary wo-act-more" type="button">
                 <i class="fas fa-ellipsis-h"></i> Mer
               </button>
-              <div id="woMoreMenu" class="wo-more-menu">
+              <div id="woMoreMenu" class="wo-more-menu wo-more-menu-down">
                 <button id="woSaveTemplateBtn" type="button"><i class="fas fa-save"></i> Lagre som mal</button>
-                <button id="woDownloadJsonBtn" type="button"><i class="fas fa-download"></i> Last ned øktfil</button>
-                <button id="woShareJsonBtn" type="button"><i class="fas fa-share-alt"></i> Del øktfil</button>
                 <button id="woImportJsonBtn" type="button"><i class="fas fa-file-import"></i> Importer øktfil</button>
               </div>
             </div>
           </div>
-          <label class="wo-export-detail-label" style="margin-top:8px;">
-            <input id="woExportDetailToggle" type="checkbox" checked>
-            <span>Inkluder øvelsesbeskrivelser og diagrammer i PDF</span>
-          </label>
           <input id="woImportFile" type="file" accept=".json,application/json,text/plain" style="display:none;" />
           <button id="woSuggestBtn" type="button" style="display:none;"></button>
+          <button id="woDownloadJsonBtn" type="button" style="display:none;"></button>
+          <button id="woShareJsonBtn" type="button" style="display:none;"></button>
         </div>
 
         <div class="results-container">

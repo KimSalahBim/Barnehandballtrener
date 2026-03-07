@@ -4197,6 +4197,74 @@ function serializeWorkoutFromState() {
     return true;
   }
 
+  // =========================================================
+  // Help dialogs for Del / Importer
+  // =========================================================
+
+  function _woShowHelpDialog(type) {
+    // Remove any existing dialog
+    const existing = document.querySelector('.wo-help-dialog');
+    if (existing) existing.remove();
+
+    const actionsEl = document.querySelector('.wo-actions');
+    if (!actionsEl) return;
+
+    const dialog = document.createElement('div');
+    dialog.className = 'wo-help-dialog';
+
+    if (type === 'share') {
+      dialog.innerHTML =
+        '<strong><i class="fas fa-share-from-square" style="margin-right:6px;color:#2563eb;"></i>Del \u00f8kta med medtrener</strong>' +
+        '<div>Sender \u00f8kta som en \u00f8ktfil (.json) som medtreneren kan importere i sin egen app.</div>' +
+        '<ol>' +
+          '<li>Trykk <b>Send \u00f8ktfil</b> under</li>' +
+          '<li>Velg SMS, e-post, AirDrop eller annen delingsm\u00e5te</li>' +
+          '<li>Medtreneren \u00e5pner filen i Barnefotballtrener og trykker <b>Importer</b></li>' +
+        '</ol>' +
+        '<div style="font-size:12px;opacity:0.75;margin-top:6px;">\u00d8ktfilen inneholder kun \u00f8velser og tider, ikke spillere. Medtreneren velger egne spillere etter import.</div>' +
+        '<div class="wo-help-actions">' +
+          '<button class="wo-help-cancel" type="button">Avbryt</button>' +
+          '<button class="wo-help-go" type="button"><i class="fas fa-share-from-square" style="margin-right:5px;"></i>Send \u00f8ktfil</button>' +
+        '</div>';
+
+      actionsEl.after(dialog);
+
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-go').addEventListener('click', () => {
+        dialog.remove();
+        // Use Web Share if available, otherwise download
+        if (navigator.share) {
+          shareWorkoutFile();
+        } else {
+          downloadWorkoutFile();
+        }
+      });
+
+    } else if (type === 'import') {
+      dialog.innerHTML =
+        '<strong><i class="fas fa-file-import" style="margin-right:6px;color:#2563eb;"></i>Importer \u00f8kt fra medtrener</strong>' +
+        '<div>Har du f\u00e5tt en \u00f8ktfil (.json) fra en medtrener? Importer den her.</div>' +
+        '<ol>' +
+          '<li>Trykk <b>Velg fil</b> under</li>' +
+          '<li>Finn \u00f8ktfilen (.json) du har mottatt</li>' +
+          '<li>\u00d8kta lastes inn og du kan justere \u00f8velser og tider</li>' +
+        '</ol>' +
+        '<div style="font-size:12px;opacity:0.75;margin-top:6px;">Spillere importeres ikke. Velg spillere til \u00f8kta med bryteren over. Husk \u00e5 lagre om du vil ta vare p\u00e5 \u00f8kta.</div>' +
+        '<div class="wo-help-actions">' +
+          '<button class="wo-help-cancel" type="button">Avbryt</button>' +
+          '<button class="wo-help-go" type="button"><i class="fas fa-file-import" style="margin-right:5px;"></i>Velg fil</button>' +
+        '</div>';
+
+      actionsEl.after(dialog);
+
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-go').addEventListener('click', () => {
+        dialog.remove();
+        importWorkoutFileFromPicker();
+      });
+    }
+  }
+
   // -------------------------
   // Init / bind
   // -------------------------
@@ -4218,6 +4286,7 @@ function serializeWorkoutFromState() {
     const shareJsonBtn = $('woShareJsonBtn');
     const importJsonBtn = $('woImportJsonBtn');
     const importFile = $('woImportFile');
+    const shareBtn = $('woShareBtn');
     const selectAllBtn = $('woSelectAllBtn');
     const clearAllBtn = $('woClearAllBtn');
 
@@ -4257,12 +4326,22 @@ function serializeWorkoutFromState() {
     if (saveWorkoutBtn) saveWorkoutBtn.addEventListener('click', () => saveWorkout());
     if (exportBtn) exportBtn.addEventListener('click', () => exportWorkout());
 
+    // Legacy hidden buttons (keep for backward compat)
     if (dlJsonBtn) dlJsonBtn.addEventListener('click', () => downloadWorkoutFile());
     if (shareJsonBtn) shareJsonBtn.addEventListener('click', () => shareWorkoutFile());
-    if (importJsonBtn) importJsonBtn.addEventListener('click', () => importWorkoutFileFromPicker());
+
+    // "Del med medtrener" — show help dialog first
+    if (shareBtn) shareBtn.addEventListener('click', () => {
+      _woShowHelpDialog('share');
+    });
+
+    // "Importer øktfil" — show help dialog first
+    if (importJsonBtn) importJsonBtn.addEventListener('click', () => {
+      _woShowHelpDialog('import');
+    });
     if (importFile) importFile.addEventListener('change', handleWorkoutFileInputChange);
 
-    // "Mer" dropdown toggle
+    // "Mer" dropdown toggle (opens downward)
     const moreBtn = $('woMoreBtn');
     const moreMenu = $('woMoreMenu');
     if (moreBtn && moreMenu) {
@@ -4271,11 +4350,9 @@ function serializeWorkoutFromState() {
         const isOpen = moreMenu.style.display === 'block';
         moreMenu.style.display = isOpen ? 'none' : 'block';
       });
-      // Close on outside click
       document.addEventListener('click', () => {
         if (moreMenu) moreMenu.style.display = 'none';
       });
-      // Prevent menu clicks from closing
       moreMenu.addEventListener('click', (e) => {
         e.stopPropagation();
       });
