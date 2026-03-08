@@ -206,7 +206,7 @@
       equipment: '1 ball per par, kjegler som markering',
       nffCategory: 'sjef_over_ballen', themes: ['pasning_samspill'], nffPhases: ['angrep_fremover'],
       learningGoals: ['Støttefoten peker mot mottaker', 'Treffe midt på ballen med innsiden', 'Åpent mottak: demp og legg klar i én bevegelse'],
-      intensity: 'low', hasOpposition: false,
+      suggestedGroupSize: 2, intensity: 'low', hasOpposition: false,
       playerCount: { min: 4, max: 20 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Grunnøvelsen i pasningsspill. To og to spillere sender ballen til hverandre med innsidetouch. Fokus på teknikk, mottak og presisjon.',
       setup: 'Spillerne stiller seg parvis med 5-10 meters avstand (kortere for yngre). Hvert par har én ball.',
@@ -309,7 +309,7 @@
       equipment: 'Baller, småmål eller kjegler, vester',
       nffCategory: 'spille_med_og_mot', themes: ['foering_dribling', '1v1_duell'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
       learningGoals: ['Angriper: brems opp foran forsvarer, bruk finter', 'Forsvarer: stå sidelengs, vær tålmodig', 'Lav tyngdepunkt for rask retningsendring'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
       playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'smaamaal', 'kjegler', 'vester'],
       description: 'Én angriper mot én forsvarer. Angriperen prøver å drible forbi og score. Ren duelltrening som bygger selvtillit og mot til å ta på seg spillere.',
       setup: 'Liten bane (10x15m) med to kjeglemål. Spillerne i to køer, én angriper og én forsvarer per runde.',
@@ -377,7 +377,7 @@
       equipment: '1 ball per par, kjegler',
       nffCategory: 'sjef_over_ballen', themes: ['vendinger_mottak', 'pasning_samspill'], nffPhases: ['angrep_fremover'],
       learningGoals: ['Sjekk over skulderen FØR ballen kommer', 'Åpne kroppen mot dit du vil vende', 'Førstetouch i retning du skal spille'],
-      intensity: 'medium', hasOpposition: false,
+      suggestedGroupSize: 2, intensity: 'medium', hasOpposition: false,
       playerCount: { min: 6, max: 12 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Spilleren mottar pasning med ryggen mot spilleretning, vender med førstetouch, og spiller videre. Trener orientert førstetouch — en nøkkelferdighet.',
       setup: 'Spillerne i par, 10m avstand. Én kjegle bak mottakeren (representerer retningen å vende mot).',
@@ -487,7 +487,7 @@
       equipment: 'Småmål eller kjegler, baller, vester',
       nffCategory: 'spille_med_og_mot', themes: ['1v1_duell', 'forsvarsspill'], nffPhases: ['angrep_avslutning', 'forsvar_vinne_ball'],
       learningGoals: ['Angriper: tøff mot forsvarer, bruk finter og fart', 'Forsvarer: tving angriperen dit DU vil, stå på tå', 'Aldri gi opp, kjemp om ballen!'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
       playerCount: { min: 4, max: 16 }, equipmentTags: ['smaamaal', 'kjegler', 'ball', 'vester'],
       description: 'Ren duelltrening på liten bane med småmål. Én angriper mot én forsvarer. Bygger ferdighet i å ta på seg en spiller og å forsvare.',
       setup: 'Liten bane 8x12m med kjeglemål i hver ende. Par stiller opp ved hver sin baselinje.',
@@ -521,7 +521,7 @@
       equipment: 'Småmål eller kjegler, baller',
       nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'avslutning'], nffPhases: ['angrep_avslutning'],
       learningGoals: ['Angriper med ball: trekk forsvarer FØR pasning', 'Angriper uten ball: hold avstand og vinkel, vær spillbar', 'Timing: spill pasning i riktig øyeblikk'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 3, intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 12 }, equipmentTags: ['smaamaal', 'kjegler', 'ball'],
       description: 'To angripere mot én forsvarer. Trener den viktigste beslutningen i fotball: når skal jeg drible, og når skal jeg spille pasning?',
       setup: 'Bane 10x15m. Mål i ene enden. Forsvareren fra midten, angriperne fra andre enden.',
@@ -557,7 +557,7 @@
       equipment: 'Mål, baller, vester',
       nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'avslutning'], nffPhases: ['angrep_avslutning'],
       learningGoals: ['Trekantformasjon: bred, ikke i linje', 'Spiller med ball: trekk forsvarer, spill videre', 'Avslutt! Ikke overspill, ta sjansen når du har den'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 5, intensity: 'high', hasOpposition: true,
       playerCount: { min: 8, max: 15 }, equipmentTags: ['maal', 'ball', 'vester'],
       description: 'Tre angripere mot to forsvarere. Trener trekantspill, støtteløp og pasning i rom. Kampnært og utviklende.',
       setup: 'Bane 15x20m med mål. Forsvarerne fra midten, angriperne fra baselinjen.',
@@ -814,7 +814,7 @@
       equipment: 'Kjegler, vester, baller, småmål eller store mål',
       nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill', '1v1_duell'], nffPhases: ['forsvar_vinne_ball'],
       learningGoals: ['Komme tett i press med riktig fart og kroppsstilling', 'Tving ballfører til én side', 'Stå mellom ballfører og mål'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 16 }, equipmentTags: ['kjegler', 'vester', 'ball', 'smaamaal'],
       description: 'Dedikert forsvarsøvelse der forsvareren øver på å presse ballfører kontrollert. Fokus på posisjonering, fart inn i press, og å tvinge ballfører dit forsvareren vil.',
       setup: 'Bane 12x18m med mål i én ende. Angripere starter ved midten, forsvarere fra siden.',
@@ -928,7 +928,7 @@
       equipment: 'Kjegler, baller, småmål eller store mål',
       nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'angrep_avslutning'],
       learningGoals: ['Spill pasning og løp forbi forsvarer i samme bevegelse', 'Medspiller: rask returpasning i rom bak forsvarer', 'Timing mellom pasning og løp er avgjørende'],
-      intensity: 'medium', hasOpposition: true,
+      suggestedGroupSize: 3, intensity: 'medium', hasOpposition: true,
       playerCount: { min: 6, max: 14 }, equipmentTags: ['kjegler', 'ball', 'smaamaal'],
       description: 'Øver på gi-og-gå: spill pasning til medspiller, løp forbi forsvareren, motta returen i rom. Den mest effektive kombinasjonen for å bryte gjennom forsvar.',
       setup: 'Bane 15x20m med mål i ene enden. Tre køer: angripere sentralt, veggspillere på siden, forsvarere ved mål.',
@@ -967,7 +967,7 @@
       equipment: 'Mål med keeper, baller, kjegler',
       nffCategory: 'scoringstrening', themes: ['avslutning', 'samarbeidsspill'], nffPhases: ['angrep_avslutning'],
       learningGoals: ['Tverrpasning eller tilbakelegg til medspiller i skuddposisjon', 'Avslutt på direkten eller med færrest mulig touch', 'Beveg deg inn i scoringsposisjon med riktig timing'],
-      intensity: 'high', hasOpposition: false,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: false,
       playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
       description: 'Avslutningsøvelse der to spillere samarbeider om å score. Øver på tverrballer, tilbakelegg og direkte avslutning — mer realistisk enn å skyte alene.',
       setup: 'Spillere i par. Kø sentralt og på høyre/venstre side, 20m fra mål. Keeper i mål.',
@@ -1010,7 +1010,7 @@
       equipment: 'Småmål eller store mål med keeper, vester, baller, kjegler',
       nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'forsvarsspill', '1v1_duell'], nffPhases: ['angrep_avslutning', 'forsvar_vinne_ball'],
       learningGoals: ['Samarbeid i angrep: når drible, når spille?', 'Forsvar: fordel ansvar — én presser, én sikrer', 'Kommuniser med makker om hvem som gjør hva'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 4, intensity: 'high', hasOpposition: true,
       playerCount: { min: 8, max: 16 }, equipmentTags: ['smaamaal', 'maal', 'vester', 'ball', 'kjegler'],
       description: 'To mot to på liten bane med mål. Mellomtingen mellom 1v1 og lagspill — her må du samarbeide med én makker for å løse situasjonen. Trener både angrep og forsvar i par.',
       setup: 'Bane 15x20m med mål (småmål eller stort med keeper) i hver ende. Par stiller opp bak hvert mål.',
@@ -1047,7 +1047,7 @@
       equipment: 'Kjegler (mange), baller',
       nffCategory: 'spille_med_og_mot', themes: ['1v1_duell', 'foering_dribling'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
       learningGoals: ['Angriper: les forsvareren og velg hvilken port du angriper', 'Bruk finter og retningsforandring for å åpne porter', 'Forsvarer: steng den nærmeste porten, tving til side'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 16 }, equipmentTags: ['kjegler', 'ball'],
       description: 'Duelltrening der angriperen scorer ved å føre ball gjennom én av flere kjegleporter. Forsvareren må lese angriperen og stenge porter. Trener retningsforandring og valgtaking.',
       setup: 'Firkant 12x12m. 3-4 kjegleporter (1m brede) spredt langs én side. Angriper starter med ball fra motsatt side.',
@@ -1123,7 +1123,7 @@
       equipment: 'Mål med keeper, baller, kjegler',
       nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill', 'keeper'], nffPhases: ['forsvar_hindre_maal'],
       learningGoals: ['Kom mellom ball og mål i riktig vinkel', 'Blokkér med fremsiden av kroppen, stå på beina', 'Keeper: kommuniser posisjon og gi beskjed til forsvarer'],
-      intensity: 'high', hasOpposition: true,
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
       description: 'Forsvareren øver på å blokkere skudd og hindre avslutning nær eget mål. Keeper og forsvarer samarbeider om å stenge rom og vinkel. Trener NFF fase F3.',
       setup: 'Halvbane eller 20x15m foran mål med keeper. Angripere i kø 18-20m ut. Forsvarere starter ved 16-meteren.',
@@ -1160,7 +1160,7 @@
       equipment: '2 småmål (eller store mål), baller',
       nffCategory: 'sjef_over_ballen', themes: ['keeper'], nffPhases: ['forsvar_hindre_maal'],
       learningGoals: ['Grunnstilling og forflytning i målet', 'Grep og skyv ved lave og høye skudd', 'Rask reaksjon og igangsetting etter redning'],
-      intensity: 'medium', hasOpposition: false,
+      suggestedGroupSize: 2, intensity: 'medium', hasOpposition: false,
       playerCount: { min: 4, max: 10 }, equipmentTags: ['smaamaal', 'maal', 'ball'],
       description: 'To keepere mot hverandre i hver sitt mål på kort avstand. Trener reaksjon, grep, plassering og utspark. Morsomt og intenst — alle får mange repetisjoner.',
       setup: 'To mål (småmål eller store) 8-12m fra hverandre. Én keeper i hvert mål. Ekstra baller bak målene.',
@@ -1742,11 +1742,14 @@
   /** Group exercises by NFF category for bottom sheet display */
   function _bsGroupExercises() {
     const groups = new Map();
+    const age = state.ageGroup || null;
     for (const cat of NFF_CATEGORIES) {
       groups.set(cat.id, []);
     }
     for (const ex of EXERCISES) {
       if (ex.category === 'special') continue;
+      // Filter by age if set
+      if (age && ex.ages && !ex.ages.includes(age)) continue;
       const catId = ex.nffCategory;
       if (groups.has(catId)) {
         groups.get(catId).push(ex);
@@ -2851,7 +2854,7 @@
     const idp = `wo_${blockId}_${track}`;
     const showCustom = ex.exerciseKey === 'custom';
     const mode = ex.groupMode || 'even';
-    const groupCount = clampInt(ex.groupCount, 1, 6, 2);
+    const groupCount = clampInt(ex.groupCount, 1, 20, 2);
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     const hasInfo = meta && meta.description && meta.steps;
 
@@ -2890,7 +2893,7 @@
           <div class="wo-field wo-groups-settings">
             <label class="wo-label">Grupper</label>
             <div class="wo-inline">
-              <input id="${idp}_groups" class="input wo-input" type="number" min="1" max="6" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
+              <input id="${idp}_groups" class="input wo-input" type="number" min="1" max="20" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
               <select id="${idp}_mode" class="input wo-input">
                 <option value="none" ${mode === 'none' ? 'selected' : ''}>Ingen inndeling</option>
                 <option value="even" ${mode === 'even' ? 'selected' : ''}>Jevne grupper</option>
@@ -3255,6 +3258,12 @@
     if (tags.length) {
       html += '<div class="wo-info-tags">' + tags.map(t => '<span class="wo-info-tag">' + escapeHtml(t) + '</span>').join('') + '</div>';
     }
+    // Learning goals (per exercise)
+    if (meta.learningGoals && meta.learningGoals.length) {
+      html += '<div class="wo-info-section">🎯 Læringsmål</div><ul class="wo-info-coaching">';
+      for (const g of meta.learningGoals) html += '<li>' + escapeHtml(g) + '</li>';
+      html += '</ul>';
+    }
     if (meta.diagram) {
       html += '<div class="wo-info-svg">' + renderDrillSVG(meta.diagram) + '</div>';
     }
@@ -3320,6 +3329,7 @@
       trigger.addEventListener('click', () => {
         openBottomSheet(bid, track, (newKey) => {
           ex.exerciseKey = newKey;
+          ex._groupCountManual = false; // reset for auto-sizing
           trackExerciseUsage(newKey);
           const meta = EX_BY_KEY.get(newKey);
           if (meta && Number(ex.minutes) <= 0) ex.minutes = meta.defaultMin ?? 10;
@@ -3355,7 +3365,8 @@
 
     if (groups) {
       groups.addEventListener('input', () => {
-        ex.groupCount = clampInt(groups.value, 1, 6, 2);
+        ex.groupCount = clampInt(groups.value, 1, 20, 2);
+        ex._groupCountManual = true; // user explicitly set group count
         // grupper stale
         state.groupsCache.delete(`${bid}:${track}`);
         persistDraft();
@@ -3464,6 +3475,7 @@
     const bid = block.id;
     const ex = track === 'a' ? block.a : block.b;
     const outKey = `${bid}:${track}`;
+    const idp = `wo_${bid}_${track}`;
 
     const groupsOut = $(`wo_${bid}_${track}_groupsOut`);
     if (!groupsOut) return;
@@ -3481,7 +3493,22 @@
     }
 
     const groupMode = String(ex.groupMode || 'even');
-    const groupCount = clampInt(ex.groupCount, 1, 6, 2);
+    let groupCount = clampInt(ex.groupCount, 1, 20, 2);
+
+    // Auto-calculate group count from suggestedGroupSize if available
+    const meta = EX_BY_KEY.get(ex.exerciseKey);
+    if (meta && meta.suggestedGroupSize && meta.suggestedGroupSize >= 2) {
+      const autoCount = Math.max(1, Math.ceil(participants.length / meta.suggestedGroupSize));
+      // Only auto-set if user hasn't manually overridden (groupCount still at default 2)
+      // or if groupCount * suggestedGroupSize is way off from participant count
+      if (!ex._groupCountManual) {
+        groupCount = autoCount;
+        ex.groupCount = autoCount;
+        // Update UI input
+        const groupInput = $(`${idp}_groups`);
+        if (groupInput) groupInput.value = String(autoCount);
+      }
+    }
 
     // "none" -> bare vis liste
     if (groupMode === 'none' || groupCount <= 1) {
@@ -3575,6 +3602,31 @@
     state.blocks.push(b);
     state.expandedBlockId = b.id; // auto-expand new block
     renderBlocks();
+  }
+
+  function clearSession() {
+    if (state.blocks.length > 0) {
+      const ok = window.confirm('Tøm hele økta og start på nytt?');
+      if (!ok) return;
+    }
+    state.blocks = [];
+    state.groupsCache.clear();
+    state.parallelPickB.clear();
+    state.expandedBlockId = null;
+    state.theme = null;
+    state.ageGroup = null;
+    state.eventId = null;
+    state.seasonId = null;
+    const dateEl = $('woDate');
+    const titleEl = $('woTitle');
+    if (dateEl) dateEl.value = '';
+    if (titleEl) titleEl.value = '';
+    safeRemove(DRAFT_KEY());
+    renderBlocks();
+    updateTotalUI();
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('Økta er tømt. Klar for ny planlegging.', 'info');
+    }
   }
 
   function deleteBlock(blockId) {
@@ -4748,7 +4800,7 @@ function serializeWorkoutFromState() {
       if (curNffCat && curNffCat !== prevNffCat) {
         const catObj = NFF_CATEGORY_BY_ID[curNffCat];
         if (catObj) {
-          sectionRow = '<tr class="exp-nff-section"><td colspan="4" style="border-left:3px solid ' + catObj.color + ';padding:6px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:' + catObj.color + ';background:#f9fafb;">' + escapeHtml(catObj.label) + '</td></tr>';
+          sectionRow = '<tr class="exp-nff-section"><td colspan="4" style="border-left:3px solid ' + catObj.color + ';padding:6px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:' + catObj.color + ';background:#f9fafb;">' + escapeHtml(catLabel(catObj, state.ageGroup)) + '</td></tr>';
         }
       }
       if (curNffCat) prevNffCat = curNffCat;
@@ -4768,8 +4820,19 @@ function serializeWorkoutFromState() {
         if (!meta || !meta.description) return '';
         let info = '';
         info += '<div class="exp-description">' + escapeHtml(meta.description) + '</div>';
+        if (meta.equipment) {
+          info += '<div class="exp-coaching" style="margin-top:4px;"><span class="exp-coaching-h">Utstyr:</span> ' + escapeHtml(meta.equipment) + '</div>';
+        }
+        if (meta.setup) {
+          info += '<div class="exp-coaching" style="margin-top:4px;"><span class="exp-coaching-h">Oppsett:</span> ' + escapeHtml(meta.setup) + '</div>';
+        }
+        if (meta.steps && meta.steps.length) {
+          info += '<div style="margin-top:4px;"><span class="exp-coaching-h">Gjennomføring:</span><ol style="margin:2px 0 0 16px;padding:0;font-size:12px;line-height:1.5;color:var(--muted);">';
+          for (const s of meta.steps) info += '<li>' + escapeHtml(s) + '</li>';
+          info += '</ol></div>';
+        }
         if (meta.coaching && meta.coaching.length) {
-          info += '<div class="exp-coaching"><span class="exp-coaching-h">Tips:</span> ' + meta.coaching.map(c => escapeHtml(c)).join(' · ') + '</div>';
+          info += '<div class="exp-coaching"><span class="exp-coaching-h">Tips:</span> ' + meta.coaching.map(c => escapeHtml(c)).join(' \u00b7 ') + '</div>';
         }
         if (meta.diagram) {
           info += '<div class="exp-svg">' + renderDrillSVG(meta.diagram) + '</div>';
@@ -5074,6 +5137,8 @@ function serializeWorkoutFromState() {
       version: 2,
       title,
       date,
+      theme: state.theme || null,
+      ageGroup: state.ageGroup || null,
       usePlayers: !!state.usePlayers,
       selected: Array.from(state.selected),
       parallelPickB: parallelPickBObj,
@@ -5098,6 +5163,8 @@ function serializeWorkoutFromState() {
 
     state.usePlayers = !!draft.usePlayers;
     state.selected = new Set(Array.isArray(draft.selected) ? draft.selected : []);
+    if (draft.theme) state.theme = draft.theme;
+    if (draft.ageGroup) state.ageGroup = draft.ageGroup;
 
     // restore title/date (if present)
     const dateEl = $('woDate');
@@ -5248,7 +5315,18 @@ function serializeWorkoutFromState() {
 
     // Generer-flow CTA button
     const genererBtn = $('woGenererBtn');
-    if (genererBtn) genererBtn.addEventListener('click', () => toggleGenererFlow());
+    if (genererBtn) {
+      genererBtn.addEventListener('click', () => toggleGenererFlow());
+      // Inject "Ny økt" button next to generer
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'btn-secondary';
+      clearBtn.style.cssText = 'margin-left:8px;font-size:13px;padding:6px 12px;';
+      clearBtn.textContent = '\uD83D\uDDD1 Ny \u00f8kt';
+      clearBtn.title = 'T\u00f8m alle \u00f8velser og start p\u00e5 nytt';
+      clearBtn.addEventListener('click', clearSession);
+      genererBtn.parentNode.insertBefore(clearBtn, genererBtn.nextSibling);
+    }
     if (saveBtn) saveBtn.addEventListener('click', () => saveTemplate());
     if (saveWorkoutBtn) saveWorkoutBtn.addEventListener('click', () => saveWorkout());
     if (exportBtn) exportBtn.addEventListener('click', () => exportWorkout());
