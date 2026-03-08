@@ -158,6 +158,7 @@
         {type:'player',x:110,y:20,team:'a',label:'A'},{type:'player',x:175,y:85,team:'a',label:'B'},
         {type:'player',x:110,y:150,team:'a',label:'C'},{type:'player',x:45,y:85,team:'a',label:'D'},
         {type:'player',x:110,y:85,team:'b',label:'X'},
+        {type:'ball',x:120,y:16},
         {type:'arrow',from:[110,20],to:[175,85],style:'pass'},{type:'arrow',from:[110,85],to:[110,30],style:'run'}
       ]}
     },
@@ -262,6 +263,7 @@
         {type:'cone',x:110,y:20},{type:'cone',x:190,y:140},{type:'cone',x:30,y:140},
         {type:'player',x:110,y:28,team:'a',label:'A'},{type:'player',x:186,y:132,team:'a',label:'B'},
         {type:'player',x:34,y:132,team:'a',label:'C'},
+        {type:'ball',x:120,y:24},
         {type:'arrow',from:[110,28],to:[186,132],style:'pass'},
         {type:'arrow',from:[115,38],to:[180,125],style:'run'}
       ]}
@@ -398,6 +400,7 @@
       diagram: { width:220, height:120, field:'none', elements:[
         {type:'player',x:35,y:60,team:'a',label:'A'},{type:'player',x:140,y:60,team:'a',label:'B'},
         {type:'cone',x:195,y:60},
+        {type:'ball',x:85,y:55},
         {type:'arrow',from:[45,60],to:[130,60],style:'pass'},
         {type:'arrow',from:[145,50],to:[190,40],style:'run'}
       ]}
@@ -466,12 +469,12 @@
       ],
       diagram: { width:220, height:160, field:'none', elements:[
         {type:'goal',x:70,y:3,w:80,h:14},
-        {type:'cone',x:65,y:55},{type:'cone',x:65,y:80},{type:'cone',x:65,y:105},
-        {type:'player',x:65,y:140,team:'a',label:''},
-        {type:'cone',x:155,y:55},{type:'cone',x:155,y:80},{type:'cone',x:155,y:105},
-        {type:'player',x:155,y:140,team:'b',label:''},
-        {type:'arrow',from:[65,140],to:[65,25],style:'run'},
-        {type:'arrow',from:[155,140],to:[155,25],style:'run'}
+        {type:'cone',x:55,y:55},{type:'cone',x:75,y:80},{type:'cone',x:55,y:105},
+        {type:'player',x:65,y:140,team:'a',label:''},{type:'ball',x:73,y:136},
+        {type:'cone',x:145,y:55},{type:'cone',x:165,y:80},{type:'cone',x:145,y:105},
+        {type:'player',x:155,y:140,team:'b',label:''},{type:'ball',x:163,y:136},
+        {type:'arrow',from:[65,135],to:[65,25],style:'run'},
+        {type:'arrow',from:[155,135],to:[155,25],style:'run'}
       ]}
     },
 
@@ -732,7 +735,7 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'keeper', label: 'Keepertrening', defaultMin: 12, category: 'keeper',
-      ages: ['8-9','10-12'], players: '1-4',
+      ages: ['8-9','10-12','13-16'], players: '1-4',
       equipment: 'Mål, baller, keeperhansker',
       nffCategory: 'sjef_over_ballen', themes: ['keeper'], nffPhases: ['forsvar_hindre_maal'],
       learningGoals: ['Grunnstilling: føtter i skulderbredde, lett på tå', 'Grep: tomler danner W, fingre spredt', 'Fall til siden, ikke bakover'],
@@ -924,7 +927,7 @@
       ages: ['8-9', '10-12', '13-16'], players: '6-14',
       equipment: 'Kjegler, baller, småmål eller store mål',
       nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'angrep_avslutning'],
-      learningGoals: ['Spill pasning og løp forbi forsvarer i samme bevegelse', 'Medspiller: rask returrpasning i rom bak forsvarer', 'Timing mellom pasning og løp er avgjørende'],
+      learningGoals: ['Spill pasning og løp forbi forsvarer i samme bevegelse', 'Medspiller: rask returpasning i rom bak forsvarer', 'Timing mellom pasning og løp er avgjørende'],
       intensity: 'medium', hasOpposition: true,
       playerCount: { min: 6, max: 14 }, equipmentTags: ['kjegler', 'ball', 'smaamaal'],
       description: 'Øver på gi-og-gå: spill pasning til medspiller, løp forbi forsvareren, motta returen i rom. Den mest effektive kombinasjonen for å bryte gjennom forsvar.',
@@ -1102,7 +1105,7 @@
         'Touchbegrensning (maks 3 touch) for raskere spill',
         'Joker: én nøytral spiller alltid med angripende lag'
       ],
-      diagram: { width:240, height:150, field:'none', elements:[
+      diagram: { width:240, height:150, field:'small', elements:[
         {type:'cone',x:10,y:10},{type:'cone',x:10,y:140},{type:'cone',x:230,y:10},{type:'cone',x:230,y:140},
         {type:'cone',x:35,y:10},{type:'cone',x:35,y:140},{type:'cone',x:205,y:10},{type:'cone',x:205,y:140},
         {type:'player',x:70,y:50,team:'a',label:''},{type:'player',x:70,y:110,team:'a',label:''},
@@ -1145,8 +1148,8 @@
         {type:'goal',x:60,y:5,w:100,h:18},{type:'keeper',x:110,y:20},
         {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
         {type:'player',x:110,y:60,team:'b',label:'F'},
-        {type:'arrow',from:[110,115],to:[110,65],style:'run'},
-        {type:'arrow',from:[115,65],to:[115,25],style:'run'}
+        {type:'arrow',from:[110,115],to:[110,70],style:'run'},
+        {type:'arrow',from:[110,35],to:[110,55],style:'run'}
       ]}
     },
 
@@ -1213,12 +1216,14 @@
         'Kun venstre fot, kun utside',
         'Løype med vending + skudd på mål til slutt'
       ],
-      diagram: { width:220, height:120, field:'none', elements:[
-        {type:'player',x:20,y:40,team:'a',label:''},{type:'player',x:20,y:55,team:'a',label:''},
-        {type:'player',x:20,y:70,team:'a',label:''},{type:'ball',x:28,y:36},
-        {type:'player',x:20,y:85,team:'b',label:''},{type:'player',x:20,y:100,team:'b',label:''},
-        {type:'cone',x:80,y:60},{type:'cone',x:120,y:60},{type:'cone',x:160,y:60},{type:'cone',x:200,y:60},
-        {type:'arrow',from:[30,40],to:[195,55],style:'run'}
+      diagram: { width:220, height:140, field:'none', elements:[
+        {type:'player',x:20,y:25,team:'a',label:''},{type:'player',x:20,y:50,team:'a',label:''},
+        {type:'player',x:20,y:75,team:'a',label:''},{type:'ball',x:28,y:21},
+        {type:'player',x:20,y:100,team:'b',label:''},{type:'player',x:20,y:125,team:'b',label:''},
+        {type:'cone',x:75,y:50},{type:'cone',x:110,y:90},{type:'cone',x:145,y:50},{type:'cone',x:180,y:90},
+        {type:'arrow',from:[30,25],to:[70,50],style:'run'},
+        {type:'arrow',from:[75,55],to:[105,85],style:'run'},
+        {type:'arrow',from:[110,85],to:[140,50],style:'run'}
       ]}
     },
 
@@ -1417,7 +1422,8 @@
         {type:'player',x:140,y:40,team:'a',label:''},{type:'player',x:160,y:80,team:'a',label:''},
         {type:'player',x:140,y:120,team:'a',label:''},{type:'player',x:190,y:80,team:'a',label:''},
         {type:'ball',x:168,y:76},
-        {type:'arrow',from:[75,60],to:[150,50],style:'run'}
+        {type:'arrow',from:[75,60],to:[150,50],style:'run'},
+        {type:'arrow',from:[73,93],to:[73,78],style:'run'},{type:'arrow',from:[73,122],to:[73,100],style:'run'}
       ]}
     },
 
@@ -1449,7 +1455,7 @@
         'Legg til forsvarer i boksen som markerer avslutteren',
         'Pasningsinnlegg lavt langs bakken (cutback) i stedet for høyt innlegg'
       ],
-      diagram: { width:240, height:180, field:'half', elements:[
+      diagram: { width:240, height:180, field:'none', elements:[
         {type:'goal',x:80,y:5,w:80,h:18},{type:'keeper',x:120,y:20},
         {type:'player',x:210,y:120,team:'a',label:'K'},{type:'ball',x:218,y:116},
         {type:'player',x:120,y:110,team:'a',label:'A'},
