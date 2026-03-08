@@ -2029,7 +2029,7 @@
       '<div class="wo-bs-card-stripe" style="background:' + color + '"></div>' +
       '<div class="wo-bs-card-body">' +
         '<div class="wo-bs-card-name">' + escapeHtml(ex.label) +
-          '<button type="button" class="wo-bs-fav" data-fav="' + ex.key + '" title="' + (isFav ? 'Fjern favoritt' : 'Legg til favoritt') + '">' +
+          '<button type="button" class="wo-bs-fav" data-fav="' + ex.key + '" title="' + (isFav ? 'Fjern favoritt' : 'Legg til favoritt') + '" style="min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;margin:-8px -6px -8px 0;padding:0;">' +
             (isFav ? '\u2605' : '\u2606') +
           '</button>' +
         '</div>' +
@@ -2299,9 +2299,9 @@
     } catch {}
   }
 
-  // Exercise favorites (synced to Supabase + localStorage cache)
+  // Exercise favorites (localStorage cache + Supabase sync)
   function FAV_KEY() { return k('exercise_favorites_v1'); }
-  let _favCache = null; // Set<string>, populated on load
+  let _favCache = null;
 
   function loadFavorites() {
     if (_favCache) return _favCache;
@@ -2311,31 +2311,24 @@
     } catch { _favCache = new Set(); }
     return _favCache;
   }
-
   function saveFavorites(favs) {
     _favCache = favs;
     try { safeSet(FAV_KEY(), JSON.stringify([...favs])); } catch {}
-    // Async Supabase sync (fire and forget)
     _woSaveFavoritesToDb(favs);
   }
-
   async function _woSaveFavoritesToDb(favs) {
     const sb = _woGetSb();
     const uid = _woGetUid();
     const tid = _woGetTeamId();
     if (!sb || !uid || uid === 'anon') return;
     try {
-      // Upsert: use source='favorites' as unique marker per user+team
       const existing = await sb.from('workouts')
-        .select('id')
-        .eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .select('id').eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
         .maybeSingle();
       const row = {
         user_id: uid, team_id: tid,
-        title: '_favorites',
-        blocks: [...favs], // store as simple array of keys
-        is_template: false,
-        source: 'favorites',
+        title: '_favorites', blocks: [...favs],
+        is_template: false, source: 'favorites',
         updated_at: new Date().toISOString()
       };
       if (existing?.data?.id) {
@@ -2347,7 +2340,6 @@
       console.warn('[workout.js] Favorites sync failed:', e.message || e);
     }
   }
-
   async function _woLoadFavoritesFromDb() {
     const sb = _woGetSb();
     const uid = _woGetUid();
@@ -2355,27 +2347,22 @@
     if (!sb || !uid || uid === 'anon') return;
     try {
       const res = await sb.from('workouts')
-        .select('blocks')
-        .eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .select('blocks').eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
         .maybeSingle();
       if (res?.data?.blocks && Array.isArray(res.data.blocks)) {
         const dbFavs = new Set(res.data.blocks);
-        // Merge with localStorage (union)
         const localFavs = loadFavorites();
         let merged = false;
         for (const k of dbFavs) {
           if (!localFavs.has(k)) { localFavs.add(k); merged = true; }
         }
         _favCache = localFavs;
-        if (merged) {
-          try { safeSet(FAV_KEY(), JSON.stringify([...localFavs])); } catch {}
-        }
+        if (merged) { try { safeSet(FAV_KEY(), JSON.stringify([...localFavs])); } catch {} }
       }
     } catch (e) {
       console.warn('[workout.js] Favorites load from db failed:', e.message || e);
     }
   }
-
   function toggleFavorite(exerciseKey) {
     const favs = loadFavorites();
     if (favs.has(exerciseKey)) {
@@ -3048,8 +3035,8 @@
               </select>
             </div>
             <div class="small-text" style="opacity:0.85; margin-top:6px;">
-              ${meta && meta.suggestedGroupSize ? '<span style="color:#2e8b57;">\u2139\ufe0f ' + meta.suggestedGroupSize + ' per gruppe (auto-tilpasset til antall deltakere)</span>' : ''}
-              ${track === 'b' ? 'Parallelt: grupper lages på deltakere til denne øvelsen.' : ''}
+              ${meta && meta.suggestedGroupSize ? '<span style="color:#2e8b57;">\u2139\ufe0f ' + meta.suggestedGroupSize + ' per gruppe (tilpasset antall deltakere)</span>' : ''}
+              ${track === 'b' ? 'Parallelt: grupper lages p\u00e5 deltakere til denne \u00f8velsen.' : ''}
             </div>
           </div>
 
@@ -4737,7 +4724,7 @@ function serializeWorkoutFromState() {
     el.innerHTML =
       ageHtml +
       tplHtml +
-      '<div class="wo-gen-divider" style="border-top:1px solid rgba(255,255,255,0.1);margin:10px 0;padding-top:8px;"><div class="wo-gen-label" style="opacity:0.7">...eller bygg selv:</div></div>' +
+      '<div style="border-top:1px solid var(--border, #e2e8f0);margin:12px 0;padding-top:10px;"><div class="wo-gen-label" style="opacity:0.6;font-size:12px;">...eller bygg selv:</div></div>' +
       themesHtml +
       goalsHtml +
       durHtml +
@@ -5521,15 +5508,20 @@ function serializeWorkoutFromState() {
     const genererBtn = $('woGenererBtn');
     if (genererBtn) {
       genererBtn.addEventListener('click', () => toggleGenererFlow());
-      // Inject "Ny økt" button next to generer
+      // Inject "Ny økt" button inline with generer via flex wrapper
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex;gap:8px;align-items:stretch;';
+      genererBtn.parentNode.insertBefore(wrapper, genererBtn);
+      genererBtn.style.flex = '1';
+      wrapper.appendChild(genererBtn);
       const clearBtn = document.createElement('button');
       clearBtn.type = 'button';
       clearBtn.className = 'btn-secondary';
-      clearBtn.style.cssText = 'margin-left:8px;font-size:13px;padding:6px 12px;';
-      clearBtn.textContent = '\uD83D\uDDD1 Ny \u00f8kt';
+      clearBtn.style.cssText = 'font-size:13px;padding:10px 14px;white-space:nowrap;border-radius:14px;';
+      clearBtn.textContent = '\uD83D\uDDD1\ufe0f Ny';
       clearBtn.title = 'T\u00f8m alle \u00f8velser og start p\u00e5 nytt';
       clearBtn.addEventListener('click', clearSession);
-      genererBtn.parentNode.insertBefore(clearBtn, genererBtn.nextSibling);
+      wrapper.appendChild(clearBtn);
     }
     if (saveBtn) saveBtn.addEventListener('click', () => saveTemplate());
     if (saveWorkoutBtn) saveWorkoutBtn.addEventListener('click', () => saveWorkout());
