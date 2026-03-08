@@ -32,23 +32,29 @@
 
   // Cache: which events have linked workouts (for calendar badge)
   var _woEventIds = null; // Set<string> or null
+  var _woSeasonWorkouts = null; // Array of workout rows for current season (for stats)
 
   function _woLoadEventIds() {
     var sb = getSb();
     var uid = getOwnerUid();
     var sid = currentSeason ? currentSeason.id : null;
-    if (!sb || !uid || !sid) { _woEventIds = null; return; }
+    if (!sb || !uid || !sid) { _woEventIds = null; _woSeasonWorkouts = null; return; }
     sb.from('workouts')
-      .select('event_id')
+      .select('id, event_id, theme, age_group, workout_date, duration_minutes, blocks, title')
       .eq('user_id', uid)
       .eq('season_id', sid)
-      .not('event_id', 'is', null)
+      .neq('source', 'favorites')
+      .order('workout_date', { ascending: true })
       .then(function(res) {
         if (res.data) {
-          _woEventIds = new Set(res.data.map(function(r) { return r.event_id; }));
+          _woSeasonWorkouts = res.data;
+          _woEventIds = new Set();
+          for (var i = 0; i < res.data.length; i++) {
+            if (res.data[i].event_id) _woEventIds.add(res.data[i].event_id);
+          }
         }
       })
-      .catch(function() { _woEventIds = null; });
+      .catch(function() { _woEventIds = null; _woSeasonWorkouts = null; });
   }
 
   // Listen for workout saves from workout.js
@@ -56,10 +62,11 @@
     if (e.detail && e.detail.eventId) {
       if (!_woEventIds) _woEventIds = new Set();
       _woEventIds.add(e.detail.eventId);
-      // Re-render calendar if visible
-      if (snView === 'dashboard' || snView === 'calendar') {
-        render();
-      }
+    }
+    // Refresh full cache for stats
+    _woLoadEventIds();
+    if (snView === 'dashboard' || snView === 'calendar') {
+      render();
     }
   });
   function getSb() {
@@ -3392,6 +3399,9 @@
 
     html += '</tbody></table></div>';
 
+    // ── TRAINING PLAN STATS ──
+    html += renderTrainingPlanStats();
+
     // PDF export button
     if (stats.players.length > 0 && (stats.totalTrainings + stats.totalMatches + stats.completedMatches) > 0) {
       html +=
@@ -3400,6 +3410,146 @@
         '</button>';
     }
 
+    return html;
+  }
+
+  // =========================================================================
+  //  TRAINING PLAN STATISTICS (from workouts table)
+  // =========================================================================
+
+  var _woThemeLabels = {
+    'foering_dribling': { label: 'F\u00f8ring og dribling', icon: '\uD83C\uDFC3', color: '#2e8b57' },
+    'vendinger_mottak': { label: 'Vendinger og mottak', icon: '\uD83D\uDD04', color: '#0ea5e9' },
+    'pasning_samspill': { label: 'Pasning og samspill', icon: '\uD83E\uDD1D', color: '#8b5cf6' },
+    'avslutning': { label: 'Avslutning', icon: '\uD83C\uDFAF', color: '#e74c3c' },
+    '1v1_duell': { label: '1 mot 1', icon: '\u26a1', color: '#f59e0b' },
+    'samarbeidsspill': { label: 'Samarbeidsspill', icon: '\uD83D\uDC65', color: '#06b6d4' },
+    'forsvarsspill': { label: 'Forsvarsspill', icon: '\uD83D\uDEE1\ufe0f', color: '#64748b' },
+    'omstilling': { label: 'Omstilling', icon: '\uD83D\uDD01', color: '#ec4899' },
+    'spilloppbygging': { label: 'Spilloppbygging', icon: '\uD83D\uDCD0', color: '#3b82f6' },
+    'keeper': { label: 'Keeper', icon: '\uD83E\uDDE4', color: '#eab308' }
+  };
+
+  function renderTrainingPlanStats() {
+    if (!_woSeasonWorkouts || _woSeasonWorkouts.length === 0) {
+      return '';
+    }
+
+    var workouts = _woSeasonWorkouts;
+    var totalWorkouts = workouts.length;
+    var totalMinutes = 0;
+
+    // Theme counts
+    var themeCounts = {};
+    var monthCounts = {}; // 'YYYY-MM' → count
+
+    for (var i = 0; i < workouts.length; i++) {
+      var w = workouts[i];
+      totalMinutes += (w.duration_minutes || 0);
+
+      if (w.theme) {
+        themeCounts[w.theme] = (themeCounts[w.theme] || 0) + 1;
+      }
+
+      if (w.workout_date) {
+        var ym = w.workout_date.substring(0, 7); // YYYY-MM
+        monthCounts[ym] = (monthCounts[ym] || 0) + 1;
+      }
+    }
+
+    // Find available themes for this age group
+    var ageGroup = (currentSeason && currentSeason.age_class) ? parseAgeFromClass(currentSeason.age_class) : null;
+    var allThemes = Object.keys(_woThemeLabels);
+    // For younger ages, fewer themes are relevant
+    if (ageGroup && ageGroup <= 7) {
+      allThemes = ['foering_dribling', 'avslutning', '1v1_duell'];
+    } else if (ageGroup && ageGroup <= 9) {
+      allThemes = ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill'];
+    }
+
+    // Build theme bars
+    var maxCount = 0;
+    for (var t in themeCounts) { if (themeCounts[t] > maxCount) maxCount = themeCounts[t]; }
+
+    var html = '<div class="sn-section" style="margin-top:20px;">\uD83C\uDFBD Treningsstatistikk</div>';
+    html += '<div class="settings-card" style="padding:16px;">';
+
+    // Summary
+    html +=
+      '<div class="sn-stats-cards">' +
+        '<div class="sn-stat-card">' +
+          '<div class="sn-stat-num">' + totalWorkouts + '</div>' +
+          '<div class="sn-stat-label">Planlagte \u00f8kter</div>' +
+        '</div>' +
+        '<div class="sn-stat-card">' +
+          '<div class="sn-stat-num">' + Math.round(totalMinutes / 60) + '<span style="font-size:14px; color:var(--text-400);"> t</span></div>' +
+          '<div class="sn-stat-label">Total treningstid</div>' +
+        '</div>' +
+      '</div>';
+
+    // Theme distribution
+    html += '<div style="margin-top:16px; font-weight:700; font-size:14px; margin-bottom:10px;">Temafordeling</div>';
+
+    for (var ti = 0; ti < allThemes.length; ti++) {
+      var themeId = allThemes[ti];
+      var meta = _woThemeLabels[themeId];
+      if (!meta) continue;
+      var count = themeCounts[themeId] || 0;
+      var pct = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
+
+      html +=
+        '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">' +
+          '<div style="width:24px; text-align:center; font-size:14px;">' + meta.icon + '</div>' +
+          '<div style="flex:1; min-width:0;">' +
+            '<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;">' +
+              '<span style="font-weight:600; color:var(--text-700);">' + escapeHtml(meta.label) + '</span>' +
+              '<span style="color:var(--text-400);">' + count + (count === 1 ? ' \u00f8kt' : ' \u00f8kter') + '</span>' +
+            '</div>' +
+            '<div style="height:6px; background:var(--bg, #f1f5f9); border-radius:3px; overflow:hidden;">' +
+              '<div style="height:100%; width:' + (count > 0 ? Math.max(pct, 4) : 0) + '%; background:' + meta.color + '; border-radius:3px; transition:width 0.3s;"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    // Gaps warning
+    var gaps = [];
+    for (var gi = 0; gi < allThemes.length; gi++) {
+      if (!themeCounts[allThemes[gi]]) {
+        var gm = _woThemeLabels[allThemes[gi]];
+        if (gm) gaps.push(gm.icon + ' ' + gm.label);
+      }
+    }
+    if (gaps.length > 0 && totalWorkouts >= 3) {
+      html +=
+        '<div style="margin-top:12px; padding:10px 12px; background:rgba(245,158,11,0.08); border-radius:10px; font-size:12px; color:#92400e;">' +
+          '<strong>\u26a0\ufe0f Ikke trent denne sesongen:</strong> ' + gaps.join(', ') +
+        '</div>';
+    }
+
+    // Monthly overview (if workouts span multiple months)
+    var months = Object.keys(monthCounts).sort();
+    if (months.length > 1) {
+      var MONTH_NAMES_NO = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
+      html += '<div style="margin-top:16px; font-weight:700; font-size:14px; margin-bottom:10px;">Per m\u00e5ned</div>';
+      html += '<div style="display:flex; gap:4px; align-items:flex-end; height:80px;">';
+      var maxMonth = 0;
+      for (var mi = 0; mi < months.length; mi++) { if (monthCounts[months[mi]] > maxMonth) maxMonth = monthCounts[months[mi]]; }
+      for (var mj = 0; mj < months.length; mj++) {
+        var mc = monthCounts[months[mj]];
+        var barH = maxMonth > 0 ? Math.max(Math.round((mc / maxMonth) * 60), 4) : 4;
+        var monthIdx = parseInt(months[mj].split('-')[1]) - 1;
+        html +=
+          '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;">' +
+            '<div style="font-size:11px; font-weight:700; color:var(--text-600);">' + mc + '</div>' +
+            '<div style="width:100%; max-width:32px; height:' + barH + 'px; background:#3b82f6; border-radius:4px;"></div>' +
+            '<div style="font-size:10px; color:var(--text-400);">' + MONTH_NAMES_NO[monthIdx] + '</div>' +
+          '</div>';
+      }
+      html += '</div>';
+    }
+
+    html += '</div>';
     return html;
   }
 
