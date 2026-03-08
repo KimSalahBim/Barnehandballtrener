@@ -1875,6 +1875,7 @@
     const inSession = _bsKeysInSession();
     const missing = _bsMissingCategories();
     const currentTheme = state.theme || null;
+    const favs = loadFavorites();
 
     let html = '';
 
@@ -1887,36 +1888,64 @@
       html += '</div>';
     }
 
+    // Favorites section
+    if (favs.size > 0) {
+      const age = state.ageGroup || null;
+      const favExercises = EXERCISES.filter(ex =>
+        ex.category !== 'special' && favs.has(ex.key) &&
+        (!age || !ex.ages || ex.ages.includes(age))
+      );
+      if (favExercises.length > 0) {
+        html += '<div class="wo-bs-section wo-bs-section-theme">';
+        html += '<div class="wo-bs-section-head wo-bs-section-head-theme">\u2605 Favoritter</div>';
+        for (const ex of favExercises) {
+          html += _bsRenderCard(ex, inSession, favs);
+        }
+        html += '</div>';
+      }
+    }
+
     // Theme section (if theme is set via generer-flow)
     if (currentTheme) {
       const themeMeta = NFF_THEME_BY_ID[currentTheme];
       if (themeMeta) {
+        const age = state.ageGroup || null;
         const themeExercises = EXERCISES.filter(ex =>
-          ex.category !== 'special' && ex.themes && ex.themes.includes(currentTheme)
+          ex.category !== 'special' && ex.themes && ex.themes.includes(currentTheme) &&
+          (!age || !ex.ages || ex.ages.includes(age))
         );
         if (themeExercises.length > 0) {
           html += '<div class="wo-bs-section wo-bs-section-theme">';
           html += '<div class="wo-bs-section-head wo-bs-section-head-theme">';
           html += escapeHtml(themeMeta.icon) + ' Passer til \u00ab' + escapeHtml(themeMeta.label) + '\u00bb</div>';
           for (const ex of themeExercises) {
-            html += _bsRenderCard(ex, inSession);
+            html += _bsRenderCard(ex, inSession, favs);
           }
           html += '</div>';
         }
       }
     }
 
-    // NFF category sections
+    // NFF category sections (favorites sorted first)
     for (const cat of NFF_CATEGORIES) {
       const exs = groups.get(cat.id) || [];
       if (!exs.length) continue;
+
+      // Sort: favorites first, then by frequency
+      const freq = loadFrequency();
+      exs.sort((a, b) => {
+        const fa = favs.has(a.key) ? 1 : 0;
+        const fb = favs.has(b.key) ? 1 : 0;
+        if (fb !== fa) return fb - fa;
+        return (freq[b.key] || 0) - (freq[a.key] || 0);
+      });
 
       html += '<div class="wo-bs-section" data-cat="' + cat.id + '">';
       html += '<div class="wo-bs-section-head" style="--cat-color:' + cat.color + '">';
       html += catLabel(cat, state.ageGroup) + '</div>';
 
       for (const ex of exs) {
-        html += _bsRenderCard(ex, inSession);
+        html += _bsRenderCard(ex, inSession, favs);
       }
       html += '</div>';
     }
@@ -1926,11 +1955,23 @@
 
     _bs.body.innerHTML = html;
 
-    // Bind card clicks
+    // Bind card clicks (select exercise)
     _bs.body.querySelectorAll('.wo-bs-card').forEach(card => {
       card.addEventListener('click', () => {
         const key = card.dataset.key;
         if (key) _bsSelectExercise(key);
+      });
+    });
+
+    // Bind favorite star clicks
+    _bs.body.querySelectorAll('.wo-bs-fav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // don't select the exercise
+        const key = btn.dataset.fav;
+        if (key) {
+          toggleFavorite(key);
+          _bsRenderBody(); // re-render to update stars and sections
+        }
       });
     });
 
@@ -1942,10 +1983,11 @@
   }
 
   /** Render a single exercise card */
-  function _bsRenderCard(ex, inSession) {
+  function _bsRenderCard(ex, inSession, favs) {
     const cat = NFF_CATEGORY_BY_ID[ex.nffCategory];
     const color = cat ? cat.color : '#888';
     const isInSession = inSession.has(ex.key);
+    const isFav = favs && favs.has(ex.key);
 
     // Description: truncate to ~60 chars
     const desc = ex.description
@@ -1973,7 +2015,11 @@
       ' data-desc="' + escapeHtml((ex.description || '').toLowerCase().slice(0, 100)) + '">' +
       '<div class="wo-bs-card-stripe" style="background:' + color + '"></div>' +
       '<div class="wo-bs-card-body">' +
-        '<div class="wo-bs-card-name">' + escapeHtml(ex.label) + '</div>' +
+        '<div class="wo-bs-card-name">' + escapeHtml(ex.label) +
+          '<button type="button" class="wo-bs-fav" data-fav="' + ex.key + '" title="' + (isFav ? 'Fjern favoritt' : 'Legg til favoritt') + '">' +
+            (isFav ? '\u2605' : '\u2606') +
+          '</button>' +
+        '</div>' +
         (desc ? '<div class="wo-bs-card-desc">' + escapeHtml(desc) + '</div>' : '') +
         equipLine +
         '<div class="wo-bs-card-meta">' + metaParts.join(' \u00b7 ') + '</div>' +
@@ -2238,6 +2284,28 @@
       freq[exerciseKey] = (freq[exerciseKey] || 0) + 1;
       safeSet(FREQ_KEY(), JSON.stringify(freq));
     } catch {}
+  }
+
+  // Exercise favorites
+  function FAV_KEY() { return k('exercise_favorites_v1'); }
+  function loadFavorites() {
+    try {
+      const raw = safeGet(FAV_KEY());
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+  }
+  function saveFavorites(favs) {
+    try { safeSet(FAV_KEY(), JSON.stringify([...favs])); } catch {}
+  }
+  function toggleFavorite(exerciseKey) {
+    const favs = loadFavorites();
+    if (favs.has(exerciseKey)) {
+      favs.delete(exerciseKey);
+    } else {
+      favs.add(exerciseKey);
+    }
+    saveFavorites(favs);
+    return favs;
   }
   function getSortedExercises() {
     const freq = loadFrequency();
@@ -4169,6 +4237,47 @@ function serializeWorkoutFromState() {
     persistDraft();
   }
 
+  /** Duplicate a saved workout as a new unsaved session */
+  function duplicateWorkout(w) {
+    if (!w || !Array.isArray(w.blocks)) return;
+
+    const dateEl = $('woDate');
+    const titleEl = $('woTitle');
+    if (titleEl) titleEl.value = 'Kopi av ' + String(w.title || 'Trenings\u00f8kt');
+    if (dateEl) dateEl.value = ''; // blank date — user sets new date
+
+    state.usePlayers = !!w.usePlayers;
+    const t = $('woUsePlayersToggle');
+    if (t) t.checked = !!state.usePlayers;
+
+    state.selected = new Set();
+    state.parallelPickB.clear();
+    state.groupsCache.clear();
+    state.expandedBlockId = null;
+    // Clear event/season links — this is a NEW session
+    state.eventId = null;
+    state.seasonId = null;
+    // Keep theme and age from original
+    state.theme = w.theme || null;
+    state.ageGroup = w.age_group || w.ageGroup || null;
+
+    state.blocks = w.blocks.map(b => {
+      const bid = uuid('b_');
+      if (b.kind === 'parallel') {
+        return { id: bid, kind: 'parallel', a: migrateExerciseObj({ ...makeDefaultExercise(), ...b.a }), b: migrateExerciseObj({ ...makeDefaultExercise(), ...b.b }), _showPickB: false };
+      }
+      return { id: bid, kind: 'single', a: migrateExerciseObj({ ...makeDefaultExercise(), ...b.a }) };
+    });
+
+    renderPlayersPanel();
+    renderBlocks();
+    persistDraft();
+
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('\u00d8kt duplisert \u2013 sett ny dato og juster fritt', 'success');
+    }
+  }
+
   function renderWorkouts() {
     const wrap = $('woWorkouts');
     if (!wrap) return;
@@ -4196,6 +4305,7 @@ function serializeWorkoutFromState() {
           </div>
           <div class="wo-template-actions">
             <button class="btn-small" type="button" data-wo-load="${escapeHtml(w.id)}"><i class="fas fa-upload"></i> Last</button>
+            <button class="btn-small" type="button" data-wo-dup="${escapeHtml(w.id)}" title="Dupliser som ny \u00f8kt">\uD83D\uDCCB Kopi</button>
             ${canEdit ? '<button class="btn-small" type="button" data-wo-del="' + escapeHtml(w.id) + '"><i class="fas fa-trash"></i> Slett</button>' : ''}
           </div>
         </div>
@@ -4207,6 +4317,13 @@ function serializeWorkoutFromState() {
         const id = btn.getAttribute('data-wo-load');
         const w = _woCache.workouts.find(x => x.id === id);
         if (w) applyWorkoutToState(w);
+      });
+    });
+    wrap.querySelectorAll('button[data-wo-dup]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-wo-dup');
+        const w = _woCache.workouts.find(x => x.id === id);
+        if (w) duplicateWorkout(w);
       });
     });
     wrap.querySelectorAll('button[data-wo-del]').forEach(btn => {
