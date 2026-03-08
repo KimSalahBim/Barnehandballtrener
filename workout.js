@@ -2299,17 +2299,83 @@
     } catch {}
   }
 
-  // Exercise favorites
+  // Exercise favorites (synced to Supabase + localStorage cache)
   function FAV_KEY() { return k('exercise_favorites_v1'); }
+  let _favCache = null; // Set<string>, populated on load
+
   function loadFavorites() {
+    if (_favCache) return _favCache;
     try {
       const raw = safeGet(FAV_KEY());
-      return raw ? new Set(JSON.parse(raw)) : new Set();
-    } catch { return new Set(); }
+      _favCache = raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { _favCache = new Set(); }
+    return _favCache;
   }
+
   function saveFavorites(favs) {
+    _favCache = favs;
     try { safeSet(FAV_KEY(), JSON.stringify([...favs])); } catch {}
+    // Async Supabase sync (fire and forget)
+    _woSaveFavoritesToDb(favs);
   }
+
+  async function _woSaveFavoritesToDb(favs) {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon') return;
+    try {
+      // Upsert: use source='favorites' as unique marker per user+team
+      const existing = await sb.from('workouts')
+        .select('id')
+        .eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .maybeSingle();
+      const row = {
+        user_id: uid, team_id: tid,
+        title: '_favorites',
+        blocks: [...favs], // store as simple array of keys
+        is_template: false,
+        source: 'favorites',
+        updated_at: new Date().toISOString()
+      };
+      if (existing?.data?.id) {
+        await sb.from('workouts').update(row).eq('id', existing.data.id);
+      } else {
+        await sb.from('workouts').insert(row);
+      }
+    } catch (e) {
+      console.warn('[workout.js] Favorites sync failed:', e.message || e);
+    }
+  }
+
+  async function _woLoadFavoritesFromDb() {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon') return;
+    try {
+      const res = await sb.from('workouts')
+        .select('blocks')
+        .eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .maybeSingle();
+      if (res?.data?.blocks && Array.isArray(res.data.blocks)) {
+        const dbFavs = new Set(res.data.blocks);
+        // Merge with localStorage (union)
+        const localFavs = loadFavorites();
+        let merged = false;
+        for (const k of dbFavs) {
+          if (!localFavs.has(k)) { localFavs.add(k); merged = true; }
+        }
+        _favCache = localFavs;
+        if (merged) {
+          try { safeSet(FAV_KEY(), JSON.stringify([...localFavs])); } catch {}
+        }
+      }
+    } catch (e) {
+      console.warn('[workout.js] Favorites load from db failed:', e.message || e);
+    }
+  }
+
   function toggleFavorite(exerciseKey) {
     const favs = loadFavorites();
     if (favs.has(exerciseKey)) {
@@ -2387,8 +2453,8 @@
       if (res.error) throw res.error;
 
       const rows = res.data || [];
-      _woCache.templates = rows.filter(r => r.is_template);
-      _woCache.workouts = rows.filter(r => !r.is_template);
+      _woCache.templates = rows.filter(r => r.is_template && r.source !== 'favorites');
+      _woCache.workouts = rows.filter(r => !r.is_template && r.source !== 'favorites');
       _woCache.loaded = true;
 
       console.log('[workout.js] Loaded ' + rows.length + ' workouts from db (' + _woCache.templates.length + ' maler, ' + _woCache.workouts.length + ' økter)');
@@ -2982,8 +3048,8 @@
               </select>
             </div>
             <div class="small-text" style="opacity:0.85; margin-top:6px;">
+              ${meta && meta.suggestedGroupSize ? '<span style="color:#2e8b57;">\u2139\ufe0f ' + meta.suggestedGroupSize + ' per gruppe (auto-tilpasset til antall deltakere)</span>' : ''}
               ${track === 'b' ? 'Parallelt: grupper lages på deltakere til denne øvelsen.' : ''}
-              ${track === 'a' ? '' : ''}
             </div>
           </div>
 
@@ -5649,6 +5715,7 @@ function serializeWorkoutFromState() {
     try {
       await _woMigrateToDb();
       await _woLoadFromDb();
+      await _woLoadFavoritesFromDb();
     } catch (e) {
       console.warn('[workout.js] loadWorkoutCloudData feilet:', e.message || e);
     }
