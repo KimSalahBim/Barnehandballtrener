@@ -29,6 +29,39 @@
   function getTeamId() { return window.__BF_getTeamId ? window.__BF_getTeamId() : (window._bftTeamId || null); }
   function getUserId() { return window.authService ? window.authService.getUserId() : null; }
   function getOwnerUid() { return window.__BF_getOwnerUid ? window.__BF_getOwnerUid() : getUserId(); }
+
+  // Cache: which events have linked workouts (for calendar badge)
+  var _woEventIds = null; // Set<string> or null
+
+  function _woLoadEventIds() {
+    var sb = getSb();
+    var uid = getOwnerUid();
+    var sid = currentSeason ? currentSeason.id : null;
+    if (!sb || !uid || !sid) { _woEventIds = null; return; }
+    sb.from('workouts')
+      .select('event_id')
+      .eq('user_id', uid)
+      .eq('season_id', sid)
+      .not('event_id', 'is', null)
+      .then(function(res) {
+        if (res.data) {
+          _woEventIds = new Set(res.data.map(function(r) { return r.event_id; }));
+        }
+      })
+      .catch(function() { _woEventIds = null; });
+  }
+
+  // Listen for workout saves from workout.js
+  window.addEventListener('workout:saved', function(e) {
+    if (e.detail && e.detail.eventId) {
+      if (!_woEventIds) _woEventIds = new Set();
+      _woEventIds.add(e.detail.eventId);
+      // Re-render calendar if visible
+      if (snView === 'dashboard' || snView === 'calendar') {
+        render();
+      }
+    }
+  });
   function getSb() {
     var sb = window.supabase || window.supabaseClient;
     return (sb && sb.from) ? sb : null;
@@ -495,6 +528,7 @@
       '.sn-playtime-name { font-weight:500; }',
       '.sn-playtime-min { font-variant-numeric:tabular-nums; font-weight:700; color:var(--text-600); }',
       '.sn-confirmed-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600; background:rgba(34,197,94,0.12); color:#16a34a; margin-left:8px; }',
+      '.sn-workout-badge { display:inline-flex; align-items:center; gap:3px; width:20px; height:20px; border-radius:50%; background:rgba(124,58,237,0.12); color:#7c3aed; font-size:11px; justify-content:center; flex-shrink:0; }',
       '.sn-unconfirm-link { font-size:12px; color:var(--text-400); cursor:pointer; text-decoration:underline; margin-top:8px; text-align:center; }',
 
       // Import checkboxes
@@ -4556,6 +4590,12 @@
         ? '<div class="sn-att-badge" title="Oppm\u00f8te registrert">\u2713</div>'
         : '';
 
+      // Workout badge for training events
+      var workoutBadge = '';
+      if (ev.type === 'training' && _woEventIds && _woEventIds.has(ev.id)) {
+        workoutBadge = '<div class="sn-workout-badge" title="Trenings\u00f8kt planlagt"><i class="fas fa-dumbbell" style="font-size:10px;"></i></div>';
+      }
+
       // Score badge for completed matches
       var scoreBadge = '';
       if ((ev.type === 'match' || ev.type === 'cup_match') && ev.status === 'completed' && ev.result_home !== null && ev.result_home !== undefined) {
@@ -4573,6 +4613,7 @@
             '<div class="sn-event-meta">' + escapeHtml(meta) + stEvBadge + '</div>' +
           '</div>' +
           scoreBadge +
+          workoutBadge +
           regBadge +
           '<div class="sn-event-arrow">\u203A</div>' +
         '</div>';
@@ -5665,6 +5706,9 @@
         html +=
           '<button class="btn-primary" id="snSaveAttendance" style="width:100%; margin-top:12px;">' +
             '<i class="fas fa-check" style="margin-right:5px;"></i>Lagre oppm\u00f8te' +
+          '</button>' +
+          '<button class="btn-secondary" id="snOpenWorkout" style="width:100%; margin-top:8px;">' +
+            '<i class="fas fa-dumbbell" style="margin-right:6px;"></i>Planlegg trenings\u00f8kt' +
           '</button>';
       }
     } else {
@@ -5900,6 +5944,47 @@
         embeddedKampdagTropp = troppPlayers;
         snView = 'embedded-kampdag';
         render();
+      });
+    }
+
+    // Planlegg treningsøkt (training events)
+    if ($('snOpenWorkout')) {
+      $('snOpenWorkout').addEventListener('click', function() {
+        // Gather present players from UI
+        var attItems = root.querySelectorAll('.sn-att-item.present');
+        var presentIds = [];
+        for (var ai = 0; ai < attItems.length; ai++) {
+          presentIds.push(attItems[ai].getAttribute('data-pid'));
+        }
+
+        // Map season age_class (G10, J7) to workout ageGroup (8-9, 10-12)
+        var woAge = null;
+        if (currentSeason && currentSeason.age_class) {
+          var parsedAge = parseAgeFromClass(currentSeason.age_class);
+          if (parsedAge >= 6 && parsedAge <= 7) woAge = '6-7';
+          else if (parsedAge >= 8 && parsedAge <= 9) woAge = '8-9';
+          else if (parsedAge >= 10 && parsedAge <= 12) woAge = '10-12';
+          else if (parsedAge >= 13) woAge = '13-16';
+        }
+
+        // Build prefill options
+        var opts = {
+          eventId: ev.id,
+          seasonId: currentSeason ? currentSeason.id : null,
+          date: ev.start_time ? ev.start_time.slice(0, 10) : null,
+          title: ev.title || 'Trening',
+          duration: ev.duration_minutes || 60,
+          ageGroup: woAge,
+          playerIds: presentIds
+        };
+
+        // Call workout.js bridge and switch tab
+        if (window.workoutPrefill) {
+          window.workoutPrefill(opts);
+        }
+        if (window.__BF_switchTab) {
+          window.__BF_switchTab('workout');
+        }
       });
     }
 
@@ -6557,6 +6642,7 @@
     currentSeason = s;
     dashTab = 'calendar';
     await Promise.all([loadEvents(seasonId), loadSeasonPlayers(seasonId), loadRegisteredEventIds(seasonId)]);
+    _woLoadEventIds(); // Async, non-blocking
     snView = 'dashboard';
     render();
   }
