@@ -1744,12 +1744,13 @@
     blockId: null,   // which block triggered
     track: null,     // 'a' or 'b'
     onSelect: null,  // callback(exerciseKey)
+    ctxOverride: null, // { ageGroup, blocks } — set by sesong-workout.js via openExercisePicker
   };
 
   /** Group exercises by NFF category for bottom sheet display */
   function _bsGroupExercises() {
     const groups = new Map();
-    const age = state.ageGroup || null;
+    const age = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup) || null;
     for (const cat of NFF_CATEGORIES) {
       groups.set(cat.id, []);
     }
@@ -1768,7 +1769,8 @@
   /** Get set of exercise keys currently in the session */
   function _bsKeysInSession() {
     const keys = new Set();
-    for (const b of state.blocks) {
+    const blocks = (_bs.ctxOverride && _bs.ctxOverride.blocks) ? _bs.ctxOverride.blocks : state.blocks;
+    for (const b of blocks) {
       if (b.a?.exerciseKey) keys.add(b.a.exerciseKey);
       if (b.kind === 'parallel' && b.b?.exerciseKey) keys.add(b.b.exerciseKey);
     }
@@ -1778,7 +1780,8 @@
   /** Get NFF categories not covered by current session */
   function _bsMissingCategories() {
     const covered = new Set();
-    for (const b of state.blocks) {
+    const blocks = (_bs.ctxOverride && _bs.ctxOverride.blocks) ? _bs.ctxOverride.blocks : state.blocks;
+    for (const b of blocks) {
       const metaA = EX_BY_KEY.get(b.a?.exerciseKey);
       if (metaA && metaA.nffCategory && metaA.nffCategory !== 'pause') covered.add(metaA.nffCategory);
       if (b.kind === 'parallel' && b.b) {
@@ -1857,10 +1860,11 @@
   /** Render category pills */
   function _bsRenderPills() {
     const wrap = _bs.el.querySelector('.wo-bs-pills');
+    const age = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup);
     wrap.innerHTML = NFF_CATEGORIES.map(cat =>
       '<button class="wo-bs-pill" type="button" data-cat="' + cat.id + '"' +
       ' style="--pill-color:' + cat.color + '">' +
-      catLabel(cat, state.ageGroup) + '</button>'
+      catLabel(cat, age) + '</button>'
     ).join('');
 
     wrap.querySelectorAll('.wo-bs-pill').forEach(btn => {
@@ -2130,6 +2134,7 @@
     _bs.onSelect = null;
     _bs.blockId = null;
     _bs.track = null;
+    _bs.ctxOverride = null;
     if (_bs.search) _bs.search.blur();
   }
 
@@ -5776,6 +5781,21 @@ function serializeWorkoutFromState() {
   // =========================================================
   // SHARED API: Exposed for sesong-workout.js embedding
   // =========================================================
+
+  /**
+   * Open the exercise picker (bottom sheet) from an external context.
+   * ctxOverride = { ageGroup, blocks } — sesong-workout.js passes its own state.
+   */
+  function openExercisePicker(onSelect, ctxOverride) {
+    _bs.ctxOverride = ctxOverride || null;
+    // Re-render pills with the overridden age group
+    if (_bs.el) _bsRenderPills();
+    openBottomSheet('__ext__', 'a', function(key) {
+      _bs.ctxOverride = null;
+      onSelect(key);
+    });
+  }
+
   window._woShared = {
     EXERCISES: EXERCISES,
     EX_BY_KEY: EX_BY_KEY,
@@ -5793,6 +5813,13 @@ function serializeWorkoutFromState() {
     getLearningGoals: getLearningGoals,
     calculateNffBalance: calculateNffBalance,
     escapeHtml: escapeHtml,
+    // Extended API for sesong-workout.js
+    openExercisePicker: openExercisePicker,
+    renderExerciseTrigger: renderExerciseTrigger,
+    renderInfoPanel: renderInfoPanel,
+    displayName: displayName,
+    saveWorkoutToDb: _woSaveToDb,
+    clampInt: clampInt,
   };
 
 })();
