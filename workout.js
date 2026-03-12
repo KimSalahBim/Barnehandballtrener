@@ -5606,8 +5606,8 @@ function serializeWorkoutFromState() {
       clearBtn.type = 'button';
       clearBtn.className = 'btn-secondary';
       clearBtn.style.cssText = 'font-size:13px;padding:10px 14px;white-space:nowrap;border-radius:14px;';
-      clearBtn.textContent = '\uD83D\uDDD1\ufe0f Ny';
-      clearBtn.title = 'T\u00f8m alle \u00f8velser og start p\u00e5 nytt';
+      clearBtn.textContent = '\uD83D\uDDD1\ufe0f Nullstill';
+      clearBtn.title = 'Nullstill alle \u00f8velser og start p\u00e5 nytt';
       clearBtn.addEventListener('click', clearSession);
       wrapper.appendChild(clearBtn);
     }
