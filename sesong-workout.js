@@ -206,6 +206,8 @@
           '<i class="fas fa-save"></i> Lagre</button>' +
         '<button type="button" class="btn-secondary" id="swExportBtn">' +
           '<i class="fas fa-file-pdf"></i> PDF</button>' +
+        '<button type="button" class="btn-secondary" id="swClearBtn" style="margin-left:auto;">' +
+          '🗑️ Nullstill</button>' +
       '</div>' +
     '</div>';
   }
@@ -832,6 +834,19 @@
     on('swAddParBtn',  'click', function() { addBlock('parallel'); });
     on('swSaveManBtn', 'click', handleManualSave);
     on('swExportBtn',  'click', exportPdf);
+    on('swClearBtn',   'click', function() {
+      if (_swBlocks.length === 0) return;
+      if (!window.confirm('Nullstill økta og start på nytt?')) return;
+      _swBlocks = [];
+      _swMeta.theme = null;
+      _swExpandedId = null;
+      _swGroupsCache.clear();
+      _swParPickB.clear();
+      scheduleSave();
+      updateHeader();
+      renderBlocks();
+      if (window.showNotification) window.showNotification('Økta er nullstilt.', 'info');
+    });
 
     // Spillerpanel toggle
     var pToggle  = c.querySelector('#swPlayersToggle');
