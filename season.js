@@ -21,6 +21,8 @@
   var editingSeasonPlayer = null; // season player object when editing
   var embeddedKampdagEvent = null; // event for embedded kampdag
   var embeddedKampdagTropp = null; // tropp players for embedded kampdag
+  var embeddedWorkoutEvent = null; // event for embedded workout
+  var embeddedWorkoutPlayers = null; // players for embedded workout
   var subTeamFilter = null; // null = all, 1-5 = specific sub-team (for roster/stats tabs)
 
   // =========================================================================
@@ -29,6 +31,46 @@
   function getTeamId() { return window.__BF_getTeamId ? window.__BF_getTeamId() : (window._bftTeamId || null); }
   function getUserId() { return window.authService ? window.authService.getUserId() : null; }
   function getOwnerUid() { return window.__BF_getOwnerUid ? window.__BF_getOwnerUid() : getUserId(); }
+
+  // Cache: which events have linked workouts (for calendar badge)
+  var _woEventIds = null; // Set<string> or null
+  var _woSeasonWorkouts = null; // Array of workout rows for current season (for stats)
+
+  function _woLoadEventIds() {
+    var sb = getSb();
+    var uid = getOwnerUid();
+    var sid = currentSeason ? currentSeason.id : null;
+    if (!sb || !uid || !sid) { _woEventIds = null; _woSeasonWorkouts = null; return; }
+    sb.from('workouts')
+      .select('id, event_id, theme, age_group, workout_date, duration_minutes, blocks, title')
+      .eq('user_id', uid)
+      .eq('season_id', sid)
+      .neq('source', 'favorites')
+      .order('workout_date', { ascending: true })
+      .then(function(res) {
+        if (res.data) {
+          _woSeasonWorkouts = res.data;
+          _woEventIds = new Set();
+          for (var i = 0; i < res.data.length; i++) {
+            if (res.data[i].event_id) _woEventIds.add(res.data[i].event_id);
+          }
+        }
+      })
+      .catch(function() { _woEventIds = null; _woSeasonWorkouts = null; });
+  }
+
+  // Listen for workout saves from workout.js
+  window.addEventListener('workout:saved', function(e) {
+    if (e.detail && e.detail.eventId) {
+      if (!_woEventIds) _woEventIds = new Set();
+      _woEventIds.add(e.detail.eventId);
+    }
+    // Refresh full cache for stats
+    _woLoadEventIds();
+    if (snView === 'dashboard' || snView === 'calendar') {
+      render();
+    }
+  });
   function getSb() {
     var sb = window.supabase || window.supabaseClient;
     return (sb && sb.from) ? sb : null;
@@ -495,6 +537,7 @@
       '.sn-playtime-name { font-weight:500; }',
       '.sn-playtime-min { font-variant-numeric:tabular-nums; font-weight:700; color:var(--text-600); }',
       '.sn-confirmed-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600; background:rgba(34,197,94,0.12); color:#16a34a; margin-left:8px; }',
+      '.sn-workout-badge { display:inline-flex; align-items:center; gap:3px; width:20px; height:20px; border-radius:50%; background:rgba(124,58,237,0.12); color:#7c3aed; font-size:11px; justify-content:center; flex-shrink:0; }',
       '.sn-unconfirm-link { font-size:12px; color:var(--text-400); cursor:pointer; text-decoration:underline; margin-top:8px; text-align:center; }',
 
       // Import checkboxes
@@ -670,8 +713,13 @@
     if (window.sesongKampdag && window.sesongKampdag.isActive()) {
       window.sesongKampdag.destroy();
     }
+    if (window.sesongWorkout && window.sesongWorkout.isActive()) {
+      window.sesongWorkout.destroy();
+    }
     embeddedKampdagEvent = null;
     embeddedKampdagTropp = null;
+    embeddedWorkoutEvent = null;
+    embeddedWorkoutPlayers = null;
     eventDistDraft = null;
     assignDraft = null;
     importState = { matches: null, allTeams: null, selectedTeam: null, selectedSubTeam: null, parsed: null };
@@ -919,6 +967,10 @@
       var r4 = await sb.from('season_players').delete().eq('season_id', id).eq('user_id', uid);
       if (r4.error) console.warn('[season.js] season_players cleanup:', r4.error.message);
 
+      // 5b. workouts (FK → seasons + events) — slettes FØR events
+      var rw = await sb.from('workouts').delete().eq('season_id', id).eq('user_id', uid);
+      if (rw.error) console.warn('[season.js] workouts cleanup:', rw.error.message);
+
       // 6. events (FK → seasons)
       var r5 = await sb.from('events').delete().eq('season_id', id).eq('user_id', uid);
       if (r5.error) console.warn('[season.js] events cleanup:', r5.error.message);
@@ -1071,8 +1123,20 @@
     if (!sb || !uid) return false;
 
     try {
+      // Delete linked workouts first (FK: workouts.event_id → events.id SET NULL)
+      var rw = await sb.from('workouts').delete().eq('event_id', id).eq('user_id', uid);
+      if (rw.error) console.warn('[season.js] workout cleanup on event delete:', rw.error.message);
+
       var res = await sb.from('events').delete().eq('id', id).eq('user_id', uid);
       if (res.error) throw res.error;
+
+      // Remove from badge cache
+      if (_woEventIds) _woEventIds.delete(id);
+      // Remove from workouts stats cache
+      if (_woSeasonWorkouts) {
+        _woSeasonWorkouts = _woSeasonWorkouts.filter(function(w) { return w.event_id !== id; });
+      }
+
       notify('Hendelse slettet.', 'success');
       return true;
     } catch (e) {
@@ -1783,7 +1847,7 @@
     var activeTab = null;
     if (snView === 'dashboard') {
       activeTab = dashTab;
-    } else if (snView === 'event-detail' || snView === 'create-event' || snView === 'edit-event' || snView === 'embedded-kampdag' || snView === 'create-series' || snView === 'fotball-import') {
+    } else if (snView === 'event-detail' || snView === 'create-event' || snView === 'edit-event' || snView === 'embedded-kampdag' || snView === 'embedded-workout' || snView === 'create-series' || snView === 'fotball-import') {
       activeTab = 'calendar';
     } else if (snView === 'roster-import' || snView === 'roster-add-manual' || snView === 'roster-assign') {
       activeTab = 'roster';
@@ -1808,6 +1872,12 @@
       embeddedKampdagEvent = null;
       embeddedKampdagTropp = null;
     }
+    // Clean up embedded workout if navigating away from it
+    if (snView !== 'embedded-workout' && window.sesongWorkout && window.sesongWorkout.isActive()) {
+      window.sesongWorkout.destroy();
+      embeddedWorkoutEvent = null;
+      embeddedWorkoutPlayers = null;
+    }
 
     updateSeasonNav();
 
@@ -1827,6 +1897,7 @@
       case 'player-stats': renderPlayerStats(root); break;
       case 'fotball-import': renderFotballImport(root); break;
       case 'embedded-kampdag': renderEmbeddedKampdag(root); break;
+      case 'embedded-workout': renderEmbeddedWorkout(root); break;
       default:               renderSeasonList(root);   break;
     }
   }
@@ -3358,6 +3429,9 @@
 
     html += '</tbody></table></div>';
 
+    // ── TRAINING PLAN STATS ──
+    html += renderTrainingPlanStats();
+
     // PDF export button
     if (stats.players.length > 0 && (stats.totalTrainings + stats.totalMatches + stats.completedMatches) > 0) {
       html +=
@@ -3366,6 +3440,146 @@
         '</button>';
     }
 
+    return html;
+  }
+
+  // =========================================================================
+  //  TRAINING PLAN STATISTICS (from workouts table)
+  // =========================================================================
+
+  var _woThemeLabels = {
+    'foering_dribling': { label: 'F\u00f8ring og dribling', icon: '\uD83C\uDFC3', color: '#2e8b57' },
+    'vendinger_mottak': { label: 'Vendinger og mottak', icon: '\uD83D\uDD04', color: '#0ea5e9' },
+    'pasning_samspill': { label: 'Pasning og samspill', icon: '\uD83E\uDD1D', color: '#8b5cf6' },
+    'avslutning': { label: 'Avslutning', icon: '\uD83C\uDFAF', color: '#e74c3c' },
+    '1v1_duell': { label: '1 mot 1', icon: '\u26a1', color: '#f59e0b' },
+    'samarbeidsspill': { label: 'Samarbeidsspill', icon: '\uD83D\uDC65', color: '#06b6d4' },
+    'forsvarsspill': { label: 'Forsvarsspill', icon: '\uD83D\uDEE1\ufe0f', color: '#64748b' },
+    'omstilling': { label: 'Omstilling', icon: '\uD83D\uDD01', color: '#ec4899' },
+    'spilloppbygging': { label: 'Spilloppbygging', icon: '\uD83D\uDCD0', color: '#3b82f6' },
+    'keeper': { label: 'Keeper', icon: '\uD83E\uDDE4', color: '#eab308' }
+  };
+
+  function renderTrainingPlanStats() {
+    if (!_woSeasonWorkouts || _woSeasonWorkouts.length === 0) {
+      return '';
+    }
+
+    var workouts = _woSeasonWorkouts;
+    var totalWorkouts = workouts.length;
+    var totalMinutes = 0;
+
+    // Theme counts
+    var themeCounts = {};
+    var monthCounts = {}; // 'YYYY-MM' → count
+
+    for (var i = 0; i < workouts.length; i++) {
+      var w = workouts[i];
+      totalMinutes += (w.duration_minutes || 0);
+
+      if (w.theme) {
+        themeCounts[w.theme] = (themeCounts[w.theme] || 0) + 1;
+      }
+
+      if (w.workout_date) {
+        var ym = w.workout_date.substring(0, 7); // YYYY-MM
+        monthCounts[ym] = (monthCounts[ym] || 0) + 1;
+      }
+    }
+
+    // Find available themes for this age group
+    var ageGroup = (currentSeason && currentSeason.age_class) ? parseAgeFromClass(currentSeason.age_class) : null;
+    var allThemes = Object.keys(_woThemeLabels);
+    // For younger ages, fewer themes are relevant
+    if (ageGroup && ageGroup <= 7) {
+      allThemes = ['foering_dribling', 'avslutning', '1v1_duell'];
+    } else if (ageGroup && ageGroup <= 9) {
+      allThemes = ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill'];
+    }
+
+    // Build theme bars
+    var maxCount = 0;
+    for (var t in themeCounts) { if (themeCounts[t] > maxCount) maxCount = themeCounts[t]; }
+
+    var html = '<div class="sn-section" style="margin-top:20px;">\uD83C\uDFBD Treningsstatistikk</div>';
+    html += '<div class="settings-card" style="padding:16px;">';
+
+    // Summary
+    html +=
+      '<div class="sn-stats-cards">' +
+        '<div class="sn-stat-card">' +
+          '<div class="sn-stat-num">' + totalWorkouts + '</div>' +
+          '<div class="sn-stat-label">Planlagte \u00f8kter</div>' +
+        '</div>' +
+        '<div class="sn-stat-card">' +
+          '<div class="sn-stat-num">' + Math.round(totalMinutes / 60) + '<span style="font-size:14px; color:var(--text-400);"> t</span></div>' +
+          '<div class="sn-stat-label">Total treningstid</div>' +
+        '</div>' +
+      '</div>';
+
+    // Theme distribution
+    html += '<div style="margin-top:16px; font-weight:700; font-size:14px; margin-bottom:10px;">Temafordeling</div>';
+
+    for (var ti = 0; ti < allThemes.length; ti++) {
+      var themeId = allThemes[ti];
+      var meta = _woThemeLabels[themeId];
+      if (!meta) continue;
+      var count = themeCounts[themeId] || 0;
+      var pct = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
+
+      html +=
+        '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">' +
+          '<div style="width:24px; text-align:center; font-size:14px;">' + meta.icon + '</div>' +
+          '<div style="flex:1; min-width:0;">' +
+            '<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;">' +
+              '<span style="font-weight:600; color:var(--text-700);">' + escapeHtml(meta.label) + '</span>' +
+              '<span style="color:var(--text-400);">' + count + (count === 1 ? ' \u00f8kt' : ' \u00f8kter') + '</span>' +
+            '</div>' +
+            '<div style="height:6px; background:var(--bg, #f1f5f9); border-radius:3px; overflow:hidden;">' +
+              '<div style="height:100%; width:' + (count > 0 ? Math.max(pct, 4) : 0) + '%; background:' + meta.color + '; border-radius:3px; transition:width 0.3s;"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    // Gaps warning
+    var gaps = [];
+    for (var gi = 0; gi < allThemes.length; gi++) {
+      if (!themeCounts[allThemes[gi]]) {
+        var gm = _woThemeLabels[allThemes[gi]];
+        if (gm) gaps.push(gm.icon + ' ' + gm.label);
+      }
+    }
+    if (gaps.length > 0 && totalWorkouts >= 3) {
+      html +=
+        '<div style="margin-top:12px; padding:10px 12px; background:rgba(245,158,11,0.08); border-radius:10px; font-size:12px; color:#92400e;">' +
+          '<strong>\u26a0\ufe0f Ikke trent denne sesongen:</strong> ' + gaps.join(', ') +
+        '</div>';
+    }
+
+    // Monthly overview (if workouts span multiple months)
+    var months = Object.keys(monthCounts).sort();
+    if (months.length > 1) {
+      var MONTH_NAMES_NO = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
+      html += '<div style="margin-top:16px; font-weight:700; font-size:14px; margin-bottom:10px;">Per m\u00e5ned</div>';
+      html += '<div style="display:flex; gap:4px; align-items:flex-end; height:80px;">';
+      var maxMonth = 0;
+      for (var mi = 0; mi < months.length; mi++) { if (monthCounts[months[mi]] > maxMonth) maxMonth = monthCounts[months[mi]]; }
+      for (var mj = 0; mj < months.length; mj++) {
+        var mc = monthCounts[months[mj]];
+        var barH = maxMonth > 0 ? Math.max(Math.round((mc / maxMonth) * 60), 4) : 4;
+        var monthIdx = parseInt(months[mj].split('-')[1]) - 1;
+        html +=
+          '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;">' +
+            '<div style="font-size:11px; font-weight:700; color:var(--text-600);">' + mc + '</div>' +
+            '<div style="width:100%; max-width:32px; height:' + barH + 'px; background:#3b82f6; border-radius:4px;"></div>' +
+            '<div style="font-size:10px; color:var(--text-400);">' + MONTH_NAMES_NO[monthIdx] + '</div>' +
+          '</div>';
+      }
+      html += '</div>';
+    }
+
+    html += '</div>';
     return html;
   }
 
@@ -4556,6 +4770,12 @@
         ? '<div class="sn-att-badge" title="Oppm\u00f8te registrert">\u2713</div>'
         : '';
 
+      // Workout badge for training events
+      var workoutBadge = '';
+      if (ev.type === 'training' && _woEventIds && _woEventIds.has(ev.id)) {
+        workoutBadge = '<div class="sn-workout-badge" title="Trenings\u00f8kt planlagt"><i class="fas fa-dumbbell" style="font-size:10px;"></i></div>';
+      }
+
       // Score badge for completed matches
       var scoreBadge = '';
       if ((ev.type === 'match' || ev.type === 'cup_match') && ev.status === 'completed' && ev.result_home !== null && ev.result_home !== undefined) {
@@ -4573,6 +4793,7 @@
             '<div class="sn-event-meta">' + escapeHtml(meta) + stEvBadge + '</div>' +
           '</div>' +
           scoreBadge +
+          workoutBadge +
           regBadge +
           '<div class="sn-event-arrow">\u203A</div>' +
         '</div>';
@@ -5666,6 +5887,13 @@
           '<button class="btn-primary" id="snSaveAttendance" style="width:100%; margin-top:12px;">' +
             '<i class="fas fa-check" style="margin-right:5px;"></i>Lagre oppm\u00f8te' +
           '</button>';
+        var hasWorkout = _woEventIds && _woEventIds.has(ev.id);
+        var woLabel = hasWorkout ? 'Rediger trenings\u00f8kt' : 'Planlegg trenings\u00f8kt';
+        var woIcon = hasWorkout ? 'fa-pen' : 'fa-dumbbell';
+        html +=
+          '<button class="btn-secondary" id="snOpenWorkout" style="width:100%; margin-top:8px;">' +
+            '<i class="fas ' + woIcon + '" style="margin-right:6px;"></i>' + woLabel +
+          '</button>';
       }
     } else {
       html +=
@@ -5899,6 +6127,36 @@
         embeddedKampdagEvent = ev;
         embeddedKampdagTropp = troppPlayers;
         snView = 'embedded-kampdag';
+        render();
+      });
+    }
+
+    // Planlegg treningsøkt (training events)
+    if ($('snOpenWorkout')) {
+      $('snOpenWorkout').addEventListener('click', function() {
+        // Gather present player IDs from UI
+        var attItems = root.querySelectorAll('.sn-att-item.present');
+        var presentIds = {};
+        for (var ai = 0; ai < attItems.length; ai++) {
+          presentIds[attItems[ai].getAttribute('data-pid')] = true;
+        }
+
+        // Build player objects for present players
+        var presentPlayers = [];
+        for (var pi = 0; pi < seasonPlayers.length; pi++) {
+          if (presentIds[seasonPlayers[pi].player_id]) {
+            presentPlayers.push({
+              id: seasonPlayers[pi].player_id,
+              name: seasonPlayers[pi].name,
+              skill_level: seasonPlayers[pi].skill,
+              goalie: seasonPlayers[pi].goalie
+            });
+          }
+        }
+
+        embeddedWorkoutEvent = ev;
+        embeddedWorkoutPlayers = presentPlayers;
+        snView = 'embedded-workout';
         render();
       });
     }
@@ -6455,6 +6713,116 @@
   }
 
   // =========================================================================
+  //  EMBEDDED WORKOUT (treningsøkt innebygd i sesong)
+  // =========================================================================
+
+  function renderEmbeddedWorkout(root) {
+    if (!embeddedWorkoutEvent) {
+      snView = 'dashboard';
+      render();
+      return;
+    }
+    var ev = embeddedWorkoutEvent;
+
+    root.innerHTML = '<div id="snWorkoutContainer"></div>';
+    var container = document.getElementById('snWorkoutContainer');
+    if (!container || !window.sesongWorkout) {
+      root.innerHTML = '<div style="padding:20px; text-align:center;">Feil: sesong-workout.js ikke lastet.</div>';
+      return;
+    }
+
+    // Find existing workout for this event
+    var existing = _woSeasonWorkouts
+      ? _woSeasonWorkouts.find(function(w) { return w.event_id === ev.id; })
+      : null;
+
+    // Map age_class to workout ageGroup
+    var woAge = null;
+    if (currentSeason && currentSeason.age_class) {
+      var parsedAge = parseAgeFromClass(currentSeason.age_class);
+      if (parsedAge >= 6 && parsedAge <= 7) woAge = '6-7';
+      else if (parsedAge >= 8 && parsedAge <= 9) woAge = '8-9';
+      else if (parsedAge >= 10 && parsedAge <= 12) woAge = '10-12';
+      else if (parsedAge >= 13) woAge = '13-16';
+    }
+
+    window.sesongWorkout.init(container, embeddedWorkoutPlayers, {
+      minutes: ev.duration_minutes || 60,
+      ageGroup: woAge,
+      date: ev.start_time ? ev.start_time.slice(0, 10) : '',
+      eventId: ev.id,
+      seasonId: currentSeason ? currentSeason.id : null,
+      title: ev.title || 'Trening',
+      existingBlocks: existing ? existing.blocks : null,
+      existingTheme: existing ? existing.theme : null,
+      existingDbId: existing ? existing.id : null,
+      onSave: function(data) {
+        return saveWorkoutToSesong(ev, data);
+      },
+      onBack: function() {
+        window.sesongWorkout.destroy();
+        embeddedWorkoutEvent = null;
+        embeddedWorkoutPlayers = null;
+        // Refresh workout cache for badges/stats
+        _woLoadEventIds();
+        snView = 'event-detail';
+        render();
+      }
+    });
+  }
+
+  async function saveWorkoutToSesong(ev, data) {
+    var sb = getSb();
+    var uid = getOwnerUid();
+    var tid = getTeamId();
+    if (!sb || !uid) return null;
+
+    var row = {
+      user_id: uid,
+      team_id: tid || null,
+      title: ev.title || 'Trening',
+      workout_date: ev.start_time ? ev.start_time.slice(0, 10) : null,
+      duration_minutes: data.duration || null,
+      age_group: data.ageGroup || null,
+      theme: data.theme || null,
+      blocks: data.blocks || [],
+      is_template: false,
+      season_id: data.seasonId || null,
+      event_id: ev.id,
+      source: 'season',
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      if (data.dbId) {
+        var res = await sb.from('workouts').update(row).eq('id', data.dbId).select().single();
+        if (res.error) throw res.error;
+        // Update local cache so re-open gets fresh data without waiting for DB fetch
+        if (_woSeasonWorkouts) {
+          var idx = _woSeasonWorkouts.findIndex(function(w) { return w.id === data.dbId; });
+          if (idx >= 0) _woSeasonWorkouts[idx] = res.data;
+          else _woSeasonWorkouts.push(res.data);
+        }
+        return res.data;
+      } else {
+        var res2 = await sb.from('workouts').insert(row).select().single();
+        if (res2.error) throw res2.error;
+        // Update event IDs cache
+        if (!_woEventIds) _woEventIds = new Set();
+        _woEventIds.add(ev.id);
+        // Update local workouts cache
+        if (!_woSeasonWorkouts) _woSeasonWorkouts = [];
+        _woSeasonWorkouts.push(res2.data);
+        return res2.data;
+      }
+    } catch (e) {
+      notify('Lagring feilet.', 'error');
+      console.error('[season] saveWorkoutToSesong:', e);
+      return null;
+    }
+  }
+
+  // =========================================================================
   //  KAMPDAG LEGACY (standalone)
   // =========================================================================
 
@@ -6557,6 +6925,7 @@
     currentSeason = s;
     dashTab = 'calendar';
     await Promise.all([loadEvents(seasonId), loadSeasonPlayers(seasonId), loadRegisteredEventIds(seasonId)]);
+    _woLoadEventIds(); // Async, non-blocking
     snView = 'dashboard';
     render();
   }

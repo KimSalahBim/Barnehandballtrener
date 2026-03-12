@@ -51,15 +51,21 @@
   // description, setup, steps[], coaching[], variations[], ages[], players, equipment, diagram{}
   const EXERCISES = [
     // ── DRIKKEPAUSE (alltid øverst, ingen info) ──
-    { key: 'drink', label: 'Drikkepause', defaultMin: 2, category: 'special' },
+    { key: 'drink', label: 'Drikkepause', defaultMin: 2, category: 'special',
+      nffCategory: 'pause', themes: [], nffPhases: [], learningGoals: [],
+      intensity: 'none', hasOpposition: false },
 
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     // 🏃 OPPVARMING
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'tag', label: 'Lek / Sisten', defaultMin: 8, category: 'oppvarming',
-      ages: ['6-7','8-9','10-12'], players: '6-20',
+      ages: ['6-7','8-9','10-12','13-16'], players: '6-20',
       equipment: 'Kjegler til avgrensning, vester til fangere',
+      nffCategory: 'sjef_over_ballen', themes: ['oppvarming_generell', 'leik'], nffPhases: ['noytral'],
+      learningGoals: ['Retningsforandringer i fart', 'Lese rommet og reagere raskt'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 20 }, equipmentTags: ['kjegler', 'vester'],
       description: 'Klassisk sistenlek som oppvarming. Alle i bevegelse fra start. Barna kjenner reglene, så organisering tar minimalt tid. Perfekt for å få opp puls og engasjement.',
       setup: 'Avgrens et område på ca. 20x20 meter med kjegler. Gi 1-2 spillere vester — de er fangere.',
       steps: [
@@ -74,8 +80,8 @@
         'Gjør området mindre for mer intensitet'
       ],
       variations: [
-        'Alle med ball: fangere sparker ballen ut av området',
-        'Havsisten: alle må drible med ball'
+        'Frostsisten: frosne spillere fryser med armene ut — fri dem ved å gå under armen',
+        'Haletag: alle har et bånd i buksen — ta andres bånd uten å miste ditt eget'
       ],
       diagram: { width:220, height:160, field:'small', elements:[
         {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},{type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
@@ -88,8 +94,12 @@
     },
     {
       key: 'warm_ball', label: 'Ballmestring', defaultMin: 10, category: 'oppvarming',
-      ages: ['6-7','8-9','10-12'], players: '4-20',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-20',
       equipment: '1 ball per spiller, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Kontroll på ballen med korte touch', 'Bruk ulike deler av foten', 'Løft blikket mens du fører ballen'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 20 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Individuell ballkontroll der hver spiller har sin egen ball. Føring med ulike deler av foten, vendinger, tempo-endringer. Bygger selvtillit og kontroll.',
       setup: 'Avgrens et område på ca. 15x15 meter. Alle spillere med egen ball inne i området.',
       steps: [
@@ -119,8 +129,12 @@
     },
     {
       key: 'rondo_easy', label: 'Rondo (lett)', defaultMin: 10, category: 'oppvarming',
-      ages: ['8-9','10-12'], players: '5-8',
+      ages: ['8-9','10-12','13-16'], players: '5-8',
       equipment: '1 ball, kjegler til firkant',
+      nffCategory: 'spille_med_og_mot', themes: ['pasning_samspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Gjør deg spillbar: avstand og vinkel til ballfører', 'Beveg deg etter pasning for å gi ny vinkel', 'Forsvarer: press på ballfører, steng pasningslinjer'],
+      intensity: 'medium', hasOpposition: true,
+      playerCount: { min: 5, max: 8 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Pasningsspill med overtall i firkant: 4 mot 1 eller 5 mot 2. Spillerne på utsiden holder ballen, den i midten prøver å vinne den. Kjerneøvelse i moderne fotball.',
       setup: 'Sett opp en firkant på ca. 6x6 meter (8x8 for 5v2). Spillere på utsiden, 1-2 i midten.',
       steps: [
@@ -144,7 +158,8 @@
         {type:'player',x:110,y:20,team:'a',label:'A'},{type:'player',x:175,y:85,team:'a',label:'B'},
         {type:'player',x:110,y:150,team:'a',label:'C'},{type:'player',x:45,y:85,team:'a',label:'D'},
         {type:'player',x:110,y:85,team:'b',label:'X'},
-        {type:'arrow',from:[110,20],to:[175,85],style:'pass'},{type:'arrow',from:[110,85],to:[110,30],style:'run'}
+        {type:'ball',x:120,y:16},
+        {type:'arrow',from:[110,20],to:[175,85],style:'pass'},{type:'arrow',from:[118,85],to:[165,85],style:'run'}
       ]}
     },
 
@@ -153,8 +168,12 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'driving', label: 'Føring av ball', defaultMin: 10, category: 'teknikk',
-      ages: ['6-7','8-9','10-12'], players: '4-16',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-16',
       equipment: '1 ball per spiller, 6-10 kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Ballen tett i foten med korte touch', 'Løft blikket mellom kjeglene', 'Bruk begge føtter og ulike deler av foten'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Spillerne fører ballen gjennom en kjegleløype med ulike deler av foten. Trener kontroll i fart og evnen til å holde ballen tett mens man beveger seg fremover.',
       setup: 'Sett opp 6-10 kjegler i sikk-sakk med 2-3 meters mellomrom. 2-4 spillere starter samtidig i parallelle løyper.',
       steps: [
@@ -183,8 +202,12 @@
     },
     {
       key: 'pass_pair', label: 'Pasning parvis', defaultMin: 10, category: 'teknikk',
-      ages: ['6-7','8-9','10-12'], players: '4-20',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-20',
       equipment: '1 ball per par, kjegler som markering',
+      nffCategory: 'sjef_over_ballen', themes: ['pasning_samspill'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Støttefoten peker mot mottaker', 'Treffe midt på ballen med innsiden', 'Åpent mottak: demp og legg klar i én bevegelse'],
+      suggestedGroupSize: 2, intensity: 'low', hasOpposition: false,
+      playerCount: { min: 4, max: 20 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Grunnøvelsen i pasningsspill. To og to spillere sender ballen til hverandre med innsidetouch. Fokus på teknikk, mottak og presisjon.',
       setup: 'Spillerne stiller seg parvis med 5-10 meters avstand (kortere for yngre). Hvert par har én ball.',
       steps: [
@@ -212,8 +235,12 @@
     },
     {
       key: 'pass_move', label: 'Pasning og bevegelse', defaultMin: 10, category: 'teknikk',
-      ages: ['8-9','10-12'], players: '6-12',
+      ages: ['8-9','10-12','13-16'], players: '6-12',
       equipment: '2-3 baller, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['pasning_samspill'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Beveg deg etter pasning (slå og gå)', 'Se deg rundt FØR ballen kommer', 'Førsteberøring legger ballen klar for neste pasning'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 6, max: 12 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Etter å ha spilt pasning, beveger spilleren seg til ny posisjon for å motta igjen. Trener det viktigste prinsippet i lagspill: spill og flytt deg!',
       setup: 'Sett opp en trekant med kjegler (8-10m mellom). Spillere fordelt på hjørnene, ball starter hos én.',
       steps: [
@@ -236,14 +263,19 @@
         {type:'cone',x:110,y:20},{type:'cone',x:190,y:140},{type:'cone',x:30,y:140},
         {type:'player',x:110,y:28,team:'a',label:'A'},{type:'player',x:186,y:132,team:'a',label:'B'},
         {type:'player',x:34,y:132,team:'a',label:'C'},
+        {type:'ball',x:120,y:24},
         {type:'arrow',from:[110,28],to:[186,132],style:'pass'},
         {type:'arrow',from:[115,38],to:[180,125],style:'run'}
       ]}
     },
     {
       key: 'pass_square', label: 'Pasningsfirkant', defaultMin: 12, category: 'teknikk',
-      ages: ['8-9','10-12'], players: '4-12',
+      ages: ['8-9','10-12','13-16'], players: '4-12',
       equipment: 'Kjegler, 1-3 baller',
+      nffCategory: 'sjef_over_ballen', themes: ['pasning_samspill', 'vendinger_mottak'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Orientert førsteberøring: se dit du skal spille', 'Førstetouch legger ballen klar for pasning', 'Åpne kroppen før mottak'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 12 }, equipmentTags: ['kjegler', 'ball'],
       description: 'Klassisk pasningsøvelse. Spillerne står i en firkant og passer ballen rundt med mottak, vending og videre pasning. Trener orientering, presisjon og å løfte blikket.',
       setup: 'Fire kjegler i firkant, ca. 8x8 meter. Én spiller ved hvert hjørne (flere spillere: 2-3 per hjørne i kø).',
       steps: [
@@ -268,13 +300,18 @@
         {type:'player',x:180,y:137,team:'a',label:'C'},{type:'player',x:40,y:137,team:'a',label:'D'},
         {type:'ball',x:55,y:30},
         {type:'arrow',from:[50,33],to:[170,33],style:'pass'},
+        {type:'arrow',from:[180,41],to:[180,130],style:'pass'},
         {type:'arrow',from:[55,43],to:[168,38],style:'run'}
       ]}
     },
     {
       key: 'dribble', label: 'Dribling 1 mot 1', defaultMin: 10, category: 'teknikk',
-      ages: ['6-7','8-9','10-12'], players: '4-16',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-16',
       equipment: 'Baller, småmål eller kjegler, vester',
+      nffCategory: 'spille_med_og_mot', themes: ['foering_dribling', '1v1_duell'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Angriper: brems opp foran forsvarer, bruk finter', 'Forsvarer: stå sidelengs, vær tålmodig', 'Lav tyngdepunkt for rask retningsendring'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'smaamaal', 'kjegler', 'vester'],
       description: 'Én angriper mot én forsvarer. Angriperen prøver å drible forbi og score. Ren duelltrening som bygger selvtillit og mot til å ta på seg spillere.',
       setup: 'Liten bane (10x15m) med to kjeglemål. Spillerne i to køer, én angriper og én forsvarer per runde.',
       steps: [
@@ -298,13 +335,18 @@
         {type:'player',x:110,y:55,team:'b',label:'F'},{type:'player',x:110,y:120,team:'a',label:'A'},
         {type:'ball',x:118,y:126},
         {type:'arrow',from:[110,120],to:[110,65],style:'run'},
-        {type:'cone',x:75,y:55},{type:'cone',x:145,y:55}
+        {type:'cone',x:75,y:55},{type:'cone',x:145,y:55},
+        {type:'goal',x:85,y:143,w:50,h:12}
       ]}
     },
     {
       key: 'turn', label: 'Vendinger', defaultMin: 10, category: 'teknikk',
-      ages: ['8-9','10-12'], players: '4-16',
+      ages: ['8-9','10-12','13-16'], players: '4-16',
       equipment: '1 ball per spiller, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['vendinger_mottak', 'foering_dribling'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Brems ned FØR vendingen, akseler ETTER', 'Bruk kroppen til å skjerme ballen', 'Se deg rundt i vendingsøyeblikket'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Trening av ulike vendeteknikker: Cruyff-vending, innsidevending, utsidedraging. Evnen til å snu med ball er avgjørende for å komme ut av press.',
       setup: 'Spillerne fører ball mot en kjegle, utfører vending, og fører ball tilbake. 3-4 parallelle stasjoner.',
       steps: [
@@ -333,8 +375,12 @@
     },
     {
       key: 'receive_turn', label: 'Mottak og vending', defaultMin: 10, category: 'teknikk',
-      ages: ['8-9','10-12'], players: '6-12',
+      ages: ['8-9','10-12','13-16'], players: '6-12',
       equipment: '1 ball per par, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['vendinger_mottak', 'pasning_samspill'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Sjekk over skulderen FØR ballen kommer', 'Åpne kroppen mot dit du vil vende', 'Førstetouch i retning du skal spille'],
+      suggestedGroupSize: 2, intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 6, max: 12 }, equipmentTags: ['ball', 'kjegler'],
       description: 'Spilleren mottar pasning med ryggen mot spilleretning, vender med førstetouch, og spiller videre. Trener orientert førstetouch — en nøkkelferdighet.',
       setup: 'Spillerne i par, 10m avstand. Én kjegle bak mottakeren (representerer retningen å vende mot).',
       steps: [
@@ -356,6 +402,7 @@
       diagram: { width:220, height:120, field:'none', elements:[
         {type:'player',x:35,y:60,team:'a',label:'A'},{type:'player',x:140,y:60,team:'a',label:'B'},
         {type:'cone',x:195,y:60},
+        {type:'ball',x:85,y:55},
         {type:'arrow',from:[45,60],to:[130,60],style:'pass'},
         {type:'arrow',from:[145,50],to:[190,40],style:'run'}
       ]}
@@ -366,15 +413,20 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'shot', label: 'Skudd på mål', defaultMin: 12, category: 'avslutning',
-      ages: ['6-7','8-9','10-12'], players: '4-14',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-14',
       equipment: 'Mål (stort eller småmål), baller, kjegler',
+      nffCategory: 'scoringstrening', themes: ['avslutning'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Plassering foran kraft: sikte lavt i hjørnene', 'Støttefot peker mot mål', 'Følg opp skuddet, vær klar for retur'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
       description: 'Avslutninger fra ulike posisjoner. Fokus på plassering framfor kraft. Alle barn elsker å skyte på mål — la dem gjøre det mye!',
       setup: 'Mål med keeper (eller åpent med kjegler). Spillere i kø ca. 12-16m fra mål. Baller klare på rekke.',
       steps: [
         'Spilleren fører ball mot mål fra sentralt.',
         'Avslutt på mål fra ca. 10-12 meter.',
         'Neste runde: skudd fra venstre side.',
-        'Tredje runde: mottar pasning fra siden og avslutter direkte.'
+        'Tredje runde: skudd fra høyre side.',
+        'Fjerde runde: mottar pasning fra siden og avslutter direkte.'
       ],
       coaching: [
         'Plassering slår kraft — sikte lavt i hjørnene',
@@ -395,8 +447,12 @@
     },
     {
       key: 'shot_race', label: 'Skuddstafett', defaultMin: 10, category: 'avslutning',
-      ages: ['6-7','8-9','10-12'], players: '6-16',
+      ages: ['6-7','8-9','10-12','13-16'], players: '6-16',
       equipment: 'Mål, baller, kjegler',
+      nffCategory: 'scoringstrening', themes: ['avslutning', 'foering_dribling'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Fart OG kontroll gjennom kjeglene', 'Ro deg ned foran mål: presisjon over panikkskudd'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 16 }, equipmentTags: ['maal', 'ball', 'kjegler'],
       description: 'To lag i stafett. Før ball gjennom kjegler og avslutt på mål. Kombinerer avslutning med fart og konkurranse — garantert engasjement!',
       setup: 'To parallelle kjegleløyper mot ett mål. Spillerne delt i to lag i kø bak startlinjen.',
       steps: [
@@ -416,12 +472,12 @@
       ],
       diagram: { width:220, height:160, field:'none', elements:[
         {type:'goal',x:70,y:3,w:80,h:14},
-        {type:'cone',x:65,y:55},{type:'cone',x:65,y:80},{type:'cone',x:65,y:105},
-        {type:'player',x:65,y:140,team:'a',label:''},
-        {type:'cone',x:155,y:55},{type:'cone',x:155,y:80},{type:'cone',x:155,y:105},
-        {type:'player',x:155,y:140,team:'b',label:''},
-        {type:'arrow',from:[65,140],to:[65,25],style:'run'},
-        {type:'arrow',from:[155,140],to:[155,25],style:'run'}
+        {type:'cone',x:55,y:55},{type:'cone',x:75,y:80},{type:'cone',x:55,y:105},
+        {type:'player',x:65,y:140,team:'a',label:''},{type:'ball',x:73,y:136},
+        {type:'cone',x:145,y:55},{type:'cone',x:165,y:80},{type:'cone',x:145,y:105},
+        {type:'player',x:155,y:140,team:'b',label:''},{type:'ball',x:163,y:136},
+        {type:'arrow',from:[65,135],to:[65,25],style:'run'},
+        {type:'arrow',from:[155,135],to:[155,25],style:'run'}
       ]}
     },
 
@@ -430,8 +486,12 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: '1v1', label: '1 mot 1', defaultMin: 10, category: 'spill_m_motstand',
-      ages: ['6-7','8-9','10-12'], players: '4-16',
+      ages: ['6-7','8-9','10-12','13-16'], players: '4-16',
       equipment: 'Småmål eller kjegler, baller, vester',
+      nffCategory: 'spille_med_og_mot', themes: ['1v1_duell', 'forsvarsspill'], nffPhases: ['angrep_avslutning', 'forsvar_vinne_ball'],
+      learningGoals: ['Angriper: tøff mot forsvarer, bruk finter og fart', 'Forsvarer: tving angriperen dit DU vil, stå på tå', 'Aldri gi opp, kjemp om ballen!'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 4, max: 16 }, equipmentTags: ['smaamaal', 'kjegler', 'ball', 'vester'],
       description: 'Ren duelltrening på liten bane med småmål. Én angriper mot én forsvarer. Bygger ferdighet i å ta på seg en spiller og å forsvare.',
       setup: 'Liten bane 8x12m med kjeglemål i hver ende. Par stiller opp ved hver sin baselinje.',
       steps: [
@@ -460,8 +520,12 @@
     },
     {
       key: '2v1', label: '2 mot 1', defaultMin: 10, category: 'spill_m_motstand',
-      ages: ['8-9','10-12'], players: '6-12',
+      ages: ['8-9','10-12','13-16'], players: '6-12',
       equipment: 'Småmål eller kjegler, baller',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'avslutning'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Angriper med ball: trekk forsvarer FØR pasning', 'Angriper uten ball: hold avstand og vinkel, vær spillbar', 'Timing: spill pasning i riktig øyeblikk'],
+      suggestedGroupSize: 3, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 12 }, equipmentTags: ['smaamaal', 'kjegler', 'ball'],
       description: 'To angripere mot én forsvarer. Trener den viktigste beslutningen i fotball: når skal jeg drible, og når skal jeg spille pasning?',
       setup: 'Bane 10x15m. Mål i ene enden. Forsvareren fra midten, angriperne fra andre enden.',
       steps: [
@@ -492,8 +556,12 @@
     },
     {
       key: '3v2', label: '3 mot 2', defaultMin: 12, category: 'spill_m_motstand',
-      ages: ['8-9','10-12'], players: '8-15',
+      ages: ['8-9','10-12','13-16'], players: '8-15',
       equipment: 'Mål, baller, vester',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'avslutning'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Trekantformasjon: bred, ikke i linje', 'Spiller med ball: trekk forsvarer, spill videre', 'Avslutt! Ikke overspill, ta sjansen når du har den'],
+      suggestedGroupSize: 5, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 15 }, equipmentTags: ['maal', 'ball', 'vester'],
       description: 'Tre angripere mot to forsvarere. Trener trekantspill, støtteløp og pasning i rom. Kampnært og utviklende.',
       setup: 'Bane 15x20m med mål. Forsvarerne fra midten, angriperne fra baselinjen.',
       steps: [
@@ -528,8 +596,12 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'ssg', label: 'Smålagsspill', defaultMin: 18, category: 'smalagsspill',
-      ages: ['6-7','8-9','10-12'], players: '6-16',
+      ages: ['6-7','8-9','10-12','13-16'], players: '6-16',
       equipment: 'Mål (2 stk), vester, baller, kjegler til bane',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse'], nffPhases: ['angrep_fremover', 'angrep_avslutning', 'forsvar_vinne_ball', 'forsvar_hindre_maal'],
+      learningGoals: ['Spre dere! Ikke alle rundt ballen', 'Snakk sammen: rop på ballen, gi beskjed', 'Etter ballvinning: se framover først'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 16 }, equipmentTags: ['maal', 'vester', 'ball', 'kjegler'],
       description: 'Kjerneøvelsen i barnefotball. Minimum 50% av økten bør være smålagsspill. 3v3, 4v4 eller 5v5 på tilpasset bane gir mest mulig ballkontakt i kamplike situasjoner.',
       setup: 'Tilpass banestørrelse (3v3: 20x25m, 5v5: 30x40m). To mål, vester for lagdeling.',
       steps: [
@@ -558,8 +630,12 @@
     },
     {
       key: 'possession', label: 'Ballbesittelse', defaultMin: 12, category: 'smalagsspill',
-      ages: ['8-9','10-12'], players: '7-15',
+      ages: ['8-9','10-12','13-16'], players: '7-15',
       equipment: 'Vester, baller, kjegler til bane',
+      nffCategory: 'smalagsspill', themes: ['pasning_samspill', 'forsvarsspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Gjør deg spillbar: avstand og vinkel til ballfører', 'Se opp før du får ballen: orienter deg', 'Forsvar: press sammen, steng midten'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 7, max: 15 }, equipmentTags: ['vester', 'ball', 'kjegler'],
       description: 'Hold ballen i laget med overtall (f.eks. 4v2 med jokere). Trener pasningsspill under press, orientering og bevegelse for å bli spillbar.',
       setup: 'Avgrens et område (12x12 til 20x20m). Del inn i to lag pluss 1-2 jokere som alltid er med ballførende lag.',
       steps: [
@@ -589,8 +665,12 @@
     },
     {
       key: 'game_activity', label: 'Fri spillaktivitet', defaultMin: 18, category: 'smalagsspill',
-      ages: ['6-7','8-9','10-12'], players: '6-20',
+      ages: ['6-7','8-9','10-12','13-16'], players: '6-20',
       equipment: 'Mål, baller, vester',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse', 'leik'], nffPhases: ['angrep_fremover', 'angrep_avslutning', 'forsvar_vinne_ball', 'forsvar_hindre_maal'],
+      learningGoals: ['La barna løse problemene selv', 'Ros samarbeid og innsats, ikke bare scoring'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 20 }, equipmentTags: ['maal', 'ball', 'vester'],
       description: 'Ustrukturert spill der barna styrer selv. Treneren observerer og heier, men griper minimalt inn. Gir eierskap, kreativitet og ren fotballglede.',
       setup: 'Tilpasset bane med mål. Del inn i lag (kan være ujevne). Minimalt med regler.',
       steps: [
@@ -611,16 +691,24 @@
       ],
       diagram: { width:240, height:160, field:'half', elements:[
         {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
-        {type:'player',x:40,y:50,team:'a',label:''},{type:'player',x:80,y:90,team:'a',label:''},
-        {type:'player',x:60,y:125,team:'a',label:''},
-        {type:'player',x:140,y:40,team:'b',label:''},{type:'player',x:175,y:80,team:'b',label:''},
-        {type:'player',x:155,y:120,team:'b',label:''},{type:'ball',x:115,y:78}
+        {type:'player',x:35,y:35,team:'a',label:''},{type:'player',x:90,y:110,team:'a',label:''},
+        {type:'player',x:60,y:75,team:'a',label:''},
+        {type:'player',x:160,y:50,team:'b',label:''},{type:'player',x:190,y:105,team:'b',label:''},
+        {type:'player',x:125,y:85,team:'b',label:''},
+        {type:'ball',x:88,y:70},
+        {type:'arrow',from:[60,75],to:[85,70],style:'run'},
+        {type:'arrow',from:[125,85],to:[92,72],style:'run'},
+        {type:'arrow',from:[160,50],to:[140,62],style:'run'}
       ]}
     },
     {
       key: 'square_game', label: 'Spill i soner', defaultMin: 12, category: 'smalagsspill',
-      ages: ['10-12'], players: '8-16',
+      ages: ['10-12','13-16'], players: '8-16',
       equipment: 'Mål, vester, kjegler, baller',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse', 'romforstaelse'], nffPhases: ['angrep_fremover', 'angrep_avslutning', 'forsvar_vinne_ball'],
+      learningGoals: ['Se etter rom i neste sone FØR du mottar', 'Bruk bredden, ikke bare gjennom midten', 'Forsvar: kontroller midtsonen, press som lag'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['maal', 'vester', 'kjegler', 'ball'],
       description: 'Spill i avgrenset område med soneoppgaver. F.eks. må ballen innom midtsonen før scoring. Trener romforståelse og taktisk tenkning.',
       setup: 'Del en halvbane i 2-3 soner med kjegler. Mål i hver ende. Tydelig markering mellom sonene.',
       steps: [
@@ -654,8 +742,12 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
       key: 'keeper', label: 'Keepertrening', defaultMin: 12, category: 'keeper',
-      ages: ['8-9','10-12'], players: '1-4',
+      ages: ['8-9','10-12','13-16'], players: '1-4',
       equipment: 'Mål, baller, keeperhansker',
+      nffCategory: 'sjef_over_ballen', themes: ['keeper'], nffPhases: ['forsvar_hindre_maal'],
+      learningGoals: ['Grunnstilling: føtter i skulderbredde, lett på tå', 'Grep: tomler danner W, fingre spredt', 'Fall til siden, ikke bakover'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 1, max: 4 }, equipmentTags: ['maal', 'ball', 'keeperhansker'],
       description: 'Grunnleggende keeperøvelser parallelt med resten av laget. Fokus på grunnstilling, grep, enkel skuddstopp og utkast. Alle bør prøve keeperrollen.',
       setup: 'Keeper i mål. Trener eller medspiller skyter fra 8-12 meter. Start med rolige skudd, øk gradvis.',
       steps: [
@@ -681,8 +773,711 @@
       ]}
     },
 
+    // ═══════════════════════════════
+    // 🆕 TIER 1: NYE ØVELSER (egenprodusert innhold)
+    // ═══════════════════════════════
+
+    // --- Ballsisten (leik med ball, 6-7 fokus) ---
+    {
+      key: 'ball_tag', label: 'Ballsisten', defaultMin: 8, category: 'oppvarming',
+      ages: ['6-7', '8-9'], players: '6-20',
+      equipment: '1 ball per spiller, kjegler til bane',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling'], nffPhases: ['noytral'],
+      learningGoals: ['Hold ballen nær foten mens du ser deg rundt', 'Retningsforandring for å unngå fanger', 'Bruk kroppen til å skjerme ballen'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 20 }, equipmentTags: ['ball', 'kjegler'],
+      description: 'Sistenlek der alle har egen ball. Fangeren fører sin ball samtidig som den prøver å ta de andre. Kombinerer ballkontroll med bevegelse og romforståelse.',
+      setup: 'Avgrens et område (15x15 til 20x20m). Alle spillere har egen ball. Velg 1-2 fangere (vester).',
+      steps: [
+        'Alle fører ball innenfor området.',
+        'Fangerne (med vest) prøver å ta de andre ved å berøre dem.',
+        'Blir du tatt, stopp og gjør 5 fotbytter på ballen. Så er du fri igjen.',
+        'Bytt fangere hvert 2. minutt.'
+      ],
+      coaching: [
+        'Hold ballen nær foten — korte, raske touch',
+        'Løft blikket! Se hvor fangeren er',
+        'Bruk retningsforandring for å stikke unna',
+        'Fangere: ikke bare jag — avskjær!'
+      ],
+      variations: [
+        'Tatt = bli fanger selv (siste spiller igjen vinner)',
+        'Fangere uten ball — sparker andres ball ut av området'
+      ],
+      diagram: { width:200, height:200, field:'small', elements:[
+        {type:'cone',x:10,y:10},{type:'cone',x:190,y:10},{type:'cone',x:10,y:190},{type:'cone',x:190,y:190},
+        {type:'player',x:60,y:80,team:'a',label:''},{type:'ball',x:68,y:76},
+        {type:'player',x:140,y:60,team:'a',label:''},{type:'ball',x:148,y:56},
+        {type:'player',x:90,y:150,team:'a',label:''},{type:'ball',x:98,y:146},
+        {type:'player',x:50,y:40,team:'b',label:'F'},{type:'ball',x:58,y:36},
+        {type:'arrow',from:[55,45],to:[80,70],style:'run'}
+      ]}
+    },
+
+    // --- Press på ballfører (forsvarsspill) ---
+    {
+      key: 'defend_press', label: 'Press på ballfører', defaultMin: 12, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '6-16',
+      equipment: 'Kjegler, vester, baller, småmål eller store mål',
+      nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill', '1v1_duell'], nffPhases: ['forsvar_vinne_ball'],
+      learningGoals: ['Komme tett i press med riktig fart og kroppsstilling', 'Tving ballfører til én side', 'Stå mellom ballfører og mål'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 16 }, equipmentTags: ['kjegler', 'vester', 'ball', 'smaamaal'],
+      description: 'Dedikert forsvarsøvelse der forsvareren øver på å presse ballfører kontrollert. Fokus på posisjonering, fart inn i press, og å tvinge ballfører dit forsvareren vil.',
+      setup: 'Bane 12x18m med mål i én ende. Angripere starter ved midten, forsvarere fra siden.',
+      steps: [
+        'Angriper mottar ball fra trener og fører mot mål.',
+        'Forsvarer starter fra siden og løper i posisjon mellom angriper og mål.',
+        'Forsvarer presser kontrollert: tving til side, ikke stup inn.',
+        'Angriper prøver å score. Forsvarer prøver å vinne ball eller tvinge skudd utenfra.',
+        'Bytt roller etter 3 forsøk.'
+      ],
+      coaching: [
+        'Forsvarer: stå på tå, sidelengs, lav tyngdepunkt',
+        'Ikke stup inn! Vent på angriperens feil',
+        'Tving angriperen mot sidelinja, vekk fra mål',
+        'Angriper: bruk finter og fart for å komme forbi'
+      ],
+      variations: [
+        '2v1: legg til en medangriper for å øve samarbeid i forsvar',
+        'Gi forsvareren poeng for å tvinge skudd utenfor 16-meter'
+      ],
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
+        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
+        {type:'player',x:40,y:80,team:'b',label:'F'},
+        {type:'arrow',from:[110,120],to:[110,40],style:'run'},
+        {type:'arrow',from:[45,80],to:[95,65],style:'run'}
+      ]}
+    },
+
+    // --- Smålagsspill med betingelser ---
+    {
+      key: 'ssg_theme', label: 'Spill med betingelser', defaultMin: 18, category: 'smalagsspill',
+      ages: ['8-9', '10-12', '13-16'], players: '8-16',
+      equipment: 'Vester, baller, mål (store eller småmål), kjegler',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Tilpass spillet til betingelsen', 'Samarbeid for å oppfylle kravet', 'Les spillet og finn løsninger'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Vanlig smålagsspill med én betingelse som forsterker øktens tema. Betingelsen styrer hva spillerne må gjøre for å score, og gir treneren kontroll over læringsfokuset.',
+      setup: 'Tilpass bane til antall (4v4: 25x35m, 5v5: 30x45m). To mål. Del i to lag med vester.',
+      steps: [
+        'Velg én betingelse og forklar den tydelig før start. Eksempler: alle på angripende lag over midtlinjen, mål teller dobbelt etter kombinasjon, eller maks 3 berøringer på siste spiller.',
+        'Spill vanlig kamp med betingelsen aktiv. La spillet flyte — stopp maks 1-2 ganger kort for å forsterke temaet.',
+        'Bytt betingelse halvveis for variasjon, eller fjern den og se om atferden sitter.',
+        'Avslutt med fri tid uten betingelse: spill bare for gleden av det.'
+      ],
+      coaching: [
+        'Forklar betingelsen tydelig FØR start',
+        'La spillet gå — stopp kun kort for å forsterke tema',
+        'Ros lagspill og løsninger, ikke bare mål',
+        'Tilpass betingelsen hvis den er for lett eller vanskelig'
+      ],
+      variations: [
+        'Jokere: 1-2 spillere alltid med angripende lag (overtall)',
+        'Tidsbetingelse: scoringen teller bare i første 3 min av hver periode'
+      ],
+      diagram: { width:240, height:160, field:'half', elements:[
+        {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
+        {type:'player',x:55,y:40,team:'a',label:''},{type:'player',x:55,y:120,team:'a',label:''},
+        {type:'player',x:95,y:80,team:'a',label:''},{type:'player',x:80,y:55,team:'a',label:''},
+        {type:'player',x:145,y:40,team:'b',label:''},{type:'player',x:145,y:120,team:'b',label:''},
+        {type:'player',x:185,y:80,team:'b',label:''},{type:'player',x:160,y:55,team:'b',label:''},
+        {type:'ball',x:100,y:74}
+      ]}
+    },
+
+    // --- Omstillingsspill ---
+    {
+      key: 'transition', label: 'Omstillingsspill', defaultMin: 15, category: 'smalagsspill',
+      ages: ['10-12', '13-16'], players: '8-16',
+      equipment: 'Vester (3 farger), baller, 2 mål, kjegler',
+      nffCategory: 'smalagsspill', themes: ['omstilling'], nffPhases: ['angrep_fremover', 'angrep_avslutning', 'forsvar_vinne_ball'],
+      learningGoals: ['Ved balltap: raskt tilbake, flest mulig på rett side av ball', 'Ved ballvinning: se fremover umiddelbart', 'Første forsvarer presser, resten organiserer'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Tre lag roterer: ett angriper, ett forsvarer, ett venter. Ved scoring eller ballvinning bytter lagene roller. Trener konstant omstilling mellom angrep og forsvar.',
+      setup: 'Bane 25x35m med mål i begge ender. Tre lag à 3-5 spillere. Lag A angriper mot Lag B. Lag C venter bak ene målet.',
+      steps: [
+        'Lag A angriper mot Lag B sitt mål.',
+        'Scorer Lag A: Lag B ut, Lag C inn som nytt forsvarslag. Lag A snur og angriper andre veien.',
+        'Vinner Lag B ballen: Lag B angriper umiddelbart mot Lag C sitt mål. Lag A ut, Lag C forsvarer.',
+        'Laget som er ute venter maks 30 sek, deretter byttes det uansett.',
+        'Poengsystem: 1 poeng per mål, 1 ekstrapoeng for scoring innen 8 sekunder etter ballvinning.'
+      ],
+      coaching: [
+        'OMSTILLING er nøkkelen: hodet opp i det ballen bytter lag!',
+        'Forsvarende lag: raskt tilbake mellom ball og mål',
+        'Angripende lag: se fremover FØR du tar kontroll',
+        'Ros rask omstilling, ikke bare mål'
+      ],
+      variations: [
+        'Uten 3. lag: etter scoring starter motstanderlaget med ball fra keeper',
+        'Krav om maks 10 sek fra ballvinning til avslutning'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'goal',x:223,y:65,w:12,h:50,vertical:true},
+        {type:'player',x:60,y:50,team:'a',label:''},{type:'player',x:60,y:130,team:'a',label:''},
+        {type:'player',x:100,y:90,team:'a',label:''},{type:'ball',x:108,y:86},
+        {type:'player',x:160,y:50,team:'b',label:''},{type:'player',x:160,y:130,team:'b',label:''},
+        {type:'player',x:190,y:90,team:'b',label:''},
+        {type:'player',x:232,y:65,team:'neutral',label:'C'},{type:'player',x:232,y:90,team:'neutral',label:'C'},
+        {type:'player',x:232,y:115,team:'neutral',label:'C'},
+        {type:'arrow',from:[108,86],to:[200,70],style:'pass'}
+      ]}
+    },
+
+    // --- Veggspill / gi-og-gå ---
+    {
+      key: 'wall_pass', label: 'Veggspill', defaultMin: 12, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '6-14',
+      equipment: 'Kjegler, baller, småmål eller store mål',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'pasning_samspill'], nffPhases: ['angrep_fremover', 'angrep_avslutning'],
+      learningGoals: ['Spill pasning og løp forbi forsvarer i samme bevegelse', 'Medspiller: rask returpasning i rom bak forsvarer', 'Timing mellom pasning og løp er avgjørende'],
+      suggestedGroupSize: 3, intensity: 'medium', hasOpposition: true,
+      playerCount: { min: 6, max: 14 }, equipmentTags: ['kjegler', 'ball', 'smaamaal'],
+      description: 'Øver på gi-og-gå: spill pasning til medspiller, løp forbi forsvareren, motta returen i rom. Den mest effektive kombinasjonen for å bryte gjennom forsvar.',
+      setup: 'Bane 15x20m med mål i ene enden. Tre køer: angripere sentralt, veggspillere på siden, forsvarere ved mål.',
+      steps: [
+        'Angriper fører ball mot forsvarer.',
+        'Angriper spiller veggpasning til medspiller på siden.',
+        'Angriper løper forbi forsvarer (gi-og-gå).',
+        'Medspiller spiller ballen tilbake i rommet bak forsvareren.',
+        'Angriper avslutter på mål. Bytt roller.'
+      ],
+      coaching: [
+        'Pasning FØRST, løp umiddelbart etterpå',
+        'Medspiller: spill ballen i rommet, ikke i beina',
+        'Trekk forsvareren mot deg FØR du spiller vegg',
+        'Fart etter pasningen — ikke stopp og se!'
+      ],
+      variations: [
+        'Dobbelt veggspill: to pasninger før avslutning',
+        'Legg til aktiv forsvarer som prøver å stoppe kombinasjonen'
+      ],
+      diagram: { width:220, height:150, field:'small', elements:[
+        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
+        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
+        {type:'player',x:40,y:70,team:'a',label:'V'},
+        {type:'player',x:110,y:65,team:'b',label:'F'},
+        {type:'arrow',from:[115,115],to:[50,75],style:'pass'},
+        {type:'arrow',from:[115,115],to:[115,50],style:'run'},
+        {type:'arrow',from:[50,65],to:[110,40],style:'pass'}
+      ]}
+    },
+
+    // --- Avslutning med medspiller ---
+    {
+      key: 'finish_assist', label: 'Avslutning med medspiller', defaultMin: 12, category: 'avslutning',
+      ages: ['8-9', '10-12', '13-16'], players: '6-14',
+      equipment: 'Mål med keeper, baller, kjegler',
+      nffCategory: 'scoringstrening', themes: ['avslutning', 'samarbeidsspill'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Tverrpasning eller tilbakelegg til medspiller i skuddposisjon', 'Avslutt på direkten eller med færrest mulig touch', 'Beveg deg inn i scoringsposisjon med riktig timing'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
+      description: 'Avslutningsøvelse der to spillere samarbeider om å score. Øver på tverrballer, tilbakelegg og direkte avslutning — mer realistisk enn å skyte alene.',
+      setup: 'Spillere i par. Kø sentralt og på høyre/venstre side, 20m fra mål. Keeper i mål.',
+      steps: [
+        'Spiller A fører ball langs siden mot dødlinja.',
+        'Spiller B løper inn i boksen fra sentralt.',
+        'A slår tverrball eller tilbakelegg til B.',
+        'B avslutter på mål — helst på direkten.',
+        'Bytt sider og roller. Varier mellom høyre og venstre.'
+      ],
+      coaching: [
+        'Innlegger: løft blikket, finn medspillerens løp',
+        'Avslutter: timing! Ikke stå stille — løp inn i ballen',
+        'Avslutt raskt, keeper skal ikke rekke å flytte seg',
+        'Plassering i det ledige hjørnet, ikke rett på keeper'
+      ],
+      variations: [
+        'Legg til en forsvarer som prøver å blokkere tverrballen',
+        'Varier: tilbakelegg fra dødlinja, tverrball fra 16m, gjennombrudd sentralt'
+      ],
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'goal',x:60,y:5,w:100,h:18},{type:'keeper',x:110,y:20},
+        {type:'player',x:190,y:110,team:'a',label:'A'},{type:'ball',x:198,y:106},
+        {type:'player',x:110,y:100,team:'a',label:'B'},
+        {type:'arrow',from:[190,105],to:[185,40],style:'run'},
+        {type:'arrow',from:[185,40],to:[120,50],style:'pass'},
+        {type:'arrow',from:[115,95],to:[120,55],style:'run'},
+        {type:'arrow',from:[120,55],to:[100,20],style:'shot'}
+      ]}
+    },
+
+    // ═══════════════════════════════
+    // 🆕 TIER 2: UTVIDET DEKNING (egenprodusert innhold)
+    // ═══════════════════════════════
+
+    // --- 2 mot 2 (+keeper) ---
+    {
+      key: '2v2', label: '2 mot 2', defaultMin: 12, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '8-16',
+      equipment: 'Småmål eller store mål med keeper, vester, baller, kjegler',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'forsvarsspill', '1v1_duell'], nffPhases: ['angrep_avslutning', 'forsvar_vinne_ball'],
+      learningGoals: ['Samarbeid i angrep: når drible, når spille?', 'Forsvar: fordel ansvar — én presser, én sikrer', 'Kommuniser med makker om hvem som gjør hva'],
+      suggestedGroupSize: 4, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['smaamaal', 'maal', 'vester', 'ball', 'kjegler'],
+      description: 'To mot to på liten bane med mål. Mellomtingen mellom 1v1 og lagspill — her må du samarbeide med én makker for å løse situasjonen. Trener både angrep og forsvar i par.',
+      setup: 'Bane 15x20m med mål (småmål eller stort med keeper) i hver ende. Par stiller opp bak hvert mål.',
+      steps: [
+        'Trener spiller ball inn til det ene paret.',
+        'Paret angriper mot det andre parets mål.',
+        'Forsvarende par prøver å vinne ball og kontre.',
+        'Spill til mål, ball ut, eller 30 sek. Nye par inn.',
+        'Hold poeng per par over flere runder.'
+      ],
+      coaching: [
+        'Angrep: én fører ball, den andre tilbyr seg i rom',
+        'Forsvar: én presser ballfører, den andre sikrer bak',
+        'Snakk sammen! «Jeg tar ball, du sikrer»',
+        'Bruk bredden — ikke stå oppå hverandre'
+      ],
+      variations: [
+        'Med keeper: 2v2+K, større mål',
+        '2v2 med jokere på sidene (3v2 i angrep)'
+      ],
+      diagram: { width:200, height:160, field:'small', elements:[
+        {type:'goal',x:70,y:5,w:60,h:12},{type:'goal',x:70,y:143,w:60,h:12},
+        {type:'player',x:75,y:70,team:'a',label:''},{type:'player',x:130,y:55,team:'a',label:''},
+        {type:'ball',x:83,y:66},
+        {type:'player',x:90,y:95,team:'b',label:''},{type:'player',x:140,y:85,team:'b',label:''},
+        {type:'arrow',from:[80,65],to:[125,50],style:'pass'}
+      ]}
+    },
+
+    // --- 1v1 med porter ---
+    {
+      key: '1v1_gates', label: '1 mot 1 med porter', defaultMin: 10, category: 'spill_m_motstand',
+      ages: ['8-9', '10-12', '13-16'], players: '6-16',
+      equipment: 'Kjegler (mange), baller',
+      nffCategory: 'spille_med_og_mot', themes: ['1v1_duell', 'foering_dribling'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Angriper: les forsvareren og velg hvilken port du angriper', 'Bruk finter og retningsforandring for å åpne porter', 'Forsvarer: steng den nærmeste porten, tving til side'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 16 }, equipmentTags: ['kjegler', 'ball'],
+      description: 'Duelltrening der angriperen scorer ved å føre ball gjennom én av flere kjegleporter. Forsvareren må lese angriperen og stenge porter. Trener retningsforandring og valgtaking.',
+      setup: 'Firkant 12x12m. 3-4 kjegleporter (1m brede) spredt langs én side. Angriper starter med ball fra motsatt side.',
+      steps: [
+        'Angriper fører ball mot portene.',
+        'Forsvarer starter ved portene og prøver å stenge veien.',
+        'Angriper scorer ved å føre ball gjennom en åpen port.',
+        'Forsvarer scorer ved å vinne ball eller tvinge angriper ut av banen.',
+        'Bytt roller etter 3 forsøk. Tell poeng.'
+      ],
+      coaching: [
+        'Angriper: løft blikket! Se hvilken port som er åpen',
+        'Bruk finter for å trekke forsvareren til én side',
+        'Forsvarer: stå sentralt, reager på angriperens valg',
+        'Tempo! Ikke nøl — ta en avgjørelse og gjennomfør'
+      ],
+      variations: [
+        'Flere porter = lettere for angriper',
+        'To forsvarere = vanskeligere, krever mer finter'
+      ],
+      diagram: { width:200, height:160, field:'none', elements:[
+        {type:'cone',x:40,y:15},{type:'cone',x:55,y:15},
+        {type:'cone',x:90,y:15},{type:'cone',x:105,y:15},
+        {type:'cone',x:140,y:15},{type:'cone',x:155,y:15},
+        {type:'player',x:100,y:130,team:'a',label:'A'},{type:'ball',x:108,y:126},
+        {type:'player',x:100,y:50,team:'b',label:'F'},
+        {type:'arrow',from:[100,125],to:[100,60],style:'run'}
+      ]}
+    },
+
+    // --- Retningsspill ---
+    {
+      key: 'possession_dir', label: 'Retningsspill', defaultMin: 15, category: 'smalagsspill',
+      ages: ['10-12', '13-16'], players: '8-16',
+      equipment: 'Vester, baller, kjegler til bane og endesoner',
+      nffCategory: 'smalagsspill', themes: ['spillforstaelse', 'spilloppbygging'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
+      learningGoals: ['Bygg opp spillet kontrollert mot endesonen', 'Gjør deg spillbar foran ballfører med riktig vinkel', 'Ved balltap: omstill raskt og press'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['vester', 'ball', 'kjegler'],
+      description: 'Ballbesittelse med retning: score ved å spille ballen kontrollert inn i motstanderens endesone. Trener spilloppbygging, romforståelse og tålmodighet i oppspillsfasen.',
+      setup: 'Bane 30x20m med 3m dype endesoner i begge ender. To lag med vester. Ingen mål — score ved å motta ball i kontroll inne i endesonen.',
+      steps: [
+        'Laget med ball bygger opp spillet og prøver å spille en medspiller inn i motstanderens endesone.',
+        'Scoring: en spiller mottar ball med kontroll inne i endesonen (foten på ballen).',
+        'Ved ballvinning: det andre laget angriper andre veien.',
+        'Spill 3-4 min perioder, hvile, bytt.'
+      ],
+      coaching: [
+        'Tålmodighet! Ikke slå lange baller i panikk',
+        'Gjør deg spillbar: ut av pasningsskygge, åpen kropp',
+        'Spill bakover eller sideveis for å finne åpning fremover',
+        'Ved balltap: press umiddelbart, ikke vent!'
+      ],
+      variations: [
+        'Touchbegrensning (maks 3 touch) for raskere spill',
+        'Joker: én nøytral spiller alltid med angripende lag'
+      ],
+      diagram: { width:240, height:150, field:'small', elements:[
+        {type:'cone',x:10,y:10},{type:'cone',x:10,y:140},{type:'cone',x:230,y:10},{type:'cone',x:230,y:140},
+        {type:'cone',x:35,y:10},{type:'cone',x:35,y:140},{type:'cone',x:205,y:10},{type:'cone',x:205,y:140},
+        {type:'player',x:70,y:50,team:'a',label:''},{type:'player',x:70,y:110,team:'a',label:''},
+        {type:'player',x:120,y:75,team:'a',label:''},{type:'ball',x:128,y:71},
+        {type:'player',x:150,y:45,team:'b',label:''},{type:'player',x:150,y:115,team:'b',label:''},
+        {type:'player',x:180,y:75,team:'b',label:''},
+        {type:'arrow',from:[128,71],to:[60,45],style:'pass'}
+      ]}
+    },
+
+    // --- Blokker og redd ---
+    {
+      key: 'block_shot', label: 'Blokker og redd', defaultMin: 10, category: 'spill_m_motstand',
+      ages: ['10-12', '13-16'], players: '6-14',
+      equipment: 'Mål med keeper, baller, kjegler',
+      nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill', 'keeper'], nffPhases: ['forsvar_hindre_maal'],
+      learningGoals: ['Kom mellom ball og mål i riktig vinkel', 'Blokkér med fremsiden av kroppen, stå på beina', 'Keeper: kommuniser posisjon og gi beskjed til forsvarer'],
+      suggestedGroupSize: 2, intensity: 'high', hasOpposition: true,
+      playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
+      description: 'Forsvareren øver på å blokkere skudd og hindre avslutning nær eget mål. Keeper og forsvarer samarbeider om å stenge rom og vinkel. Trener NFF fase F3.',
+      setup: 'Halvbane eller 20x15m foran mål med keeper. Angripere i kø 18-20m ut. Forsvarere starter ved 16-meteren.',
+      steps: [
+        'Angriper mottar ball fra trener og fører mot mål.',
+        'Forsvarer rykker ut og posisjonerer seg mellom angriper og mål.',
+        'Angriper forsøker å score. Forsvarer blokkerer eller vinner ball.',
+        'Keeper kommuniserer: «Hold side!», «Jeg har nær stolpe!»',
+        'Bytt roller etter 3 forsøk.'
+      ],
+      coaching: [
+        'Forsvarer: stå på beina, ikke kast deg ned for tidlig',
+        'Blokkér med fremsiden av kroppen — aldri ryggen til',
+        'Steng ett hjørne, la keeper ta det andre',
+        'Keeper: snakk! Fortell forsvareren hvor du er'
+      ],
+      variations: [
+        '2v1 nær mål: to angripere mot én forsvarer + keeper',
+        'Innlegg fra siden: forsvarer må markere og cleare'
+      ],
+      diagram: { width:220, height:150, field:'small', elements:[
+        {type:'goal',x:60,y:5,w:100,h:18},{type:'keeper',x:110,y:20},
+        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
+        {type:'player',x:110,y:60,team:'b',label:'F'},
+        {type:'arrow',from:[110,115],to:[110,70],style:'run'},
+        {type:'arrow',from:[110,35],to:[110,55],style:'run'}
+      ]}
+    },
+
+    // --- Keeperduell ---
+    {
+      key: 'keeper_play', label: 'Keeperduell', defaultMin: 10, category: 'keeper',
+      ages: ['8-9', '10-12'], players: '4-10',
+      equipment: '2 småmål (eller store mål), baller',
+      nffCategory: 'sjef_over_ballen', themes: ['keeper'], nffPhases: ['forsvar_hindre_maal'],
+      learningGoals: ['Grunnstilling og forflytning i målet', 'Grep og skyv ved lave og høye skudd', 'Rask reaksjon og igangsetting etter redning'],
+      suggestedGroupSize: 2, intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 4, max: 10 }, equipmentTags: ['smaamaal', 'maal', 'ball'],
+      description: 'To keepere mot hverandre i hver sitt mål på kort avstand. Trener reaksjon, grep, plassering og utspark. Morsomt og intenst — alle får mange repetisjoner.',
+      setup: 'To mål (småmål eller store) 8-12m fra hverandre. Én keeper i hvert mål. Ekstra baller bak målene.',
+      steps: [
+        'Keeper A kaster eller sparker ballen mot Keeper Bs mål.',
+        'Keeper B forsøker å redde og angriper umiddelbart tilbake.',
+        'Spill fram og tilbake i perioder på 2 minutter.',
+        'Tell poeng: mål = 1 poeng, redning + kontroll = 1 poeng til forsvarer.',
+        'Roter keepere slik at alle prøver seg.'
+      ],
+      coaching: [
+        'Grunnstilling: lav, vekt fremover, på tå',
+        'Grep: hendene bak ballen, fingre spredt (W-grep)',
+        'Etter redning: kontroll først, så kast/spark raskt',
+        'Plassering: stå sentralt, følg ballens posisjon'
+      ],
+      variations: [
+        'Spillere på sidene skyter i stedet for keeperne',
+        'Større avstand (15m) for å øve utspark'
+      ],
+      diagram: { width:200, height:120, field:'none', elements:[
+        {type:'goal',x:10,y:30,w:12,h:60,vertical:true},{type:'goal',x:178,y:30,w:12,h:60,vertical:true},
+        {type:'keeper',x:25,y:60},{type:'keeper',x:175,y:60},
+        {type:'ball',x:50,y:55},
+        {type:'arrow',from:[50,55],to:[165,65],style:'pass'}
+      ]}
+    },
+
+    // --- Stafett med ball ---
+    {
+      key: 'relay_ball', label: 'Stafett med ball', defaultMin: 8, category: 'oppvarming',
+      ages: ['6-7', '8-9'], players: '6-20',
+      equipment: 'Baller, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling'], nffPhases: ['noytral'],
+      learningGoals: ['Før ballen i fart uten å miste kontroll', 'Vend med ball rundt kjegle', 'Legg til fart gradvis — kontroll først'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 6, max: 20 }, equipmentTags: ['ball', 'kjegler'],
+      description: 'Lagstafett der spillerne fører ball gjennom en kjegleløype og tilbake. Kombinerer ballkontroll med fart og lagkonkurranse. Perfekt oppvarming med mye engasjement.',
+      setup: 'To eller flere lag i kø bak en startlinje. Kjegleløype 10-15m foran (rett linje, slalåm, eller sirkelbane).',
+      steps: [
+        'Første spiller på hvert lag fører ball gjennom løypa og tilbake.',
+        'Overlever ballen til neste i køen med en pasning.',
+        'Laget som fullfører først vinner runden.',
+        'Kjør 3-4 runder med ulike løyper eller regler.'
+      ],
+      coaching: [
+        'Kontroll først, fart etterpå — ballen må være nær foten',
+        'Bruk innsiden og utsiden rundt kjeglene',
+        'Hei på lagkameratene! Sørg for at alle er klare',
+        'Presis overlevering: pasning til neste, ikke bare spark den'
+      ],
+      variations: [
+        'Kun venstre fot, kun utside',
+        'Løype med vending + skudd på mål til slutt'
+      ],
+      diagram: { width:220, height:140, field:'none', elements:[
+        {type:'player',x:20,y:25,team:'a',label:''},{type:'player',x:20,y:50,team:'a',label:''},
+        {type:'player',x:20,y:75,team:'a',label:''},{type:'ball',x:28,y:21},
+        {type:'player',x:20,y:100,team:'b',label:''},{type:'player',x:20,y:125,team:'b',label:''},
+        {type:'cone',x:75,y:50},{type:'cone',x:110,y:90},{type:'cone',x:145,y:50},{type:'cone',x:180,y:90},
+        {type:'arrow',from:[30,25],to:[70,50],style:'run'},
+        {type:'arrow',from:[75,55],to:[105,85],style:'run'},
+        {type:'arrow',from:[110,85],to:[140,50],style:'run'}
+      ]}
+    },
+
+    // ═══════════════════════════════
+    // 🆕 TIER 3: 13-16 ÅR SPESIFIKKE (egenprodusert innhold)
+    // ═══════════════════════════════
+
+    // --- Prepp'n (oppvarming ungdom) ---
+    {
+      key: 'prepp', label: 'Prepp\u2019n', defaultMin: 12, category: 'oppvarming',
+      ages: ['13-16'], players: '8-22',
+      equipment: 'Baller, kjegler',
+      nffCategory: 'sjef_over_ballen', themes: ['foering_dribling', 'vendinger_mottak'], nffPhases: ['noytral'],
+      learningGoals: ['Fart i beina: høy frekvens i forflytninger med og uten ball', 'Fart i ballen: rask ballhåndtering med begge føtter', 'Kroppskontroll: kontroll på overkropp i utgangsstillinger og retningsforandringer'],
+      intensity: 'medium', hasOpposition: false,
+      playerCount: { min: 8, max: 22 }, equipmentTags: ['ball', 'kjegler'],
+      description: 'Strukturert oppvarming for ungdom. Fokus på fart i hodet, fart i beina og fart i ballen. Gjør spillerne spilleklare for høy intensitet i spill. Bør knyttes til øktens tema.',
+      setup: 'Firkant 15x15m med kjegler. Alle spillere med ball. Kan kjøres i par eller individuelt.',
+      steps: [
+        'Føring (3 min): alle fører ball i firkanten. Trener roper kommandoer — innside, utside, såle, vending, tempoøkning.',
+        'Frekvens (3 min): ball i hendene, kjappe føtter over ball, sidesteg langs kjegler, akselerasjon ut.',
+        'Pasning i par (4 min): kort avstand, vekslende pasning med førstetouch i bevegelse. Øk avstand gradvis.',
+        'Fritt (2 min): kombiner føring, vending og pasning i fritt tempo med stigende fart.'
+      ],
+      coaching: [
+        'Kontroll på overkroppen: stå rett, ikke len deg forover',
+        'Høy frekvens i beina, korte raske steg',
+        'Førstetouch legger ballen klar for neste handling',
+        'Knytt aktivitetene til øktens tema — f.eks. vendinger hvis tema er spilloppbygging'
+      ],
+      variations: [
+        'Med motstand: legg til en passiv jager i del 1',
+        'Konkurranseform: hvem klarer flest vendinger på 30 sek?'
+      ],
+      diagram: { width:200, height:200, field:'small', elements:[
+        {type:'cone',x:20,y:20},{type:'cone',x:180,y:20},{type:'cone',x:20,y:180},{type:'cone',x:180,y:180},
+        {type:'player',x:60,y:70,team:'a',label:''},{type:'ball',x:68,y:66},
+        {type:'player',x:140,y:90,team:'a',label:''},{type:'ball',x:148,y:86},
+        {type:'player',x:80,y:140,team:'a',label:''},{type:'ball',x:88,y:136},
+        {type:'player',x:120,y:50,team:'a',label:''},{type:'ball',x:128,y:46},
+        {type:'arrow',from:[65,75],to:[100,100],style:'run'},
+        {type:'arrow',from:[145,85],to:[115,65],style:'run'}
+      ]}
+    },
+
+    // --- Spilloppbygging bakfra ---
+    {
+      key: 'build_up', label: 'Spilloppbygging bakfra', defaultMin: 15, category: 'smalagsspill',
+      ages: ['13-16'], players: '10-18',
+      equipment: 'Vester (2-3 farger), baller, store mål med keeper, kjegler',
+      nffCategory: 'smalagsspill', themes: ['spilloppbygging', 'pasning_samspill'], nffPhases: ['angrep_fremover'],
+      learningGoals: ['Keeper/back: ro med ball, åpne i førstetouch, true med blikk', 'Midtbane: spillbar i framrom med oversikt fremover', 'Unngå å gi bort presseøyeblikk — kontrollert oppspill ut av press'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 10, max: 18 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Laget øver på å spille seg ut bakfra mot organisert press. Keeper starter, backer og midtbane bygger opp, angrepsspillerne tilbyr seg i rom. Trener NFF fase A1.',
+      setup: 'Halv bane. Keeper + 4-5 oppbyggingsspillere mot 3-4 pressende motstandere. Mål å spille ballen over midtlinjen kontrollert (eller til mottaker i endesone).',
+      steps: [
+        'Keeper starter med ball (utspark eller utkast til back).',
+        'Backene og midtbanen tilbyr seg med riktig avstand og vinkel.',
+        'Pressende lag forsøker å vinne ball og score på motangrep.',
+        'Oppbyggingslaget scorer ved å spille en spiller gjennom midtsonen med ball i kontroll.',
+        'Ved ballvinning for presslaget: score på stort mål innen 8 sek.'
+      ],
+      coaching: [
+        'Keeper: oversikt først, ikke bare spark den lang',
+        'Backer: åpen kropp, se begge sider FØR du får ballen',
+        'Midtbane: gjør deg spillbar mellom linjene, vis deg!',
+        'Presslaget: les presseøyeblikk — støttepasning, dårlig touch, ball til keeper'
+      ],
+      variations: [
+        'Øk antall pressende spillere for mer utfordring',
+        'Krav: minst 3 pasninger før ballen kan krysse midtlinjen'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'keeper',x:20,y:90},
+        {type:'player',x:55,y:45,team:'a',label:''},{type:'player',x:55,y:135,team:'a',label:''},
+        {type:'player',x:100,y:70,team:'a',label:''},{type:'player',x:100,y:110,team:'a',label:''},
+        {type:'ball',x:28,y:88},
+        {type:'player',x:130,y:55,team:'b',label:''},{type:'player',x:130,y:125,team:'b',label:''},
+        {type:'player',x:160,y:90,team:'b',label:''},
+        {type:'arrow',from:[28,88],to:[50,50],style:'pass'},
+        {type:'arrow',from:[55,50],to:[95,75],style:'pass'}
+      ]}
+    },
+
+    // --- Soneforsvar intro ---
+    {
+      key: 'zone_defense', label: 'Soneforsvar', defaultMin: 15, category: 'spill_m_motstand',
+      ages: ['13-16'], players: '10-18',
+      equipment: 'Vester, baller, store mål med keeper, kjegler',
+      nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill'], nffPhases: ['forsvar_vinne_ball', 'forsvar_hindre_maal'],
+      learningGoals: ['Posisjonering i forhold til ball og medspillere, ikke motspillere', 'Sideforskyvning som enhet: korte og smale når ball er sentralt', 'Lese presseøyeblikk og reagere samlet'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 10, max: 18 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Forsvarslaget øver på å bevege seg som enhet: sideforskyvning, pumping (opp/ned) og samlet press. Angrepslaget prøver å trenge gjennom. Trener NFF fase F1/F2.',
+      setup: 'Halv bane med stort mål og keeper. Forsvarslag (4-5 spillere) mot angrepsslag (5-6 spillere). Angrepslaget starter med ball fra midten.',
+      steps: [
+        'Angrepslaget bygger opp og prøver å score.',
+        'Forsvarslaget holder formasjon: sideforskyvning mot ball, pumper opp ved press.',
+        'Trener fryser spillet 2-3 ganger for å vise posisjoner.',
+        'Ved ballvinning: forsvarslaget spiller raskt til en mottaker over midtlinjen (omstilling).',
+        'Bytt roller etter 5 min.'
+      ],
+      coaching: [
+        'Se på ballen, ikke motspillerne — posisjoner dere ift ball',
+        'Korte avstander! Glipper det mellom to, kommer ballen gjennom',
+        'Når ball er på siden: forskyv samlet, steng midten',
+        'Presssignaler: dårlig touch, ball til back, feilvendt spiller → PRESS SAMLET!'
+      ],
+      variations: [
+        'Begynn uten mål: forsvarslaget scorer ved ballvinning + 5 pasninger',
+        '3 linjer: backer, midtbane, angrep — øv pumping mellom leddene'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'keeper',x:20,y:90},
+        {type:'player',x:60,y:50,team:'b',label:''},{type:'player',x:60,y:90,team:'b',label:''},
+        {type:'player',x:60,y:130,team:'b',label:''},{type:'player',x:90,y:70,team:'b',label:''},
+        {type:'player',x:90,y:110,team:'b',label:''},
+        {type:'player',x:140,y:40,team:'a',label:''},{type:'player',x:140,y:90,team:'a',label:''},
+        {type:'player',x:140,y:140,team:'a',label:''},{type:'player',x:180,y:65,team:'a',label:''},
+        {type:'player',x:180,y:115,team:'a',label:''},{type:'ball',x:148,y:86},
+        {type:'arrow',from:[65,55],to:[65,85],style:'run'},{type:'arrow',from:[65,125],to:[65,95],style:'run'}
+      ]}
+    },
+
+    // --- Situasjonsøvelse angrep ---
+    {
+      key: 'sit_attack', label: 'Situasjonsøvelse angrep', defaultMin: 15, category: 'spill_m_motstand',
+      ages: ['13-16'], players: '10-18',
+      equipment: 'Vester, baller, store mål med keeper, kjegler',
+      nffCategory: 'spille_med_og_mot', themes: ['samarbeidsspill', 'avslutning'], nffPhases: ['angrep_fremover', 'angrep_avslutning'],
+      learningGoals: ['Ballfører: ro med ball, true med blikk, spille kontrollert fremover', 'Medspillere: bevegelse for å skape og utnytte overtall', 'Avslutning: kort tid mellom nest siste touch og skudd'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 10, max: 18 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Kamplik øvelse med mange repetisjoner inn mot angrepstemaet. Starter med oppspill fra trener/keeper, angrepsspillerne kombinerer seg gjennom forsvar og avslutter. NFF fase A2/A3.',
+      setup: 'Halv bane med mål og keeper. Angrepsgruppe (3-5 spillere) mot forsvarsgruppe (2-4 spillere). Trener/keeper igangsetter.',
+      steps: [
+        'Trener spiller ball til en angrepsspiller sentralt eller på siden.',
+        'Angrepslaget kombinerer seg mot mål (overtall eller likt antall).',
+        'Forsvarslaget prøver å vinne ball — ved vinning spill raskt over midtlinjen.',
+        'Ny ball fra trener umiddelbart etter avslutning/ball ut.',
+        'Mange repetisjoner! 10-12 angrep på 5 min, deretter bytt.'
+      ],
+      coaching: [
+        'Angrip hurtig fremover — ikke overspill, ta sjansen!',
+        'Beveg dere bak, forbi og foran ballfører',
+        'True flere rom samtidig: bakrom, mellomrom',
+        'Avslutter: se på keeper, plassering framfor kraft'
+      ],
+      variations: [
+        'Start med 3v2, øk til 4v3 eller 5v4',
+        'Krav: scoring innen 8 sekunder etter igangsetting'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'keeper',x:20,y:90},
+        {type:'player',x:80,y:60,team:'b',label:'F'},{type:'player',x:80,y:120,team:'b',label:'F'},
+        {type:'player',x:150,y:50,team:'a',label:''},{type:'player',x:150,y:90,team:'a',label:''},
+        {type:'player',x:150,y:130,team:'a',label:''},{type:'ball',x:158,y:86},
+        {type:'arrow',from:[155,85],to:[90,65],style:'pass'},
+        {type:'arrow',from:[155,50],to:[60,50],style:'run'}
+      ]}
+    },
+
+    // --- Situasjonsøvelse forsvar ---
+    {
+      key: 'sit_defend', label: 'Situasjonsøvelse forsvar', defaultMin: 15, category: 'spill_m_motstand',
+      ages: ['13-16'], players: '10-18',
+      equipment: 'Vester, baller, store mål med keeper, kjegler',
+      nffCategory: 'spille_med_og_mot', themes: ['forsvarsspill'], nffPhases: ['forsvar_vinne_ball', 'forsvar_hindre_maal'],
+      learningGoals: ['Førsteforsvarer: tett i press, styr ballfører vekk fra mål', 'Resten: sikring bak press, steng rom sentralt', 'Ved ballvinning: hurtig omstilling til angrep'],
+      intensity: 'high', hasOpposition: true,
+      playerCount: { min: 10, max: 18 }, equipmentTags: ['vester', 'ball', 'maal', 'kjegler'],
+      description: 'Kamplik øvelse med fokus på forsvarsspill. Forsvarslaget øver på å stoppe organiserte angrep gjennom press, sikring og blokkering. NFF fase F1/F2/F3.',
+      setup: 'Halv bane med mål og keeper. Forsvargruppe (3-4 spillere) mot angrepsgruppe (4-5 spillere i overtall). Angrepslaget har fritt spill.',
+      steps: [
+        'Angrepslaget starter med ball og angriper fritt mot mål.',
+        'Forsvarslaget organiserer seg: første forsvarer presser, andre sikrer.',
+        'Keeper kommuniserer: «Steng side!», «Hold linja!»',
+        'Ved ballvinning: forsvarslaget kontrerer raskt mot småmål på midtlinjen.',
+        'Ny ball umiddelbart etter avslutning. 10-12 repetisjoner per periode.'
+      ],
+      coaching: [
+        'Første forsvarer: riktig fart inn i press, korte steg, stå på beina',
+        'Sikring: tett bak, steng rom mellom forsvarer og mål',
+        'Kommuniser! «Jeg tar ball, du sikrer», «Hold feilvendt!»',
+        'Blokkér skudd med fremsiden av kroppen'
+      ],
+      variations: [
+        'Start i undertall (2v3) for å øve desperatforsvar',
+        'Fokus F3: angrep starter med innlegg fra siden'
+      ],
+      diagram: { width:240, height:180, field:'half', elements:[
+        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'keeper',x:20,y:90},
+        {type:'player',x:70,y:55,team:'b',label:'F'},{type:'player',x:70,y:90,team:'b',label:'F'},
+        {type:'player',x:70,y:125,team:'b',label:'F'},
+        {type:'player',x:140,y:40,team:'a',label:''},{type:'player',x:160,y:80,team:'a',label:''},
+        {type:'player',x:140,y:120,team:'a',label:''},{type:'player',x:190,y:80,team:'a',label:''},
+        {type:'ball',x:168,y:76},
+        {type:'arrow',from:[75,60],to:[150,50],style:'run'},
+        {type:'arrow',from:[73,93],to:[73,78],style:'run'},{type:'arrow',from:[73,122],to:[73,100],style:'run'}
+      ]}
+    },
+
+    // --- Innlegg og avslutning ---
+    {
+      key: 'cross_finish', label: 'Innlegg og avslutning', defaultMin: 12, category: 'avslutning',
+      ages: ['13-16'], players: '8-16',
+      equipment: 'Store mål med keeper, baller, kjegler',
+      nffCategory: 'scoringstrening', themes: ['avslutning', 'samarbeidsspill'], nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Innlegger: løft blikket, slå ballen i rom som angripes', 'Avslutter: true 1. stolpe, bakre stolpe eller 45 med timing', 'Bevegelser for å komme først på ballen: sprint, stå i ro, fra-imot'],
+      intensity: 'high', hasOpposition: false,
+      playerCount: { min: 8, max: 16 }, equipmentTags: ['maal', 'ball', 'kjegler'],
+      description: 'Innleggsøvelse med avslutning fra ulike posisjoner i boksen. Kantspiller slår innlegg, medspillere angriper rom foran mål. Trener NFF fase A3 med fokus på siste pasning og avslutning.',
+      setup: 'Halvbane med stort mål og keeper. Innleggere på begge kanter (ved sidelinja, 25m fra mål). Avsluttere i kø sentralt, 20m fra mål.',
+      steps: [
+        'Innlegger mottar ball fra trener og fører mot dødlinja.',
+        'Avslutter starter løp inn i boksen: veksle mellom 1. stolpe, bakre stolpe og «45».',
+        'Innlegger slår ball i rom som avslutteren angriper.',
+        'Avslutter scorer med ett eller to touch.',
+        'Veksle mellom høyre og venstre side. Roter roller.'
+      ],
+      coaching: [
+        'Innlegger: se opp FØR du slår — finn medspillerens løp',
+        'Avslutter: timing! Start løpet når innlegger ser opp',
+        'True 1. stolpe tidlig, juster til bakre stolpe sent',
+        'Plassering: styr ballen tilbake dit den kom fra (vanskeligst for keeper)'
+      ],
+      variations: [
+        'Legg til forsvarer i boksen som markerer avslutteren',
+        'Pasningsinnlegg lavt langs bakken (cutback) i stedet for høyt innlegg'
+      ],
+      diagram: { width:240, height:180, field:'none', elements:[
+        {type:'goal',x:80,y:5,w:80,h:18},{type:'keeper',x:120,y:20},
+        {type:'player',x:210,y:120,team:'a',label:'K'},{type:'ball',x:218,y:116},
+        {type:'player',x:120,y:110,team:'a',label:'A'},
+        {type:'player',x:90,y:110,team:'a',label:''},
+        {type:'arrow',from:[210,115],to:[200,40],style:'run'},
+        {type:'arrow',from:[200,40],to:[130,50],style:'pass'},
+        {type:'arrow',from:[120,105],to:[130,45],style:'run'},
+        {type:'arrow',from:[90,105],to:[100,50],style:'run'}
+      ]}
+    },
+
     // ── EGENDEFINERT (alltid nederst) ──
-    { key: 'custom', label: 'Skriv inn selv', defaultMin: 10, isCustom: true, category: 'special' }
+    { key: 'custom', label: 'Skriv inn selv', defaultMin: 10, isCustom: true, category: 'special',
+      nffCategory: 'sjef_over_ballen', themes: [], nffPhases: [], learningGoals: [],
+      intensity: 'medium', hasOpposition: false }
   ];
 
   // Migration map for removed/renamed exercise keys
@@ -690,7 +1485,6 @@
     'warm_no_ball': 'tag',
     'long_pass': 'pass_pair',
     'pass_turn': 'receive_turn',
-    'cross_finish': 'shot',
     'juggle': 'custom',
     'competitions': 'custom',
     'overload': '2v1',
@@ -712,10 +1506,16 @@
     if (newKey !== oldKey) {
       exObj.exerciseKey = newKey;
       if (newKey === 'custom' && !exObj.customName) {
-        // Preserve a readable name
         const oldMeta = { 'juggle': 'Triksing med ball', 'competitions': 'Konkurranser' };
         exObj.customName = oldMeta[oldKey] || oldKey;
       }
+    }
+    // Safety net: if key doesn't exist in current EXERCISES catalog, treat as custom
+    if (exObj.exerciseKey !== 'custom' && !EX_BY_KEY.has(exObj.exerciseKey)) {
+      const lostName = exObj.exerciseKey;
+      exObj.exerciseKey = 'custom';
+      if (!exObj.customName) exObj.customName = lostName;
+      console.warn('[workout.js] Ukjent \u00f8velses-key migrert til custom:', lostName);
     }
     return exObj;
   }
@@ -731,6 +1531,640 @@
     { id: 'smalagsspill', label: '🏟️ Smålagsspill' },
     { id: 'keeper', label: '🧤 Keeper' },
   ];
+
+  // -------------------------
+  // NFF-struktur: Aktivitetskategorier, temaer, læringsmomenter
+  // Basert på NFFs skoleringsplaner 2021 og spillmodell.
+  // Begreper og struktur er offentlige retningslinjer. Alt innhold er egenprodusert.
+  // -------------------------
+
+  const NFF_CATEGORIES = [
+    { id: 'sjef_over_ballen',   label: '⚽ Sjef over ballen',   short: 'Sjef',    color: '#2e8b57',
+      label1316: '⚽ Prepp\u2019n', short1316: 'Prepp' },
+    { id: 'spille_med_og_mot',  label: '⚔️ Spille med og mot',  short: 'Øvelse',  color: '#e67e22',
+      label1316: '⚔️ Situasjonsøving', short1316: 'Situasjon' },
+    { id: 'smalagsspill',       label: '🏟️ Smålagsspill',       short: 'Spill',   color: '#3498db',
+      label1316: '🏟️ Spill', short1316: 'Spill' },
+    { id: 'scoringstrening',    label: '🎯 Scoringstrening',    short: 'Scoring', color: '#e74c3c',
+      label1316: '🎯 Avslutning', short1316: 'Avslutning' },
+  ];
+
+  const NFF_CATEGORY_BY_ID = Object.fromEntries(NFF_CATEGORIES.map(c => [c.id, c]));
+
+  /** Get age-appropriate label for NFF category */
+  function catLabel(cat, ageGroup) {
+    return (ageGroup === '13-16' && cat.label1316) ? cat.label1316 : cat.label;
+  }
+  function catShort(cat, ageGroup) {
+    return (ageGroup === '13-16' && cat.short1316) ? cat.short1316 : cat.short;
+  }
+
+  // Treningstemaer knyttet til NFFs spillmodell
+  const NFF_THEMES = [
+    { id: 'foering_dribling',   label: 'Føring og dribling',    phase: 'angrep',  icon: '🏃' },
+    { id: 'vendinger_mottak',   label: 'Vendinger og mottak',   phase: 'angrep',  icon: '🔄' },
+    { id: 'pasning_samspill',   label: 'Pasning og samspill',   phase: 'angrep',  icon: '🤝' },
+    { id: 'avslutning',         label: 'Avslutning',            phase: 'angrep',  icon: '🎯' },
+    { id: '1v1_duell',          label: '1 mot 1',               phase: 'begge',   icon: '⚡' },
+    { id: 'samarbeidsspill',    label: 'Samarbeidsspill',        phase: 'angrep',  icon: '👥' },
+    { id: 'forsvarsspill',      label: 'Forsvarsspill',          phase: 'forsvar', icon: '🛡️' },
+    { id: 'omstilling',         label: 'Omstilling',             phase: 'begge',   icon: '🔁' },
+    { id: 'spilloppbygging',    label: 'Spilloppbygging',        phase: 'angrep',  icon: '📐' },
+    { id: 'keeper',             label: 'Keeper',                 phase: 'forsvar', icon: '🧤' },
+  ];
+
+  const NFF_THEME_BY_ID = Object.fromEntries(NFF_THEMES.map(t => [t.id, t]));
+
+  // Hvilke temaer er relevante per aldersgruppe
+  const NFF_THEMES_BY_AGE = {
+    '6-7':  ['foering_dribling', 'avslutning', '1v1_duell'],
+    '8-9':  ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill'],
+    '10-12': ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'omstilling', 'spilloppbygging', 'keeper'],
+    '13-16': ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'omstilling', 'spilloppbygging', 'keeper'],
+  };
+
+  // Anbefalt tidsfordeling per aldersgruppe (prosent av total økttid, ekskl. drikkepause)
+  const NFF_TIME_DISTRIBUTION = {
+    '6-7':  { sjef_over_ballen: 35, spille_med_og_mot: 5,  smalagsspill: 50, scoringstrening: 10 },
+    '8-9':  { sjef_over_ballen: 20, spille_med_og_mot: 20, smalagsspill: 45, scoringstrening: 15 },
+    '10-12': { sjef_over_ballen: 15, spille_med_og_mot: 25, smalagsspill: 45, scoringstrening: 15 },
+    '13-16': { sjef_over_ballen: 15, spille_med_og_mot: 35, smalagsspill: 40, scoringstrening: 10 },
+  };
+
+  // Læringsmomenter per tema per aldersgruppe (egne formuleringer)
+  const NFF_LEARNING_GOALS = {
+    'foering_dribling': {
+      '6-7':  ['Hold ballen nær foten med korte touch', 'Bruk ulike deler av foten (innside, utside, såle)', 'Løft blikket mens du fører ballen'],
+      '8-9':  ['Fart i føringen: tett ball i press, lengre touch i åpent rom', 'Bruk kroppen til å skjerme ballen', 'Se fremover og ta valg: føre, drible eller spille'],
+      '10-12': ['Føring i fart med retningsforandring under press', 'Velg riktig teknikk for situasjonen', 'Retningsbestemt føring mot ledig rom'],
+      '13-16': ['Korte hurtige touch med begge føtter for å utnytte rom', 'Beholde oversikt med ball i beina, kunne ombestemme valg', 'Fartsvariasjon og retningsforandring for å skape overtall'],
+    },
+    'vendinger_mottak': {
+      '8-9':  ['Sjekk over skulderen FØR ballen kommer', 'Åpne kroppen mot dit du vil vende', 'Førstetouch i retning du skal spille'],
+      '10-12': ['Mottak under press med skjermingskontakt', 'Varier vendeteknikk etter situasjonen', 'Retningsbestemt mottak med begge føtter'],
+      '13-16': ['Ro med ball, åpne i førstetouch, true med blikk og fot', 'Mottak med fart: første touch setter opp neste handling', 'Vende i press for å utnytte rom bak motstander'],
+    },
+    'pasning_samspill': {
+      '6-7':  ['Spark ballen med innsiden av foten', 'Pek støttefoten mot den du sender til'],
+      '8-9':  ['Orientert førsteberøring: se mot mål før mottak', 'Beveg deg etter pasning (slå og gå)', 'Gjør deg spillbar: finn rom, ut av pasningsskygge'],
+      '10-12': ['Spill med færrest mulig berøringer under press', 'Veggspill og kombinasjoner', 'Les medspillerens bevegelse, spill i rom'],
+      '13-16': ['Spille kontrollert fremover, søke igjennom framfor rundt', 'Skape nye rom med pasninger i riktig fart til riktig fot', 'Prinsipper: opp-tilbake-igjennom, fra trangt til ledig'],
+    },
+    'avslutning': {
+      '6-7':  ['Plassering foran kraft: sikte mot mål', 'Tørr å skyte!'],
+      '8-9':  ['Plassering i hjørnene, lav avslutning', 'Avslutt raskt, ikke nøl', 'Følg opp skuddet, vær klar for retur'],
+      '10-12': ['Avslutning under press (tidskrav, forsvarer)', 'Les keeper: velg hjørne', 'Avslutning fra ulike vinkler og avstander'],
+      '13-16': ['Kort tid mellom nest siste touch og avslutning', 'True 1. stolpe, bakre stolpe og 45 med bevegelse', 'Se på keeper, så på ball — plassering framfor kraft'],
+    },
+    '1v1_duell': {
+      '6-7':  ['Tørr å utfordre motspilleren', 'Bruk kroppen for å beskytte ballen'],
+      '8-9':  ['Angriper: brems opp, bruk finter', 'Forsvarer: stå sidelengs, vær tålmodig', 'Lav tyngdepunkt for rask retningsendring'],
+      '10-12': ['Les forsvarerens kropp: angrip den svake siden', 'Fartsvariasjon: brems-akseler', 'Forsvarer: tving til svak fot, steng rom mot mål'],
+      '13-16': ['Utnytte dårlige, lange og for mange touch hos motstander', 'Aktiv armbruk ved duellspill og kroppskontakt', 'Ta rommet mellom ballfører og ball før du tar ball'],
+    },
+    'samarbeidsspill': {
+      '8-9':  ['Angriper med ball: trekk forsvarer FØR pasning', 'Angriper uten ball: hold avstand og vinkel', 'Timing: spill pasning i riktig øyeblikk'],
+      '10-12': ['Trekantspill: spill og beveg deg til ny posisjon', 'Veggspill: gi-og-gå forbi forsvarer', 'Les medspiller, tilpass fart og vinkel'],
+      '13-16': ['Bevegelse for å skape og utnytte overtall sammen med ballfører', 'Flere bevegelser etter hverandre for å åpne rom', 'Spillbarhet med riktig avstand og vinkel i alle situasjoner'],
+    },
+    'forsvarsspill': {
+      '8-9':  ['Tett opp i ballfører, press!', 'Stå mellom ballfører og eget mål', 'Alle tilbake raskt ved balltap'],
+      '10-12': ['Steng pasningslinjer, tving til side', 'Beveg dere som enhet (soneprinsipp)', 'Omstilling: første forsvarer presser, andre sikrer'],
+      '13-16': ['Komme tett i press med riktig fart, korte ned stegene', 'Lese presseøyeblikk: støttepasning, dårlig touch, feilvendt spiller', 'Soneforsvar: posisjonering ift ball og medspillere, sideforskyvning og pumping'],
+    },
+    'omstilling': {
+      '10-12': ['Raskt tilbake ved balltap', 'Første forsvarer presser, resten organiserer', 'Ved ballvinning: se fremover umiddelbart'],
+      '13-16': ['Ved balltap: fortest mulig flest mulig på rett side av ball', 'Ved ballvinning: identifiser balanseforhold — kontring eller kontroll?', 'Hurtig samlet reaksjon på definerte press-signaler'],
+    },
+    'spilloppbygging': {
+      '10-12': ['Keeper/back starter rolig, bygg opp bakfra', 'Finn den frie spilleren mellom linjene', 'Tålmodighet: ikke slå lange baller i panikk'],
+      '13-16': ['Ro med ball, åpne i førstetouch, true med blikk og fot', 'Unngå å gi bort presseøyeblikk — kontrollert oppspill', 'Fra små rom til store rom, opp og ned, inn og ut'],
+    },
+    'keeper': {
+      '8-9':  ['Grunnstilling: føtter i skulderbredde, lett på tå', 'W-grep, fingre spredt', 'Fall til siden, ikke bakover'],
+      '10-12': ['Les angriperens kropp: forutse skuddretning', 'Utkast/utspark for rask omstilling', 'Kommuniser med forsvarslinja'],
+      '13-16': ['Posisjonering i forhold til forsvar og motstander', 'Pasningsalternativ for vending av spill', 'Kommunikasjon: styre leddet foran, tetthet og pumping'],
+    },
+  };
+
+  /**
+   * Hent læringsmomenter for et gitt tema og aldersgruppe.
+   * Fallback til nærmeste eldre aldersgruppe hvis ingen spesifikk finnes.
+   */
+  function getLearningGoals(themeId, ageGroup) {
+    const themeGoals = NFF_LEARNING_GOALS[themeId];
+    if (!themeGoals) return [];
+    if (themeGoals[ageGroup]) return themeGoals[ageGroup];
+    // Fallback: prøv eldre aldersgrupper
+    const fallback = ['6-7', '8-9', '10-12', '13-16'];
+    const idx = fallback.indexOf(ageGroup);
+    for (let i = idx - 1; i >= 0; i--) {
+      if (themeGoals[fallback[i]]) return themeGoals[fallback[i]];
+    }
+    return [];
+  }
+
+  /**
+   * Filtrer øvelser basert på aldersgruppe og valgfritt tema.
+   * Returnerer sortert liste: relevante først, deretter resten.
+   */
+  function filterExercisesByContext(ageGroup, themeId) {
+    const results = { primary: [], secondary: [], other: [] };
+    for (const ex of EXERCISES) {
+      if (ex.category === 'special') continue;
+      const ageMatch = !ageGroup || (ex.ages && ex.ages.includes(ageGroup));
+      const themeMatch = themeId && ex.themes && ex.themes.includes(themeId);
+
+      if (ageMatch && themeMatch) {
+        results.primary.push(ex);
+      } else if (ageMatch) {
+        results.secondary.push(ex);
+      } else {
+        results.other.push(ex);
+      }
+    }
+    return results;
+  }
+
+  /**
+   * Beregn NFF-tidsfordeling for en liste med blokker.
+   * Returnerer { kategori: minutter } og sammenligner med anbefalt fordeling.
+   */
+  function calculateNffBalance(blocks, ageGroup) {
+    const actual = { sjef_over_ballen: 0, spille_med_og_mot: 0, smalagsspill: 0, scoringstrening: 0 };
+    let totalMin = 0;
+
+    for (const block of blocks) {
+      const trackA = block.a || block;
+      const meta = EX_BY_KEY.get(trackA.exerciseKey);
+      if (!meta || meta.category === 'special') continue;
+      const cat = meta.nffCategory;
+      const minutes = trackA.minutes || meta.defaultMin || 0;
+      if (cat && actual.hasOwnProperty(cat)) {
+        actual[cat] += minutes;
+      }
+      totalMin += minutes;
+
+      // Parallell: bruk den lengste varigheten (allerede telt via track A),
+      // men kategoriser B-spor separat om det er en annen kategori
+      if (block.kind === 'parallel' && block.b) {
+        const metaB = EX_BY_KEY.get(block.b.exerciseKey);
+        if (metaB && metaB.nffCategory && metaB.nffCategory !== cat) {
+          // B-spor kjører samtidig, bidrar til kategori men ikke totaltid
+          const minB = block.b.minutes || metaB.defaultMin || 0;
+          if (actual.hasOwnProperty(metaB.nffCategory)) {
+            actual[metaB.nffCategory] += minB;
+          }
+        }
+      }
+    }
+
+    const recommended = NFF_TIME_DISTRIBUTION[ageGroup] || NFF_TIME_DISTRIBUTION['8-9'];
+    const balance = {};
+    for (const cat of Object.keys(actual)) {
+      const actualPct = totalMin > 0 ? Math.round((actual[cat] / totalMin) * 100) : 0;
+      const recPct = recommended[cat] || 0;
+      balance[cat] = { minutes: actual[cat], actualPct, recommendedPct: recPct, diff: actualPct - recPct };
+    }
+
+    return { actual, totalMinutes: totalMin, balance, ageGroup };
+  }
+
+  // =========================================================
+  // BOTTOM SHEET EXERCISE PICKER
+  // Replaces native <select> for exercise selection.
+  // Singleton DOM element, shown/hidden with class toggle.
+  // =========================================================
+
+  const _bs = {
+    el: null,        // root overlay element
+    sheet: null,     // sheet panel
+    body: null,      // scrollable body
+    search: null,    // search input
+    blockId: null,   // which block triggered
+    track: null,     // 'a' or 'b'
+    onSelect: null,  // callback(exerciseKey)
+    ctxOverride: null, // { ageGroup, blocks } — set by sesong-workout.js via openExercisePicker
+  };
+
+  /** Group exercises by NFF category for bottom sheet display */
+  function _bsGroupExercises() {
+    const groups = new Map();
+    const age = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup) || null;
+    for (const cat of NFF_CATEGORIES) {
+      groups.set(cat.id, []);
+    }
+    for (const ex of EXERCISES) {
+      if (ex.category === 'special') continue;
+      // Filter by age if set
+      if (age && ex.ages && !ex.ages.includes(age)) continue;
+      const catId = ex.nffCategory;
+      if (groups.has(catId)) {
+        groups.get(catId).push(ex);
+      }
+    }
+    return groups;
+  }
+
+  /** Get set of exercise keys currently in the session */
+  function _bsKeysInSession() {
+    const keys = new Set();
+    const blocks = (_bs.ctxOverride && _bs.ctxOverride.blocks) ? _bs.ctxOverride.blocks : state.blocks;
+    for (const b of blocks) {
+      if (b.a?.exerciseKey) keys.add(b.a.exerciseKey);
+      if (b.kind === 'parallel' && b.b?.exerciseKey) keys.add(b.b.exerciseKey);
+    }
+    return keys;
+  }
+
+  /** Get NFF categories not covered by current session */
+  function _bsMissingCategories() {
+    const covered = new Set();
+    const blocks = (_bs.ctxOverride && _bs.ctxOverride.blocks) ? _bs.ctxOverride.blocks : state.blocks;
+    for (const b of blocks) {
+      const metaA = EX_BY_KEY.get(b.a?.exerciseKey);
+      if (metaA && metaA.nffCategory && metaA.nffCategory !== 'pause') covered.add(metaA.nffCategory);
+      if (b.kind === 'parallel' && b.b) {
+        const metaB = EX_BY_KEY.get(b.b.exerciseKey);
+        if (metaB && metaB.nffCategory && metaB.nffCategory !== 'pause') covered.add(metaB.nffCategory);
+      }
+    }
+    return NFF_CATEGORIES.filter(c => !covered.has(c.id));
+  }
+
+  /** Create the bottom sheet DOM (once) */
+  function _bsCreate() {
+    if (_bs.el) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'wo-bs-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Velg øvelse');
+
+    overlay.innerHTML = `
+      <div class="wo-bs-backdrop"></div>
+      <div class="wo-bs-sheet">
+        <div class="wo-bs-header">
+          <div class="wo-bs-drag-handle"></div>
+          <div class="wo-bs-title">Velg øvelse</div>
+          <button class="wo-bs-close" type="button" aria-label="Lukk">\u2715</button>
+        </div>
+        <div class="wo-bs-search-wrap">
+          <input class="wo-bs-search" type="search" placeholder="S\u00f8k etter \u00f8velse..." autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="wo-bs-pills"></div>
+        <div class="wo-bs-drink-wrap">
+          <button class="wo-bs-drink-btn" type="button">
+            \uD83D\uDCA7 Drikkepause <span class="wo-bs-drink-min">2 min</span>
+          </button>
+        </div>
+        <div class="wo-bs-body"></div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    _bs.el = overlay;
+    _bs.sheet = overlay.querySelector('.wo-bs-sheet');
+    _bs.body = overlay.querySelector('.wo-bs-body');
+    _bs.search = overlay.querySelector('.wo-bs-search');
+
+    // Backdrop close
+    const backdrop = overlay.querySelector('.wo-bs-backdrop');
+    backdrop.addEventListener('click', closeBottomSheet);
+    backdrop.style.touchAction = 'none';
+
+    // Close button
+    overlay.querySelector('.wo-bs-close').addEventListener('click', closeBottomSheet);
+
+    // Drikkepause button
+    overlay.querySelector('.wo-bs-drink-btn').addEventListener('click', () => {
+      _bsSelectExercise('drink');
+    });
+
+    // Search
+    _bs.search.addEventListener('input', _bsFilterSearch);
+
+    // Escape key
+    overlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeBottomSheet();
+    });
+
+    // Build category pills
+    _bsRenderPills();
+
+    console.log('[workout.js] bottom sheet created');
+  }
+
+  /** Render category pills */
+  function _bsRenderPills() {
+    const wrap = _bs.el.querySelector('.wo-bs-pills');
+    const age = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup);
+    wrap.innerHTML = NFF_CATEGORIES.map(cat =>
+      '<button class="wo-bs-pill" type="button" data-cat="' + cat.id + '"' +
+      ' style="--pill-color:' + cat.color + '">' +
+      catLabel(cat, age) + '</button>'
+    ).join('');
+
+    wrap.querySelectorAll('.wo-bs-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const catId = btn.dataset.cat;
+        const section = _bs.body.querySelector('.wo-bs-section[data-cat="' + catId + '"]');
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        btn.classList.add('wo-bs-pill-active');
+        setTimeout(() => btn.classList.remove('wo-bs-pill-active'), 600);
+      });
+    });
+  }
+
+  /** Render the body content (called each time sheet opens) */
+  function _bsRenderBody() {
+    const groups = _bsGroupExercises();
+    const inSession = _bsKeysInSession();
+    const missing = _bsMissingCategories();
+    const currentTheme = (_bs.ctxOverride && _bs.ctxOverride.theme) ? _bs.ctxOverride.theme : state.theme;
+    const effectiveAge = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup) || null;
+    const favs = loadFavorites();
+
+    let html = '';
+
+    // Missing categories hint
+    if (missing.length > 0 && missing.length < NFF_CATEGORIES.length) {
+      html += '<div class="wo-bs-hint">';
+      html += '<span class="wo-bs-hint-icon">\uD83D\uDCA1</span> ';
+      html += 'Mangler i \u00f8kta: ';
+      html += missing.map(c => '<strong>' + escapeHtml(catShort(c, effectiveAge)) + '</strong>').join(', ');
+      html += '</div>';
+    }
+
+    // Favorites section
+    if (favs.size > 0) {
+      const age = effectiveAge;
+      const favExercises = EXERCISES.filter(ex =>
+        ex.category !== 'special' && favs.has(ex.key) &&
+        (!age || !ex.ages || ex.ages.includes(age))
+      );
+      if (favExercises.length > 0) {
+        html += '<div class="wo-bs-section wo-bs-section-theme">';
+        html += '<div class="wo-bs-section-head wo-bs-section-head-theme">\u2605 Favoritter</div>';
+        for (const ex of favExercises) {
+          html += _bsRenderCard(ex, inSession, favs);
+        }
+        html += '</div>';
+      }
+    }
+
+    // Theme section (if theme is set via generer-flow)
+    if (currentTheme) {
+      const themeMeta = NFF_THEME_BY_ID[currentTheme];
+      if (themeMeta) {
+        const age = effectiveAge;
+        const themeExercises = EXERCISES.filter(ex =>
+          ex.category !== 'special' && ex.themes && ex.themes.includes(currentTheme) &&
+          (!age || !ex.ages || ex.ages.includes(age))
+        );
+        if (themeExercises.length > 0) {
+          html += '<div class="wo-bs-section wo-bs-section-theme">';
+          html += '<div class="wo-bs-section-head wo-bs-section-head-theme">';
+          html += escapeHtml(themeMeta.icon) + ' Passer til \u00ab' + escapeHtml(themeMeta.label) + '\u00bb</div>';
+          for (const ex of themeExercises) {
+            html += _bsRenderCard(ex, inSession, favs);
+          }
+          html += '</div>';
+        }
+      }
+    }
+
+    // NFF category sections (favorites sorted first)
+    for (const cat of NFF_CATEGORIES) {
+      const exs = groups.get(cat.id) || [];
+      if (!exs.length) continue;
+
+      // Sort: favorites first, then by frequency
+      const freq = loadFrequency();
+      exs.sort((a, b) => {
+        const fa = favs.has(a.key) ? 1 : 0;
+        const fb = favs.has(b.key) ? 1 : 0;
+        if (fb !== fa) return fb - fa;
+        return (freq[b.key] || 0) - (freq[a.key] || 0);
+      });
+
+      html += '<div class="wo-bs-section" data-cat="' + cat.id + '">';
+      html += '<div class="wo-bs-section-head" style="--cat-color:' + cat.color + '">';
+      html += catLabel(cat, effectiveAge) + '</div>';
+
+      for (const ex of exs) {
+        html += _bsRenderCard(ex, inSession, favs);
+      }
+      html += '</div>';
+    }
+
+    // "Skriv inn selv" at bottom
+    html += '<button class="wo-bs-custom-btn" type="button">\u270f\ufe0f Skriv inn selv\u2026</button>';
+
+    _bs.body.innerHTML = html;
+
+    // Bind card clicks (select exercise)
+    _bs.body.querySelectorAll('.wo-bs-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const key = card.dataset.key;
+        if (key) _bsSelectExercise(key);
+      });
+    });
+
+    // Bind favorite star clicks
+    _bs.body.querySelectorAll('.wo-bs-fav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // don't select the exercise
+        const key = btn.dataset.fav;
+        if (key) {
+          toggleFavorite(key);
+          _bsRenderBody(); // re-render to update stars and sections
+        }
+      });
+    });
+
+    // Bind custom button
+    const customBtn = _bs.body.querySelector('.wo-bs-custom-btn');
+    if (customBtn) {
+      customBtn.addEventListener('click', () => _bsSelectExercise('custom'));
+    }
+  }
+
+  /** Render a single exercise card */
+  function _bsRenderCard(ex, inSession, favs) {
+    const cat = NFF_CATEGORY_BY_ID[ex.nffCategory];
+    const color = cat ? cat.color : '#888';
+    const isInSession = inSession.has(ex.key);
+    const isFav = favs && favs.has(ex.key);
+
+    // Description: truncate to ~60 chars
+    const desc = ex.description
+      ? (ex.description.length > 70 ? ex.description.slice(0, 67) + '\u2026' : ex.description)
+      : '';
+
+    // Equipment line (compact)
+    const equipLine = ex.equipment
+      ? '<div class="wo-bs-card-equip">' + escapeHtml(ex.equipment) + '</div>'
+      : '';
+
+    // Meta chips
+    const metaParts = [];
+    metaParts.push(ex.defaultMin + ' min');
+    if (ex.ages && ex.ages.length) {
+      if (ex.ages.length > 2) {
+        const first = ex.ages[0].split('-')[0];
+        const last = ex.ages[ex.ages.length - 1].split('-')[1];
+        metaParts.push(first + '\u2013' + last + ' \u00e5r');
+      } else {
+        metaParts.push(ex.ages.map(a => a + ' \u00e5r').join(', '));
+      }
+    }
+    if (ex.hasOpposition) {
+      metaParts.push('<span class="wo-bs-tag-opp">Motspill</span>');
+    }
+
+    return '<div class="wo-bs-card' + (isInSession ? ' wo-bs-card-insession' : '') + '"' +
+      ' data-key="' + ex.key + '"' +
+      ' data-name="' + escapeHtml(ex.label.toLowerCase()) + '"' +
+      ' data-desc="' + escapeHtml((ex.description || '').toLowerCase().slice(0, 100)) + '">' +
+      '<div class="wo-bs-card-stripe" style="background:' + color + '"></div>' +
+      '<div class="wo-bs-card-body">' +
+        '<div class="wo-bs-card-name">' + escapeHtml(ex.label) +
+          '<button type="button" class="wo-bs-fav" data-fav="' + ex.key + '" title="' + (isFav ? 'Fjern favoritt' : 'Legg til favoritt') + '" style="min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;margin:-8px -6px -8px 0;padding:0;">' +
+            (isFav ? '\u2605' : '\u2606') +
+          '</button>' +
+        '</div>' +
+        (desc ? '<div class="wo-bs-card-desc">' + escapeHtml(desc) + '</div>' : '') +
+        equipLine +
+        '<div class="wo-bs-card-meta">' + metaParts.join(' \u00b7 ') + '</div>' +
+      '</div>' +
+      (isInSession ? '<div class="wo-bs-badge">I \u00f8kta</div>' : '') +
+    '</div>';
+  }
+
+  /** Filter exercises based on search input */
+  function _bsFilterSearch() {
+    const q = (_bs.search.value || '').trim().toLowerCase();
+    const cards = _bs.body.querySelectorAll('.wo-bs-card');
+    const sections = _bs.body.querySelectorAll('.wo-bs-section');
+
+    if (!q) {
+      cards.forEach(c => { c.style.display = ''; });
+      sections.forEach(s => { s.style.display = ''; });
+      const cb = _bs.body.querySelector('.wo-bs-custom-btn');
+      if (cb) cb.style.display = '';
+      return;
+    }
+
+    cards.forEach(card => {
+      const name = card.dataset.name || '';
+      const desc = card.dataset.desc || '';
+      const match = name.includes(q) || desc.includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+
+    // Hide sections where all cards are hidden
+    sections.forEach(section => {
+      const visible = section.querySelectorAll('.wo-bs-card[style=""], .wo-bs-card:not([style])');
+      // More reliable: count non-hidden
+      let hasVisible = false;
+      section.querySelectorAll('.wo-bs-card').forEach(c => {
+        if (c.style.display !== 'none') hasVisible = true;
+      });
+      section.style.display = hasVisible ? '' : 'none';
+    });
+
+    const cb = _bs.body.querySelector('.wo-bs-custom-btn');
+    if (cb) cb.style.display = '';
+  }
+
+  /** Handle exercise selection */
+  function _bsSelectExercise(key) {
+    if (_bs.onSelect) {
+      _bs.onSelect(key);
+    }
+    closeBottomSheet();
+  }
+
+  /** Open the bottom sheet for a specific block/track */
+  function openBottomSheet(blockId, track, onSelect) {
+    _bsCreate();
+
+    _bs.blockId = blockId;
+    _bs.track = track;
+    _bs.onSelect = onSelect;
+
+    _bsRenderBody();
+
+    // Reset search
+    _bs.search.value = '';
+    _bsFilterSearch();
+
+    // Save scroll position before body lock (iOS fix)
+    _bs._savedScrollY = window.scrollY;
+    document.body.style.top = '-' + window.scrollY + 'px';
+
+    // Show
+    _bs.el.classList.add('wo-bs-open');
+    document.body.classList.add('wo-bs-body-lock');
+
+    // Focus search after animation
+    setTimeout(() => {
+      if (_bs.search) _bs.search.focus({ preventScroll: true });
+    }, 300);
+
+    if (_bs.body) _bs.body.scrollTop = 0;
+  }
+
+  /** Close the bottom sheet */
+  function closeBottomSheet() {
+    if (!_bs.el) return;
+    _bs.el.classList.remove('wo-bs-open');
+    document.body.classList.remove('wo-bs-body-lock');
+
+    // Restore scroll position (iOS fix)
+    document.body.style.top = '';
+    if (typeof _bs._savedScrollY === 'number') {
+      window.scrollTo(0, _bs._savedScrollY);
+    }
+
+    _bs.onSelect = null;
+    _bs.blockId = null;
+    _bs.track = null;
+    _bs.ctxOverride = null;
+    if (_bs.search) _bs.search.blur();
+  }
+
+  // =========================================================
+  // TRIGGER BUTTON (replaces <select> in exercise editor)
+  // =========================================================
+
+  /** Render trigger button HTML for exercise picker */
+  function renderExerciseTrigger(blockId, track, ex) {
+    const idp = 'wo_' + blockId + '_' + track;
+    const meta = EX_BY_KEY.get(ex.exerciseKey);
+    const cat = meta ? NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
+    const color = cat ? cat.color : '#ccc';
+    const name = displayName(ex);
+    const desc = (meta && meta.description)
+      ? (meta.description.length > 50 ? meta.description.slice(0, 47) + '\u2026' : meta.description)
+      : '';
+    const isDrink = ex.exerciseKey === 'drink';
+
+    return '<button type="button" class="wo-trigger" id="' + idp + '_trigger"' +
+      ' style="--trigger-color:' + color + '">' +
+      '<div class="wo-trigger-stripe"></div>' +
+      '<div class="wo-trigger-content">' +
+        '<div class="wo-trigger-name">' + (isDrink ? '\uD83D\uDCA7 ' : '') + escapeHtml(name) + '</div>' +
+        (desc ? '<div class="wo-trigger-desc">' + escapeHtml(desc) + '</div>' : '') +
+      '</div>' +
+      '<div class="wo-trigger-chevron">Endre \u25be</div>' +
+    '</button>';
+  }
 
   // -------------------------
   // SVG Diagram Renderer
@@ -870,6 +2304,81 @@
       safeSet(FREQ_KEY(), JSON.stringify(freq));
     } catch {}
   }
+
+  // Exercise favorites (localStorage cache + Supabase sync)
+  function FAV_KEY() { return k('exercise_favorites_v1'); }
+  let _favCache = null;
+
+  function loadFavorites() {
+    if (_favCache) return _favCache;
+    try {
+      const raw = safeGet(FAV_KEY());
+      _favCache = raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { _favCache = new Set(); }
+    return _favCache;
+  }
+  function saveFavorites(favs) {
+    _favCache = favs;
+    try { safeSet(FAV_KEY(), JSON.stringify([...favs])); } catch {}
+    _woSaveFavoritesToDb(favs);
+  }
+  async function _woSaveFavoritesToDb(favs) {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon') return;
+    try {
+      const existing = await sb.from('workouts')
+        .select('id').eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .maybeSingle();
+      const row = {
+        user_id: uid, team_id: tid,
+        title: '_favorites', blocks: [...favs],
+        is_template: false, source: 'favorites',
+        updated_at: new Date().toISOString()
+      };
+      if (existing?.data?.id) {
+        await sb.from('workouts').update(row).eq('id', existing.data.id);
+      } else {
+        await sb.from('workouts').insert(row);
+      }
+    } catch (e) {
+      console.warn('[workout.js] Favorites sync failed:', e.message || e);
+    }
+  }
+  async function _woLoadFavoritesFromDb() {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon') return;
+    try {
+      const res = await sb.from('workouts')
+        .select('blocks').eq('user_id', uid).eq('team_id', tid).eq('source', 'favorites')
+        .maybeSingle();
+      if (res?.data?.blocks && Array.isArray(res.data.blocks)) {
+        const dbFavs = new Set(res.data.blocks);
+        const localFavs = loadFavorites();
+        let merged = false;
+        for (const k of dbFavs) {
+          if (!localFavs.has(k)) { localFavs.add(k); merged = true; }
+        }
+        _favCache = localFavs;
+        if (merged) { try { safeSet(FAV_KEY(), JSON.stringify([...localFavs])); } catch {} }
+      }
+    } catch (e) {
+      console.warn('[workout.js] Favorites load from db failed:', e.message || e);
+    }
+  }
+  function toggleFavorite(exerciseKey) {
+    const favs = loadFavorites();
+    if (favs.has(exerciseKey)) {
+      favs.delete(exerciseKey);
+    } else {
+      favs.add(exerciseKey);
+    }
+    saveFavorites(favs);
+    return favs;
+  }
   function getSortedExercises() {
     const freq = loadFrequency();
     const sorted = [...EXERCISES];
@@ -890,13 +2399,184 @@
     return { schemaVersion: SCHEMA_VERSION, templates: [] };
   }
 
+  // =========================================================
+  // Supabase-backed storage for workouts + templates
+  // Draft + frequency stay in localStorage (flyktig data)
+  // =========================================================
+
+  function _woGetSb() {
+    var sb = window.supabase || window.supabaseClient;
+    return (sb && sb.from) ? sb : null;
+  }
+  function _woGetUid() {
+    return window.__BF_getOwnerUid ? window.__BF_getOwnerUid() : (window.authService ? window.authService.getUserId() : null);
+  }
+  function _woGetTeamId() {
+    return window._bftTeamId || (window.__BF_getTeamId ? window.__BF_getTeamId() : 'default');
+  }
+  function _woGetSeasonId() {
+    // Heuristikk: bruk aktiv sesong hvis tilgjengelig
+    try { return window._bftCurrentSeasonId || null; } catch { return null; }
+  }
+
+  // In-memory cache (populated async, rendered sync)
+  const _woCache = {
+    templates: [],   // { id, title, blocks, ... } from Supabase
+    workouts: [],    // { id, title, blocks, ... } from Supabase
+    loaded: false,
+    loading: false,
+  };
+
+  /** Load templates + workouts from Supabase into cache */
+  async function _woLoadFromDb() {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon' || !tid || tid === 'default') return;
+    if (_woCache.loading) return;
+    _woCache.loading = true;
+
+    try {
+      const res = await sb.from('workouts')
+        .select('*')
+        .eq('user_id', uid)
+        .eq('team_id', tid)
+        .order('updated_at', { ascending: false });
+
+      if (res.error) throw res.error;
+
+      const rows = res.data || [];
+      _woCache.templates = rows.filter(r => r.is_template && r.source !== 'favorites');
+      _woCache.workouts = rows.filter(r => !r.is_template && r.source !== 'favorites');
+      _woCache.loaded = true;
+
+      console.log('[workout.js] Loaded ' + rows.length + ' workouts from db (' + _woCache.templates.length + ' maler, ' + _woCache.workouts.length + ' økter)');
+
+      renderTemplates();
+      renderWorkouts();
+    } catch (e) {
+      console.warn('[workout.js] _woLoadFromDb feilet:', e.message || e);
+
+      // Fallback: vis localStorage-data hvis Supabase ikke er tilgjengelig
+      // (f.eks. workouts-tabell finnes ikke enda, eller nettverksfeil)
+      if (!_woCache.loaded) {
+        const localTpl = loadStore().data.templates || [];
+        const localWo = loadWorkoutsStore().data.workouts || [];
+        if (localTpl.length || localWo.length) {
+          console.log('[workout.js] Bruker localStorage-fallback: ' + localTpl.length + ' maler, ' + localWo.length + ' \u00f8kter');
+          _woCache.templates = localTpl.map(t => ({
+            id: t.id,
+            title: t.title,
+            blocks: t.blocks,
+            is_template: true,
+            created_at: t.createdAt ? new Date(t.createdAt).toISOString() : null,
+            updated_at: t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+            _local: true
+          }));
+          _woCache.workouts = localWo.map(w => ({
+            id: w.id,
+            title: w.title,
+            workout_date: w.date || null,
+            blocks: w.blocks,
+            is_template: false,
+            created_at: w.createdAt ? new Date(w.createdAt).toISOString() : null,
+            updated_at: w.updatedAt ? new Date(w.updatedAt).toISOString() : null,
+            _local: true
+          }));
+          renderTemplates();
+          renderWorkouts();
+        }
+      }
+    } finally {
+      _woCache.loading = false;
+    }
+  }
+
+  /** Save a workout/template to Supabase, return row or null */
+  async function _woSaveToDb(data) {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    const tid = _woGetTeamId();
+    if (!sb || !uid || uid === 'anon') return null;
+
+    const row = {
+      user_id: uid,
+      team_id: tid,
+      title: data.title || null,
+      workout_date: data.date || null,
+      duration_minutes: data.duration_minutes || null,
+      age_group: data.age_group || state.ageGroup || null,
+      theme: data.theme || state.theme || null,
+      blocks: data.blocks || [],
+      is_template: !!data.is_template,
+      season_id: data.season_id || null,
+      event_id: data.event_id || null,
+      source: data.source || 'manual',
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      if (data.dbId) {
+        // Update existing
+        const res = await sb.from('workouts').update(row).eq('id', data.dbId).select().single();
+        if (res.error) throw res.error;
+        return res.data;
+      } else {
+        // Insert new
+        const res = await sb.from('workouts').insert(row).select().single();
+        if (res.error) throw res.error;
+        return res.data;
+      }
+    } catch (e) {
+      console.error('[workout.js] _woSaveToDb feilet:', e.message || e);
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Lagring feilet. Prøv igjen.', 'error');
+      }
+      return null;
+    }
+  }
+
+  /** Delete a workout/template from Supabase */
+  async function _woDeleteFromDb(dbId) {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    if (!sb || !uid || !dbId) return false;
+
+    try {
+      const res = await sb.from('workouts').delete().eq('id', dbId).eq('user_id', uid);
+      if (res.error) throw res.error;
+      return true;
+    } catch (e) {
+      console.error('[workout.js] _woDeleteFromDb feilet:', e.message || e);
+      return false;
+    }
+  }
+
+  /** Rename a workout/template in Supabase */
+  async function _woRenameInDb(dbId, newTitle) {
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    if (!sb || !uid || !dbId) return false;
+
+    try {
+      const res = await sb.from('workouts')
+        .update({ title: newTitle, updated_at: new Date().toISOString() })
+        .eq('id', dbId).eq('user_id', uid);
+      if (res.error) throw res.error;
+      return true;
+    } catch (e) {
+      console.error('[workout.js] _woRenameInDb feilet:', e.message || e);
+      return false;
+    }
+  }
+
+  // === Legacy compatibility: keep localStorage functions for fallback ===
   function loadStore() {
     const raw = safeGet(STORE_KEY());
     if (!raw) return { ok: true, data: defaultStore(), corrupt: false };
     try {
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') throw new Error('bad');
-      if (parsed.schemaVersion !== SCHEMA_VERSION) throw new Error('schema');
       if (!Array.isArray(parsed.templates)) parsed.templates = [];
       return { ok: true, data: parsed, corrupt: false };
     } catch (e) {
@@ -904,35 +2584,146 @@
     }
   }
 
-  function saveStore(store) {
-    safeSet(STORE_KEY(), JSON.stringify(store));
-    if (window._bftCloud) window._bftCloud.save('workout_templates_v1', JSON.stringify(store));
-  }
-
-  // Separate store for saved workouts (økt-historikk) to avoid schema migration for templates
-  const WORKOUTS_SCHEMA_VERSION = 1;
-
-  function defaultWorkoutsStore() {
-    return { schemaVersion: WORKOUTS_SCHEMA_VERSION, workouts: [] };
-  }
-
   function loadWorkoutsStore() {
     const raw = safeGet(WORKOUTS_KEY());
-    if (!raw) return { ok: true, data: defaultWorkoutsStore(), corrupt: false };
+    if (!raw) return { ok: true, data: { workouts: [] }, corrupt: false };
     try {
       const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') throw new Error('bad');
-      if (parsed.schemaVersion !== WORKOUTS_SCHEMA_VERSION) throw new Error('schema');
       if (!Array.isArray(parsed.workouts)) parsed.workouts = [];
       return { ok: true, data: parsed, corrupt: false };
     } catch (e) {
-      return { ok: false, data: defaultWorkoutsStore(), corrupt: true, error: e };
+      return { ok: false, data: { workouts: [] }, corrupt: true };
     }
   }
 
-  function saveWorkoutsStore(store) {
-    safeSet(WORKOUTS_KEY(), JSON.stringify(store));
-    if (window._bftCloud) window._bftCloud.save('workout_sessions_v1', JSON.stringify(store));
+  /** One-time migration: localStorage + user_data → workouts table */
+  async function _woMigrateToDb() {
+    const tid = _woGetTeamId();
+    const migKey = 'bf_wo_migrated_' + tid;
+    if (safeGet(migKey)) return;
+
+    const sb = _woGetSb();
+    const uid = _woGetUid();
+    if (!sb || !uid || uid === 'anon' || !tid || tid === 'default') return;
+
+    // Gather templates and workouts from BOTH localStorage and user_data cloud
+    let templates = [];
+    let workouts = [];
+
+    // Source 1: localStorage
+    const localTemplates = loadStore().data.templates || [];
+    const localWorkouts = loadWorkoutsStore().data.workouts || [];
+    templates.push(...localTemplates);
+    workouts.push(...localWorkouts);
+
+    // Source 2: user_data cloud (handles "ny enhet" case where localStorage is empty)
+    try {
+      if (window._bftCloud && window._bftCloud.loadAll) {
+        const cloudRows = await window._bftCloud.loadAll();
+        if (cloudRows && Array.isArray(cloudRows)) {
+          for (const row of cloudRows) {
+            if (row.key === 'workout_templates_v1' && row.value) {
+              const cloudStore = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+              if (cloudStore && Array.isArray(cloudStore.templates)) {
+                const localIds = new Set(templates.map(t => t.id));
+                for (const ct of cloudStore.templates) {
+                  if (ct.id && !localIds.has(ct.id)) templates.push(ct);
+                }
+              }
+            }
+            if (row.key === 'workout_sessions_v1' && row.value) {
+              const cloudStore = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+              if (cloudStore && Array.isArray(cloudStore.workouts)) {
+                const localIds = new Set(workouts.map(w => w.id));
+                for (const cw of cloudStore.workouts) {
+                  if (cw.id && !localIds.has(cw.id)) workouts.push(cw);
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[workout.js] Cloud data lesing under migrasjon feilet:', e.message || e);
+    }
+
+    if (templates.length === 0 && workouts.length === 0) {
+      safeSet(migKey, '1');
+      return;
+    }
+
+    // Check what's already in workouts table (handles partial migration / other device)
+    // Dedup key: title + is_template + created_at (normalized to epoch ms)
+    let existingKeys = new Set();
+    try {
+      const existing = await sb.from('workouts')
+        .select('title, is_template, created_at')
+        .eq('user_id', uid).eq('team_id', tid);
+      if (existing.data) {
+        for (const r of existing.data) {
+          // Normalize: Supabase returns '2024-03-07T16:40:00+00:00', JS produces '.000Z'
+          var epoch = r.created_at ? new Date(r.created_at).getTime() : 0;
+          existingKeys.add((r.title || '') + '|' + (r.is_template ? '1' : '0') + '|' + epoch);
+        }
+      }
+    } catch (e) {
+      // If we can't check, proceed carefully
+      console.warn('[workout.js] Kunne ikke sjekke eksisterende rader:', e.message || e);
+    }
+
+    const rows = [];
+    for (const t of templates) {
+      const createdIso = t.createdAt ? new Date(t.createdAt).toISOString() : new Date().toISOString();
+      var epoch = t.createdAt ? new Date(t.createdAt).getTime() : new Date(createdIso).getTime();
+      const key = (t.title || 'Mal') + '|1|' + epoch;
+      if (existingKeys.has(key)) continue; // allerede migrert
+      rows.push({
+        user_id: uid,
+        team_id: tid,
+        title: t.title || 'Mal',
+        blocks: t.blocks || [],
+        is_template: true,
+        source: 'migrated',
+        created_at: createdIso,
+        updated_at: t.updatedAt ? new Date(t.updatedAt).toISOString() : createdIso
+      });
+    }
+    for (const w of workouts) {
+      const createdIso = w.createdAt ? new Date(w.createdAt).toISOString() : new Date().toISOString();
+      var wEpoch = w.createdAt ? new Date(w.createdAt).getTime() : new Date(createdIso).getTime();
+      const key = (w.title || '\u00d8kt') + '|0|' + wEpoch;
+      if (existingKeys.has(key)) continue; // allerede migrert
+      rows.push({
+        user_id: uid,
+        team_id: tid,
+        title: w.title || '\u00d8kt',
+        workout_date: w.date || null,
+        blocks: w.blocks || [],
+        is_template: false,
+        source: 'migrated',
+        created_at: createdIso,
+        updated_at: w.updatedAt ? new Date(w.updatedAt).toISOString() : createdIso
+      });
+    }
+
+    if (rows.length === 0) {
+      // Alt er allerede migrert (f.eks. fra annen enhet)
+      safeSet(migKey, '1');
+      return;
+    }
+
+    console.log('[workout.js] Migrerer ' + rows.length + ' \u00f8kter/maler til workouts-tabell');
+
+    try {
+      // Single insert (no batching) — atomisk: alt eller ingenting
+      const res = await sb.from('workouts').insert(rows);
+      if (res.error) throw res.error;
+      safeSet(migKey, '1');
+      console.log('[workout.js] Migrasjon fullf\u00f8rt: ' + rows.length + ' rader');
+    } catch (e) {
+      console.warn('[workout.js] Migrasjon feilet:', e.message || e);
+      // Don't mark as migrated — retry next load
+    }
   }
 
   function loadDraft() {
@@ -943,7 +2734,7 @@
 
   function saveDraft(draft) {
     try { safeSet(DRAFT_KEY(), JSON.stringify(draft)); } catch {}
-    if (window._bftCloud) window._bftCloud.save('workout_draft_v1', JSON.stringify(draft));
+    // Draft er flyktig — lagres kun i localStorage, ikke i Supabase
   }
 
   // -------------------------
@@ -978,7 +2769,12 @@
     parallelPickB: new Map(),
     // groups cache: key = `${blockId}:${track}` -> groups (array of arrays of player objects)
     groupsCache: new Map(),
-    blocks: []
+    blocks: [],
+    expandedBlockId: null, // Hybrid 1: only one block expanded at a time
+    theme: null,      // NFF theme id (set by generer-flow, used by bottom sheet)
+    ageGroup: null,   // '6-7' | '8-9' | '10-12' (set by generer-flow)
+    eventId: null,    // Supabase event UUID (set by sesong-kobling)
+    seasonId: null    // Supabase season UUID (set by sesong-kobling)
   };
 
   function makeDefaultExercise() {
@@ -1033,11 +2829,75 @@
   }
 
   function updateTotalUI() {
-    const t = `${totalMinutes()} min`;
-    const el = $('woTotalTop');
-    if (el) el.textContent = t;
+    // ── Meta-bar: replaces simple "Total tid" with rich overview ──
+    const el = $('woMetaBar');
+    const total = totalMinutes();
+    const blockCount = state.blocks.filter(b => b.a?.exerciseKey !== 'drink').length;
+
+    // NFF balance
+    const balance = calculateNffBalance(state.blocks, state.ageGroup || '8-9');
+
+    // Theme pill
+    const themeMeta = state.theme ? NFF_THEME_BY_ID[state.theme] : null;
+    const themePill = themeMeta
+      ? '<span class="wo-meta-theme">' +
+          escapeHtml(themeMeta.icon) + ' ' + escapeHtml(themeMeta.label) +
+          ' <button type="button" class="wo-meta-theme-x" id="woMetaThemeX" aria-label="Fjern tema">\u2715</button>' +
+        '</span>'
+      : '';
+
+    // Age class badge
+    const ageBadge = state.ageGroup
+      ? '<span class="wo-meta-age">' + escapeHtml(state.ageGroup) + ' \u00e5r</span>'
+      : '';
+
+    // NFF balance bar
+    let balanceHtml = '<div class="wo-meta-balance">';
+    for (const cat of NFF_CATEGORIES) {
+      const b = balance.balance[cat.id];
+      if (!b) continue;
+      const pct = balance.totalMinutes > 0 ? Math.round((b.minutes / balance.totalMinutes) * 100) : 0;
+      const recPct = b.recommendedPct || 0;
+      const _age = state.ageGroup || '8-9';
+      balanceHtml += '<div class="wo-meta-bal-seg" style="--bal-color:' + cat.color + '; --bal-pct:' + pct + '%" ' +
+        'title="' + escapeHtml(catShort(cat, _age)) + ': ' + b.minutes + ' min (' + pct + '%) \u2014 anbefalt ' + recPct + '%">' +
+        '<div class="wo-meta-bal-fill"></div>' +
+        '<span class="wo-meta-bal-label">' + escapeHtml(catShort(cat, _age)) + '</span>' +
+      '</div>';
+    }
+    balanceHtml += '</div>';
+
+    if (el) {
+      el.innerHTML =
+        '<div class="wo-meta-row">' +
+          '<div class="wo-meta-total">' + total + '<span class="wo-meta-total-unit">min</span></div>' +
+          '<div class="wo-meta-info">' +
+            '<span class="wo-meta-count">' + blockCount + ' \u00f8velser</span>' +
+            ageBadge +
+            themePill +
+          '</div>' +
+        '</div>' +
+        balanceHtml;
+
+      // Bind theme remove
+      const themeX = $('woMetaThemeX');
+      if (themeX) {
+        themeX.addEventListener('click', () => {
+          state.theme = null;
+          updateTotalUI();
+        });
+      }
+    }
+
+    // Legacy: keep bottom total in sync if it still exists
     const elB = $('woTotalBottom');
-    if (elB) elB.textContent = t;
+    if (elB) elB.textContent = total + ' min';
+
+    // Fallback: update old woTotalTop if meta-bar not yet in DOM
+    if (!el) {
+      const elTop = $('woTotalTop');
+      if (elTop) elTop.textContent = total + ' min';
+    }
   }
 
   function renderPlayersPanel() {
@@ -1115,7 +2975,7 @@
         if (fb !== fa) return fb - fa;
         return a.label.localeCompare(b.label, 'nb');
       });
-      html += '<optgroup label="' + escapeHtml(cat.label) + '">';
+      html += '<optgroup label="' + escapeHtml(catLabel(cat, state.ageGroup)) + '">';
       for (const x of exs) {
         const sel = x.key === selectedKey ? 'selected' : '';
         html += '<option value="' + escapeHtml(x.key) + '" ' + sel + '>' + escapeHtml(x.label) + '</option>';
@@ -1134,7 +2994,7 @@
     const idp = `wo_${blockId}_${track}`;
     const showCustom = ex.exerciseKey === 'custom';
     const mode = ex.groupMode || 'even';
-    const groupCount = clampInt(ex.groupCount, 1, 6, 2);
+    const groupCount = clampInt(ex.groupCount, 1, 20, 2);
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     const hasInfo = meta && meta.description && meta.steps;
 
@@ -1148,9 +3008,7 @@
           <div class="wo-field">
             <label class="wo-label">Velg øvelse</label>
             <div class="wo-select-row">
-              <select id="${idp}_sel" class="input wo-input">
-                ${optionHtml(ex.exerciseKey)}
-              </select>
+              ${renderExerciseTrigger(blockId, track, ex)}
             </div>
             ${hasInfo ? `<button type="button" id="${idp}_info" class="wo-info-expand" aria-label="Vis øvelsesinfo">
               <span class="wo-info-expand-text"><span class="wo-info-expand-icon">📖</span> Vis beskrivelse, diagram og trenertips</span>
@@ -1175,7 +3033,7 @@
           <div class="wo-field wo-groups-settings">
             <label class="wo-label">Grupper</label>
             <div class="wo-inline">
-              <input id="${idp}_groups" class="input wo-input" type="number" min="1" max="6" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
+              <input id="${idp}_groups" class="input wo-input" type="number" min="1" max="20" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
               <select id="${idp}_mode" class="input wo-input">
                 <option value="none" ${mode === 'none' ? 'selected' : ''}>Ingen inndeling</option>
                 <option value="even" ${mode === 'even' ? 'selected' : ''}>Jevne grupper</option>
@@ -1183,8 +3041,8 @@
               </select>
             </div>
             <div class="small-text" style="opacity:0.85; margin-top:6px;">
-              ${track === 'b' ? 'Parallelt: grupper lages på deltakere til denne øvelsen.' : ''}
-              ${track === 'a' ? '' : ''}
+              ${meta && meta.suggestedGroupSize ? '<span style="color:#2e8b57;">\u2139\ufe0f ' + meta.suggestedGroupSize + ' per gruppe (tilpasset antall deltakere)</span>' : ''}
+              ${track === 'b' ? 'Parallelt: grupper lages p\u00e5 deltakere til denne \u00f8velsen.' : ''}
             </div>
           </div>
 
@@ -1272,62 +3130,215 @@
     `;
   }
 
+  // =========================================================
+  // HYBRID 1 LAYOUT — Compact cards with accordion
+  // =========================================================
+
+  /**
+   * Get the NFF category for a block (based on track A).
+   * Returns the NFF_CATEGORIES object or null.
+   */
+  function _blockNffCategory(block) {
+    const meta = EX_BY_KEY.get(block.a?.exerciseKey);
+    if (!meta) return null;
+    if (meta.nffCategory === 'pause') return null; // drikkepause has no NFF section
+    return NFF_CATEGORY_BY_ID[meta.nffCategory] || null;
+  }
+
+  /**
+   * Compute section marker data: where NFF category changes between blocks.
+   * Returns array of { beforeIndex, cat, minutes } objects.
+   */
+  function _computeSectionMarkers() {
+    const markers = [];
+    let prevCatId = null;
+    let sectionStart = 0;
+
+    for (let i = 0; i < state.blocks.length; i++) {
+      const cat = _blockNffCategory(state.blocks[i]);
+      const catId = cat ? cat.id : null;
+
+      if (catId && catId !== prevCatId) {
+        // Compute minutes for this new section
+        let sectionMin = 0;
+        for (let j = i; j < state.blocks.length; j++) {
+          const jCat = _blockNffCategory(state.blocks[j]);
+          const jCatId = jCat ? jCat.id : null;
+          if (j > i && jCatId !== catId) break;
+          // Only count blocks that belong to this category
+          if (jCatId === catId) {
+            const b = state.blocks[j];
+            if (b.kind === 'parallel') {
+              sectionMin += Math.max(clampInt(b.a?.minutes, 0, 300, 0), clampInt(b.b?.minutes, 0, 300, 0));
+            } else {
+              sectionMin += clampInt(b.a?.minutes, 0, 300, 0);
+            }
+          }
+        }
+        markers.push({ beforeIndex: i, cat, minutes: sectionMin });
+      }
+      if (catId) prevCatId = catId;
+    }
+    return markers;
+  }
+
+  /**
+   * Render a collapsed card for a block.
+   */
+  function renderCollapsedCard(block, idx) {
+    const bid = block.id;
+    const isParallel = block.kind === 'parallel';
+    const meta = EX_BY_KEY.get(block.a?.exerciseKey);
+    const cat = meta ? NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
+    const color = cat ? cat.color : '#ccc';
+    const name = displayName(block.a);
+    const isDrink = block.a?.exerciseKey === 'drink';
+    const minutes = isParallel
+      ? Math.max(clampInt(block.a?.minutes, 0, 300, 0), clampInt(block.b?.minutes, 0, 300, 0))
+      : clampInt(block.a?.minutes, 0, 300, 0);
+
+    // Badges
+    const badges = [];
+    if (isParallel) {
+      const nameB = displayName(block.b);
+      badges.push('<span class="wo-h1-badge wo-h1-badge-par">\u2016 ' + escapeHtml(nameB) + '</span>');
+    }
+    if (block.a?.groupMode && block.a.groupMode !== 'none' && block.a.groupCount > 1) {
+      badges.push('<span class="wo-h1-badge">\uD83D\uDC65 ' + block.a.groupCount + ' gr</span>');
+    }
+    if ((block.a?.comment || '').trim()) {
+      badges.push('<span class="wo-h1-badge">\uD83D\uDCDD</span>');
+    }
+
+    return '<div class="wo-h1-card wo-h1-collapsed" data-bid="' + bid + '" style="--h1-color:' + color + '">' +
+      '<div class="wo-h1-stripe"></div>' +
+      '<div class="wo-h1-main">' +
+        '<div class="wo-h1-name">' + (isDrink ? '\uD83D\uDCA7 ' : '') + escapeHtml(name) + '</div>' +
+        (badges.length ? '<div class="wo-h1-badges">' + badges.join('') + '</div>' : '') +
+      '</div>' +
+      '<div class="wo-h1-min" id="wo_' + bid + '_minTap">' + minutes + '<span class="wo-h1-min-unit">min</span></div>' +
+    '</div>';
+  }
+
+  /**
+   * Render an expanded card for a block.
+   */
+  function renderExpandedCard(block, idx) {
+    const bid = block.id;
+    const isParallel = block.kind === 'parallel';
+    const meta = EX_BY_KEY.get(block.a?.exerciseKey);
+    const cat = meta ? NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
+    const color = cat ? cat.color : '#ccc';
+
+    const editorA = renderExerciseEditor(bid, 'a', block.a);
+    const editorB = isParallel ? renderParallelPicker(block) + renderExerciseEditor(bid, 'b', block.b) : '';
+
+    const helpText = isParallel
+      ? '<div class="small-text" style="opacity:0.85; margin-top:6px;">Parallelt: total tid teller lengste varighet av \u00f8velse A/B.</div>'
+      : '';
+
+    return '<div class="wo-h1-card wo-h1-expanded" data-bid="' + bid + '" style="--h1-color:' + color + '">' +
+      '<div class="wo-h1-stripe"></div>' +
+      '<div class="wo-h1-exp-body">' +
+        editorA +
+        editorB +
+        helpText +
+        '<div class="wo-h1-actions">' +
+          '<button class="btn-small" type="button" id="wo_' + bid + '_up" title="Flytt opp">\u2191</button>' +
+          '<button class="btn-small" type="button" id="wo_' + bid + '_down" title="Flytt ned">\u2193</button>' +
+          (isParallel ? '' : '<button class="btn-small" type="button" id="wo_' + bid + '_addParallel" title="Legg til parallell \u00f8velse">\u2016 Parallelt</button>') +
+          '<button class="btn-small btn-danger" type="button" id="wo_' + bid + '_del" title="Slett">\uD83D\uDDD1 Slett</button>' +
+          '<button class="btn-small" type="button" id="wo_' + bid + '_collapse" title="Lagre og lukk">\u2713 Lagre og lukk</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /**
+   * Render a section marker.
+   */
+  function renderSectionMarker(cat, minutes) {
+    return '<div class="wo-h1-marker" style="--marker-color:' + cat.color + '">' +
+      '<span class="wo-h1-marker-label">' + catLabel(cat, state.ageGroup) + '</span>' +
+      '<span class="wo-h1-marker-min">' + minutes + ' min</span>' +
+    '</div>';
+  }
+
   function renderBlocks() {
     const container = $('woBlocks');
     if (!container) return;
 
-    container.innerHTML = state.blocks.map((b, idx) => {
-      const isParallel = b.kind === 'parallel';
-      const header = `
-        <div class="wo-block-header">
-          <div class="wo-block-title">Del ${idx + 1}${isParallel ? ' • Parallelt' : ''}</div>
-          <div class="wo-block-actions">
-            <button class="btn-small" type="button" id="wo_${b.id}_up" title="Flytt opp">↑</button>
-            <button class="btn-small" type="button" id="wo_${b.id}_down" title="Flytt ned">↓</button>
-            ${isParallel ? '' : `<button class="btn-small" type="button" id="wo_${b.id}_addParallel" title="Legg til parallell øvelse">Øvelser parallelt</button>`}
-            <button class="btn-small btn-danger" type="button" id="wo_${b.id}_del" title="Slett">Slett</button>
-          </div>
-        </div>
-      `;
+    const markers = _computeSectionMarkers();
+    const markerMap = new Map(markers.map(m => [m.beforeIndex, m]));
 
-      const help = isParallel
-        ? `<div class="small-text" style="opacity:0.85; margin-top:6px;">Parallelt: total tid teller lengste varighet av øvelse A/B.</div>`
-        : '';
-
-      const body = `
-        ${renderExerciseEditor(b.id, 'a', b.a)}
-        ${isParallel ? renderParallelPicker(b) + renderExerciseEditor(b.id, 'b', b.b) : ''}
-      `;
-
-      return `
-        <div class="wo-block${isParallel ? ' wo-block-parallel' : ''}">
-          ${header}
-          ${help}
-          <div class="wo-block-body">
-            ${body}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    // bind per-block actions
+    let html = '';
     for (let i = 0; i < state.blocks.length; i++) {
       const b = state.blocks[i];
 
-      const up = $(`wo_${b.id}_up`);
-      const down = $(`wo_${b.id}_down`);
-      const del = $(`wo_${b.id}_del`);
-      const addPar = $(`wo_${b.id}_addParallel`);
+      // Insert section marker if needed
+      const marker = markerMap.get(i);
+      if (marker) {
+        html += renderSectionMarker(marker.cat, marker.minutes);
+      }
 
-      if (up) up.addEventListener('click', () => moveBlock(b.id, -1));
-      if (down) down.addEventListener('click', () => moveBlock(b.id, +1));
-      if (del) del.addEventListener('click', () => deleteBlock(b.id));
-      if (addPar) addPar.addEventListener('click', () => convertToParallel(b.id));
+      // Render card (collapsed or expanded)
+      const isExpanded = state.expandedBlockId === b.id;
+      if (isExpanded) {
+        html += renderExpandedCard(b, i);
+      } else {
+        html += renderCollapsedCard(b, i);
+      }
+    }
 
-      bindExerciseEditor(b, 'a');
-      if (b.kind === 'parallel') {
-        bindParallelPicker(b);
-        bindExerciseEditor(b, 'b');
+    container.innerHTML = html;
+
+    // Bind events
+    for (let i = 0; i < state.blocks.length; i++) {
+      const b = state.blocks[i];
+      const isExpanded = state.expandedBlockId === b.id;
+
+      if (isExpanded) {
+        // Expanded: bind editors + action buttons
+        const up = $(`wo_${b.id}_up`);
+        const down = $(`wo_${b.id}_down`);
+        const del = $(`wo_${b.id}_del`);
+        const addPar = $(`wo_${b.id}_addParallel`);
+        const collapse = $(`wo_${b.id}_collapse`);
+
+        if (up) up.addEventListener('click', () => moveBlock(b.id, -1));
+        if (down) down.addEventListener('click', () => moveBlock(b.id, +1));
+        if (del) del.addEventListener('click', () => { state.expandedBlockId = null; deleteBlock(b.id); });
+        if (addPar) addPar.addEventListener('click', () => convertToParallel(b.id));
+        if (collapse) collapse.addEventListener('click', () => {
+          state.expandedBlockId = null;
+          renderBlocks();
+        });
+
+        bindExerciseEditor(b, 'a');
+        if (b.kind === 'parallel') {
+          bindParallelPicker(b);
+          bindExerciseEditor(b, 'b');
+        }
+      } else {
+        // Collapsed: click to expand
+        const card = container.querySelector('.wo-h1-collapsed[data-bid="' + b.id + '"]');
+        if (card) {
+          card.addEventListener('click', (e) => {
+            // Don't expand if user clicked the inline minute tap area
+            if (e.target.closest('.wo-h1-min')) return;
+            state.expandedBlockId = b.id;
+            renderBlocks();
+          });
+        }
+
+        // Inline minute editing on tap
+        const minTap = $(`wo_${b.id}_minTap`);
+        if (minTap) {
+          minTap.addEventListener('click', (e) => {
+            e.stopPropagation();
+            _inlineEditMinutes(b, minTap);
+          });
+        }
       }
     }
 
@@ -1335,17 +3346,71 @@
     persistDraft();
   }
 
+  /**
+   * Inline minute editing for collapsed cards.
+   * Replaces the minute display with an input field.
+   */
+  function _inlineEditMinutes(block, el) {
+    const currentMin = block.kind === 'parallel'
+      ? Math.max(clampInt(block.a?.minutes, 0, 300, 0), clampInt(block.b?.minutes, 0, 300, 0))
+      : clampInt(block.a?.minutes, 0, 300, 0);
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.className = 'wo-h1-min-input';
+    input.min = '0';
+    input.max = '300';
+    input.value = String(currentMin);
+
+    el.textContent = '';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+
+    const commit = () => {
+      const val = clampInt(input.value, 0, 300, currentMin);
+      block.a.minutes = val;
+      if (block.kind === 'parallel' && block.b) {
+        // Keep B in sync if it was the longer one
+        if (clampInt(block.b.minutes, 0, 300, 0) >= currentMin) {
+          block.b.minutes = val;
+        }
+      }
+      renderBlocks();
+    };
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { input.blur(); }
+      if (e.key === 'Escape') { input.value = String(currentMin); input.blur(); }
+    });
+  }
+
   function renderInfoPanel(exerciseKey) {
     const meta = EX_BY_KEY.get(exerciseKey);
     if (!meta || !meta.description || !meta.steps) return '';
     const tags = [];
-    if (meta.ages) meta.ages.forEach(a => tags.push('📍 ' + a + ' år'));
+    if (meta.ages && meta.ages.length) {
+      if (meta.ages.length > 2) {
+        const first = meta.ages[0].split('-')[0];
+        const last = meta.ages[meta.ages.length - 1].split('-')[1];
+        tags.push('📍 ' + first + '\u2013' + last + ' år');
+      } else {
+        meta.ages.forEach(a => tags.push('📍 ' + a + ' år'));
+      }
+    }
     if (meta.players) tags.push('👥 ' + meta.players);
     if (meta.equipment) tags.push('⚙️ ' + meta.equipment);
     let html = '<div class="wo-info-content">';
     html += '<p class="wo-info-desc">' + escapeHtml(meta.description) + '</p>';
     if (tags.length) {
       html += '<div class="wo-info-tags">' + tags.map(t => '<span class="wo-info-tag">' + escapeHtml(t) + '</span>').join('') + '</div>';
+    }
+    // Learning goals (per exercise)
+    if (meta.learningGoals && meta.learningGoals.length) {
+      html += '<div class="wo-info-section">🎯 Læringsmål</div><ul class="wo-info-coaching">';
+      for (const g of meta.learningGoals) html += '<li>' + escapeHtml(g) + '</li>';
+      html += '</ul>';
     }
     if (meta.diagram) {
       html += '<div class="wo-info-svg">' + renderDrillSVG(meta.diagram) + '</div>';
@@ -1373,7 +3438,7 @@
     const ex = track === 'a' ? block.a : block.b;
     const idp = `wo_${bid}_${track}`;
 
-    const sel = $(`${idp}_sel`);
+    const trigger = $(`${idp}_trigger`);
     const customWrap = $(`${idp}_customWrap`);
     const custom = $(`${idp}_custom`);
     const min = $(`${idp}_min`);
@@ -1395,7 +3460,6 @@
           const txt = infoBtn.querySelector('.wo-info-expand-text');
           if (txt) txt.innerHTML = '<span class="wo-info-expand-icon">📖</span> Vis beskrivelse, diagram og trenertips';
         } else {
-          // Lazy render content
           if (!infoPanel.dataset.rendered) {
             infoPanel.innerHTML = renderInfoPanel(ex.exerciseKey);
             infoPanel.dataset.rendered = '1';
@@ -1408,24 +3472,27 @@
       });
     }
 
-    if (sel) {
-      sel.addEventListener('change', () => {
-        const v = String(sel.value || 'tag');
-        ex.exerciseKey = v;
-        trackExerciseUsage(v);
-        const meta = EX_BY_KEY.get(v);
-        if (meta && Number(ex.minutes) <= 0) ex.minutes = meta.defaultMin ?? 10;
+    // Trigger button → opens bottom sheet
+    if (trigger) {
+      trigger.addEventListener('click', () => {
+        openBottomSheet(bid, track, (newKey) => {
+          ex.exerciseKey = newKey;
+          ex._groupCountManual = false; // reset for auto-sizing
+          trackExerciseUsage(newKey);
+          const meta = EX_BY_KEY.get(newKey);
+          if (meta && Number(ex.minutes) <= 0) ex.minutes = meta.defaultMin ?? 10;
 
-        if (v === 'custom') {
-          if (customWrap) customWrap.classList.remove('wo-hidden');
-        } else {
-          if (customWrap) customWrap.classList.add('wo-hidden');
-          ex.customName = '';
-        }
+          if (newKey === 'custom') {
+            if (customWrap) customWrap.classList.remove('wo-hidden');
+          } else {
+            if (customWrap) customWrap.classList.add('wo-hidden');
+            ex.customName = '';
+          }
 
-        // grupper stale
-        state.groupsCache.delete(`${bid}:${track}`);
-        renderBlocks();
+          // grupper stale
+          state.groupsCache.delete(`${bid}:${track}`);
+          renderBlocks();
+        });
       });
     }
 
@@ -1446,7 +3513,8 @@
 
     if (groups) {
       groups.addEventListener('input', () => {
-        ex.groupCount = clampInt(groups.value, 1, 6, 2);
+        ex.groupCount = clampInt(groups.value, 1, 20, 2);
+        ex._groupCountManual = true; // user explicitly set group count
         // grupper stale
         state.groupsCache.delete(`${bid}:${track}`);
         persistDraft();
@@ -1555,6 +3623,7 @@
     const bid = block.id;
     const ex = track === 'a' ? block.a : block.b;
     const outKey = `${bid}:${track}`;
+    const idp = `wo_${bid}_${track}`;
 
     const groupsOut = $(`wo_${bid}_${track}_groupsOut`);
     if (!groupsOut) return;
@@ -1572,7 +3641,22 @@
     }
 
     const groupMode = String(ex.groupMode || 'even');
-    const groupCount = clampInt(ex.groupCount, 1, 6, 2);
+    let groupCount = clampInt(ex.groupCount, 1, 20, 2);
+
+    // Auto-calculate group count from suggestedGroupSize if available
+    const meta = EX_BY_KEY.get(ex.exerciseKey);
+    if (meta && meta.suggestedGroupSize && meta.suggestedGroupSize >= 2) {
+      const autoCount = Math.max(1, Math.ceil(participants.length / meta.suggestedGroupSize));
+      // Only auto-set if user hasn't manually overridden (groupCount still at default 2)
+      // or if groupCount * suggestedGroupSize is way off from participant count
+      if (!ex._groupCountManual) {
+        groupCount = autoCount;
+        ex.groupCount = autoCount;
+        // Update UI input
+        const groupInput = $(`${idp}_groups`);
+        if (groupInput) groupInput.value = String(autoCount);
+      }
+    }
 
     // "none" -> bare vis liste
     if (groupMode === 'none' || groupCount <= 1) {
@@ -1662,8 +3746,35 @@
   // Block operations
   // -------------------------
   function addBlock(kind = 'single') {
-    state.blocks.push(makeBlock(kind));
+    const b = makeBlock(kind);
+    state.blocks.push(b);
+    state.expandedBlockId = b.id; // auto-expand new block
     renderBlocks();
+  }
+
+  function clearSession() {
+    if (state.blocks.length > 0) {
+      const ok = window.confirm('Tøm hele økta og start på nytt?');
+      if (!ok) return;
+    }
+    state.blocks = [];
+    state.groupsCache.clear();
+    state.parallelPickB.clear();
+    state.expandedBlockId = null;
+    state.theme = null;
+    state.ageGroup = null;
+    state.eventId = null;
+    state.seasonId = null;
+    const dateEl = $('woDate');
+    const titleEl = $('woTitle');
+    if (dateEl) dateEl.value = '';
+    if (titleEl) titleEl.value = '';
+    safeRemove(DRAFT_KEY());
+    renderBlocks();
+    updateTotalUI();
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('Økta er tømt. Klar for ny planlegging.', 'info');
+    }
   }
 
   function deleteBlock(blockId) {
@@ -1766,6 +3877,9 @@
 
     state.groupsCache.clear();
     state.parallelPickB.clear();
+    state.expandedBlockId = null;
+    state.eventId = null;
+    state.seasonId = null;
     renderBlocks();
   }
 
@@ -1773,22 +3887,21 @@
     const wrap = $('woTemplates');
     if (!wrap) return;
 
-    const storeRes = loadStore();
-    const store = storeRes.data;
-    const list = store.templates.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-
-    if (storeRes.corrupt && typeof window.showNotification === 'function') {
-      window.showNotification('⚠️ Lagring av maler var korrupt – startet med tom liste', 'error');
-    }
+    const list = _woCache.templates.slice().sort((a, b) => {
+      const ta = a.updated_at || a.created_at || '';
+      const tb = b.updated_at || b.created_at || '';
+      return tb.localeCompare(ta);
+    });
 
     if (!list.length) {
-      wrap.innerHTML = `<div class="small-text" style="opacity:0.85;">Ingen maler lagret ennå.</div>`;
+      wrap.innerHTML = '<div class="small-text" style="opacity:0.85;">Ingen maler lagret enn\u00e5.</div>';
       return;
     }
 
     wrap.innerHTML = list.map(t => {
-      const dt = new Date(t.updatedAt || t.createdAt || Date.now());
+      const dt = new Date(t.updated_at || t.created_at || Date.now());
       const when = dt.toLocaleString('nb-NO', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+      const canEdit = !t._local; // Local-only items can't be renamed/deleted until Supabase loads
       return `
         <div class="wo-template-item">
           <div>
@@ -1797,8 +3910,8 @@
           </div>
           <div class="wo-template-actions">
             <button class="btn-small" type="button" data-wo-load="${escapeHtml(t.id)}">Last inn</button>
-            <button class="btn-small" type="button" data-wo-rename="${escapeHtml(t.id)}">Gi nytt navn</button>
-            <button class="btn-small btn-danger" type="button" data-wo-del="${escapeHtml(t.id)}">Slett</button>
+            ${canEdit ? '<button class="btn-small" type="button" data-wo-rename="' + escapeHtml(t.id) + '">Gi nytt navn</button>' : ''}
+            ${canEdit ? '<button class="btn-small btn-danger" type="button" data-wo-del="' + escapeHtml(t.id) + '">Slett</button>' : ''}
           </div>
         </div>
       `;
@@ -1807,8 +3920,7 @@
     wrap.querySelectorAll('button[data-wo-load]').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-wo-load');
-        const s = loadStore().data;
-        const tpl = s.templates.find(x => x.id === id);
+        const tpl = _woCache.templates.find(x => x.id === id);
         if (!tpl) return;
         applyTemplateToState(tpl);
         if (typeof window.showNotification === 'function') window.showNotification('Mal lastet inn', 'success');
@@ -1816,49 +3928,122 @@
     });
 
     wrap.querySelectorAll('button[data-wo-rename]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-wo-rename');
-        const res = loadStore();
-        const s = res.data;
-        const tpl = s.templates.find(x => x.id === id);
+        const tpl = _woCache.templates.find(x => x.id === id);
         if (!tpl) return;
-        const name = window.prompt('Nytt navn på malen:', tpl.title || '');
+        const name = window.prompt('Nytt navn p\u00e5 malen:', tpl.title || '');
         if (name === null) return;
         const v = String(name).trim();
         if (!v) return;
-        tpl.title = v;
-        tpl.updatedAt = Date.now();
-        saveStore(s);
-        renderTemplates();
-        if (typeof window.showNotification === 'function') window.showNotification('Navn oppdatert', 'success');
+        const ok = await _woRenameInDb(id, v);
+        if (ok) {
+          tpl.title = v;
+          tpl.updated_at = new Date().toISOString();
+          renderTemplates();
+          if (typeof window.showNotification === 'function') window.showNotification('Navn oppdatert', 'success');
+        }
       });
     });
 
     wrap.querySelectorAll('button[data-wo-del]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-wo-del');
         const ok = window.confirm('Slette denne malen?');
         if (!ok) return;
-        const s = loadStore().data;
-        s.templates = s.templates.filter(x => x.id !== id);
-        saveStore(s);
-        renderTemplates();
-        if (typeof window.showNotification === 'function') window.showNotification('Mal slettet', 'info');
+        const deleted = await _woDeleteFromDb(id);
+        if (deleted) {
+          _woCache.templates = _woCache.templates.filter(x => x.id !== id);
+          renderTemplates();
+          if (typeof window.showNotification === 'function') window.showNotification('Mal slettet', 'info');
+        }
       });
     });
   }
 
-  function saveTemplate() {
-    const tpl = serializeTemplateFromState();
-    const res = loadStore();
-    const store = res.data;
+  async function saveTemplate() {
+    const title = String($('woTitle')?.value || '').trim();
+    const date = String($('woDate')?.value || '').trim();
 
-    // dedupe title if same (optional)
-    store.templates.push(tpl);
-    saveStore(store);
+    const blocks = state.blocks.map(b => {
+      if (b.kind === 'parallel') {
+        return { kind: 'parallel', a: { ...b.a }, b: { ...b.b } };
+      }
+      return { kind: 'single', a: { ...b.a } };
+    });
 
-    renderTemplates();
-    if (typeof window.showNotification === 'function') window.showNotification('Mal lagret', 'success');
+    const saved = await _woSaveToDb({
+      title: title || (date ? 'Trening ' + date : 'Ny trenings\u00f8kt'),
+      blocks,
+      is_template: true,
+    });
+
+    if (saved) {
+      _woCache.templates.unshift(saved);
+      renderTemplates();
+      if (typeof window.showNotification === 'function') window.showNotification('Mal lagret', 'success');
+    } else {
+      // Supabase feilet — lagre i localStorage som sikkerhetsnett
+      _woFallbackSaveLocal(title || (date ? 'Trening ' + date : 'Ny trenings\u00f8kt'), null, blocks, true);
+    }
+  }
+
+  /**
+   * Fallback: lagre til localStorage når Supabase er utilgjengelig.
+   * Dataen plukkes opp av _woMigrateToDb neste gang Supabase fungerer.
+   */
+  function _woFallbackSaveLocal(title, date, blocks, isTemplate) {
+    try {
+      if (isTemplate) {
+        const store = loadStore().data;
+        store.templates.push({
+          id: uuid('tpl_'),
+          title: title,
+          blocks: blocks,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        safeSet(STORE_KEY(), JSON.stringify(store));
+        // Reset migration flag so next load migrates this item
+        safeRemove('bf_wo_migrated_' + _woGetTeamId());
+        // Add to visible cache
+        _woCache.templates.unshift({
+          id: store.templates[store.templates.length - 1].id,
+          title: title, blocks: blocks, is_template: true, _local: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        renderTemplates();
+      } else {
+        const store = loadWorkoutsStore().data;
+        store.workouts.unshift({
+          id: uuid('w_'),
+          title: title,
+          date: date || '',
+          blocks: blocks,
+          usePlayers: !!state.usePlayers,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        safeSet(WORKOUTS_KEY(), JSON.stringify(store));
+        safeRemove('bf_wo_migrated_' + _woGetTeamId());
+        _woCache.workouts.unshift({
+          id: store.workouts[0].id,
+          title: title, workout_date: date, blocks: blocks, is_template: false, _local: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        renderWorkouts();
+      }
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Lagret lokalt (synkroniseres ved neste lasting)', 'success');
+      }
+    } catch (e) {
+      console.error('[workout.js] Lokal fallback-lagring feilet:', e.message || e);
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Lagring feilet. Eksporter \u00f8kta som PDF for \u00e5 bevare den.', 'error');
+      }
+    }
   }
 
   
@@ -1978,6 +4163,9 @@ function applyWorkoutFileToState(fileObj) {
   state.groupsCache.clear();
 
   state.blocks = normalizeImportedBlocks(fileObj.blocks);
+  state.expandedBlockId = null;
+  state.eventId = null;
+  state.seasonId = null;
 
   renderPlayersPanel();
   renderBlocks();
@@ -2099,16 +4287,22 @@ function serializeWorkoutFromState() {
     const dateEl = $('woDate');
     const titleEl = $('woTitle');
     if (titleEl) titleEl.value = String(w.title || '');
-    if (dateEl && typeof w.date === 'string') dateEl.value = w.date;
+    // Support both old format (.date) and Supabase format (.workout_date)
+    const dateVal = w.workout_date || w.date || '';
+    if (dateEl && dateVal) dateEl.value = dateVal;
 
     state.usePlayers = !!w.usePlayers;
     const t = $('woUsePlayersToggle');
     if (t) t.checked = !!state.usePlayers;
 
-    // attendance is intentionally NOT stored
     state.selected = new Set();
     state.parallelPickB.clear();
     state.groupsCache.clear();
+    state.expandedBlockId = null;
+    state.eventId = w.event_id || null;
+    state.seasonId = w.season_id || null;
+    state.theme = w.theme || null;
+    state.ageGroup = w.age_group || w.ageGroup || null;
 
     state.blocks = w.blocks.map(b => {
       const bid = uuid('b_');
@@ -2123,94 +4317,298 @@ function serializeWorkoutFromState() {
     persistDraft();
   }
 
+  /** Duplicate a saved workout as a new unsaved session */
+  function duplicateWorkout(w) {
+    if (!w || !Array.isArray(w.blocks)) return;
+
+    const dateEl = $('woDate');
+    const titleEl = $('woTitle');
+    if (titleEl) titleEl.value = 'Kopi av ' + String(w.title || 'Trenings\u00f8kt');
+    if (dateEl) dateEl.value = ''; // blank date — user sets new date
+
+    state.usePlayers = !!w.usePlayers;
+    const t = $('woUsePlayersToggle');
+    if (t) t.checked = !!state.usePlayers;
+
+    state.selected = new Set();
+    state.parallelPickB.clear();
+    state.groupsCache.clear();
+    state.expandedBlockId = null;
+    // Clear event/season links — this is a NEW session
+    state.eventId = null;
+    state.seasonId = null;
+    // Keep theme and age from original
+    state.theme = w.theme || null;
+    state.ageGroup = w.age_group || w.ageGroup || null;
+
+    state.blocks = w.blocks.map(b => {
+      const bid = uuid('b_');
+      if (b.kind === 'parallel') {
+        return { id: bid, kind: 'parallel', a: migrateExerciseObj({ ...makeDefaultExercise(), ...b.a }), b: migrateExerciseObj({ ...makeDefaultExercise(), ...b.b }), _showPickB: false };
+      }
+      return { id: bid, kind: 'single', a: migrateExerciseObj({ ...makeDefaultExercise(), ...b.a }) };
+    });
+
+    renderPlayersPanel();
+    renderBlocks();
+    persistDraft();
+
+    if (typeof window.showNotification === 'function') {
+      window.showNotification('\u00d8kt duplisert \u2013 sett ny dato og juster fritt', 'success');
+    }
+  }
+
   function renderWorkouts() {
     const wrap = $('woWorkouts');
     if (!wrap) return;
 
-    const loaded = loadWorkoutsStore();
-    const store = loaded.data;
+    const list = _woCache.workouts.slice().sort((a, b) => {
+      const ta = a.updated_at || a.created_at || '';
+      const tb = b.updated_at || b.created_at || '';
+      return tb.localeCompare(ta);
+    });
 
-    if (!loaded.ok && loaded.corrupt) {
-      wrap.innerHTML = `
-        <div class="small-text" style="opacity:0.85;">
-          Kunne ikke lese lagrede økter (korrupt data). Ny lagring vil overskrive.
-        </div>
-      `;
-      return;
-    }
-
-    const list = store.workouts.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
     if (!list.length) {
-      wrap.innerHTML = `<div class="small-text" style="opacity:0.75;">Ingen lagrede økter ennå.</div>`;
+      wrap.innerHTML = '<div class="small-text" style="opacity:0.75;">Ingen lagrede \u00f8kter enn\u00e5.</div>';
       return;
     }
 
     wrap.innerHTML = list.map(w => {
-      const dateTxt = w.date ? `<span class="small-text" style="opacity:0.8;">${escapeHtml(w.date)}</span>` : '';
+      const dateTxt = w.workout_date ? '<span class="small-text" style="opacity:0.8;">' + escapeHtml(w.workout_date) + '</span>' : '';
+      const eventBadge = w.event_id ? ' <span class="wo-h1-badge" style="vertical-align:middle;">\uD83D\uDCC5 Sesong</span>' : '';
+      const canEdit = !w._local;
       return `
         <div class="wo-template-item">
           <div>
-            <div style="font-weight:900;">${escapeHtml(w.title || 'Treningsøkt')}</div>
+            <div style="font-weight:900;">${escapeHtml(w.title || 'Trenings\u00f8kt')}${eventBadge}</div>
             ${dateTxt}
           </div>
           <div class="wo-template-actions">
             <button class="btn-small" type="button" data-wo-load="${escapeHtml(w.id)}"><i class="fas fa-upload"></i> Last</button>
-            <button class="btn-small" type="button" data-wo-del="${escapeHtml(w.id)}"><i class="fas fa-trash"></i> Slett</button>
+            <button class="btn-small" type="button" data-wo-dup="${escapeHtml(w.id)}" title="Dupliser som ny \u00f8kt">\uD83D\uDCCB Kopi</button>
+            ${canEdit ? '<button class="btn-small" type="button" data-wo-del="' + escapeHtml(w.id) + '"><i class="fas fa-trash"></i> Slett</button>' : ''}
           </div>
         </div>
       `;
     }).join('');
 
-    // Bind actions
     wrap.querySelectorAll('button[data-wo-load]').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-wo-load');
-        const s = loadWorkoutsStore().data;
-        const w = s.workouts.find(x => x.id === id);
+        const w = _woCache.workouts.find(x => x.id === id);
         if (w) applyWorkoutToState(w);
       });
     });
-    wrap.querySelectorAll('button[data-wo-del]').forEach(btn => {
+    wrap.querySelectorAll('button[data-wo-dup]').forEach(btn => {
       btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-wo-dup');
+        const w = _woCache.workouts.find(x => x.id === id);
+        if (w) duplicateWorkout(w);
+      });
+    });
+    wrap.querySelectorAll('button[data-wo-del]').forEach(btn => {
+      btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-wo-del');
-        const ok = window.confirm('Slette denne økta?');
+        const ok = window.confirm('Slette denne \u00f8kta?');
         if (!ok) return;
-        const loaded2 = loadWorkoutsStore();
-        const s2 = loaded2.data;
-        s2.workouts = s2.workouts.filter(x => x.id !== id);
-        saveWorkoutsStore(s2);
-        renderWorkouts();
+        const deleted = await _woDeleteFromDb(id);
+        if (deleted) {
+          _woCache.workouts = _woCache.workouts.filter(x => x.id !== id);
+          renderWorkouts();
+        }
       });
     });
   }
 
-  function saveWorkout() {
+  async function saveWorkout() {
     const date = String($('woDate')?.value || '').trim();
-    // For saved workouts, date is useful but not mandatory
     if (!date) {
-      const ok = window.confirm('Ingen dato valgt. Vil du lagre økta likevel?');
+      const ok = window.confirm('Ingen dato valgt. Vil du lagre \u00f8kta likevel?');
       if (!ok) return;
     }
 
-    const loaded = loadWorkoutsStore();
-    const store = loaded.data;
-    const w = serializeWorkoutFromState();
+    const title = String($('woTitle')?.value || '').trim();
+    const blocks = state.blocks.map(b => {
+      if (b.kind === 'parallel') {
+        return { kind: 'parallel', a: { ...b.a }, b: { ...b.b } };
+      }
+      return { kind: 'single', a: { ...b.a } };
+    });
 
-    // cap to avoid unbounded localStorage growth (user can still delete)
-    const MAX = 100;
-    store.workouts = store.workouts.filter(x => x.id !== w.id);
-    store.workouts.unshift(w);
-    if (store.workouts.length > MAX) store.workouts = store.workouts.slice(0, MAX);
+    const saved = await _woSaveToDb({
+      title: title || (date ? 'Trening ' + date : 'Trenings\u00f8kt'),
+      date: date || null,
+      blocks,
+      is_template: false,
+      event_id: state.eventId || null,
+      season_id: state.seasonId || null,
+      duration_minutes: totalMinutes() || null,
+    });
 
-    saveWorkoutsStore(store);
-    renderWorkouts();
-    if (typeof window.showNotification === 'function') window.showNotification('Økt lagret lokalt', 'success');
+    if (saved) {
+      _woCache.workouts.unshift(saved);
+      renderWorkouts();
+      if (typeof window.showNotification === 'function') window.showNotification('\u00d8kt lagret', 'success');
+
+      // Notify season.js if linked to event
+      if (saved.event_id) {
+        window.dispatchEvent(new CustomEvent('workout:saved', {
+          detail: { eventId: saved.event_id, workoutId: saved.id }
+        }));
+      }
+    } else {
+      // Supabase feilet — lagre i localStorage som sikkerhetsnett
+      _woFallbackSaveLocal(title || (date ? 'Trening ' + date : 'Trenings\u00f8kt'), date, blocks, false);
+    }
   }
 
 
   // -------------------------
-  // Suggestions ("Lag en treningsøkt for meg")
+  // Pre-built session templates (ferdige øktmaler)
   // -------------------------
+  const NFF_TEMPLATES = {
+    '6-7': [
+      { title: 'Leik og føring (60 min)', theme: 'foering_dribling', duration: 60, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'ball_tag', min: 10 },
+        { key: 'drink', min: 2 },
+        { key: 'driving', min: 10 },
+        { key: 'ssg', min: 20 },
+        { key: 'shot', min: 8 }
+      ]},
+      { title: 'Score mål! (60 min)', theme: 'avslutning', duration: 60, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'warm_ball', min: 10 },
+        { key: 'drink', min: 2 },
+        { key: 'shot', min: 10 },
+        { key: 'game_activity', min: 20 },
+        { key: 'shot_race', min: 8 }
+      ]},
+      { title: 'Føring og spill (60 min)', theme: 'foering_dribling', duration: 60, blocks: [
+        { key: 'ball_tag', min: 10 },
+        { key: 'driving', min: 10 },
+        { key: 'drink', min: 2 },
+        { key: 'dribble', min: 10 },
+        { key: 'ssg', min: 20 },
+        { key: 'relay_ball', min: 8 }
+      ]}
+    ],
+    '8-9': [
+      { title: 'Pasning og samspill (75 min)', theme: 'pasning_samspill', duration: 75, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'pass_pair', min: 12 },
+        { key: 'pass_move', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'wall_pass', min: 10 },
+        { key: 'ssg_theme', min: 20 },
+        { key: 'shot', min: 8 }
+      ]},
+      { title: 'Forsvarsspill (75 min)', theme: 'forsvarsspill', duration: 75, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'warm_ball', min: 10 },
+        { key: 'defend_press', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: '1v1', min: 12 },
+        { key: 'ssg', min: 20 },
+        { key: 'shot_race', min: 8 }
+      ]},
+      { title: 'Avslutning og mål (75 min)', theme: 'avslutning', duration: 75, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'warm_ball', min: 10 },
+        { key: 'shot', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'finish_assist', min: 12 },
+        { key: 'ssg', min: 20 },
+        { key: 'shot_race', min: 8 }
+      ]},
+      { title: 'Dribling og 1v1 (75 min)', theme: '1v1_duell', duration: 75, blocks: [
+        { key: 'ball_tag', min: 10 },
+        { key: 'driving', min: 10 },
+        { key: '1v1', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: '1v1_gates', min: 12 },
+        { key: 'ssg', min: 20 },
+        { key: 'shot', min: 8 }
+      ]}
+    ],
+    '10-12': [
+      { title: 'Spilloppbygging (90 min)', theme: 'spilloppbygging', duration: 90, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'rondo_easy', min: 12 },
+        { key: 'pass_square', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'possession_dir', min: 15 },
+        { key: 'ssg_theme', min: 28 },
+        { key: 'shot', min: 10 }
+      ]},
+      { title: 'Omstilling (90 min)', theme: 'omstilling', duration: 90, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'warm_ball', min: 10 },
+        { key: 'transition', min: 15 },
+        { key: 'drink', min: 3 },
+        { key: 'defend_press', min: 12 },
+        { key: 'ssg_theme', min: 28 },
+        { key: 'shot', min: 12 }
+      ]},
+      { title: 'Samarbeid og avslutning (90 min)', theme: 'samarbeidsspill', duration: 90, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'pass_move', min: 12 },
+        { key: 'wall_pass', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: '3v2', min: 15 },
+        { key: 'ssg_theme', min: 28 },
+        { key: 'shot', min: 10 }
+      ]},
+      { title: 'Forsvar og pressing (90 min)', theme: 'forsvarsspill', duration: 90, blocks: [
+        { key: 'tag', min: 10 },
+        { key: 'warm_ball', min: 10 },
+        { key: 'defend_press', min: 15 },
+        { key: 'drink', min: 3 },
+        { key: '2v2', min: 12 },
+        { key: 'ssg', min: 28 },
+        { key: 'block_shot', min: 12 }
+      ]}
+    ],
+    '13-16': [
+      { title: 'Prepp + Forsvarsspill (90 min)', theme: 'forsvarsspill', duration: 90, blocks: [
+        { key: 'prepp', min: 12 },
+        { key: 'defend_press', min: 15 },
+        { key: 'drink', min: 3 },
+        { key: 'sit_defend', min: 15 },
+        { key: 'zone_defense', min: 15 },
+        { key: 'ssg_theme', min: 30 }
+      ]},
+      { title: 'Prepp + Spilloppbygging (90 min)', theme: 'spilloppbygging', duration: 90, blocks: [
+        { key: 'prepp', min: 12 },
+        { key: 'rondo_easy', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'build_up', min: 15 },
+        { key: 'sit_attack', min: 15 },
+        { key: 'ssg_theme', min: 25 },
+        { key: 'shot', min: 8 }
+      ]},
+      { title: 'Prepp + Omstilling (90 min)', theme: 'omstilling', duration: 90, blocks: [
+        { key: 'prepp', min: 12 },
+        { key: 'wall_pass', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'transition', min: 15 },
+        { key: 'ssg_theme', min: 30 },
+        { key: 'finish_assist', min: 10 },
+        { key: 'shot', min: 8 }
+      ]},
+      { title: 'Prepp + Angrep og avslutning (90 min)', theme: 'avslutning', duration: 90, blocks: [
+        { key: 'prepp', min: 12 },
+        { key: 'pass_square', min: 12 },
+        { key: 'drink', min: 3 },
+        { key: 'sit_attack', min: 15 },
+        { key: 'finish_assist', min: 12 },
+        { key: 'ssg_theme', min: 28 },
+        { key: 'cross_finish', min: 8 }
+      ]}
+    ]
+  };
+
+  // Legacy SUGGESTIONS (used as fallback only)
   const SUGGESTIONS = [
     // 60 min
     [
@@ -2244,33 +4642,395 @@ function serializeWorkoutFromState() {
     ]
   ];
 
-  function suggestWorkout() {
-    const idx = Math.floor(Math.random() * SUGGESTIONS.length);
-    const tpl = SUGGESTIONS[idx];
+  // =========================================================
+  // "LAG EN TRENINGSØKT FOR MEG" — NFF-aware generator
+  // =========================================================
+
+  const _gen = {
+    open: false,
+    selectedTheme: null,
+    selectedDuration: 75,
+    selectedAge: '8-9',
+  };
+
+  /** Render the generer-flow panel */
+  function renderGenererFlow() {
+    const el = $('woGenererPanel');
+    if (!el) return;
+
+    if (!_gen.open) {
+      el.innerHTML = '';
+      el.style.display = 'none';
+      return;
+    }
+
+    el.style.display = 'block';
+
+    // Get available themes for selected age
+    const availableThemes = NFF_THEMES_BY_AGE[_gen.selectedAge] || NFF_THEMES_BY_AGE['8-9'];
+
+    // Theme pills
+    let themesHtml = '<div class="wo-gen-label">\u00d8ktens tema</div><div class="wo-gen-themes">';
+    for (const themeId of availableThemes) {
+      const t = NFF_THEME_BY_ID[themeId];
+      if (!t) continue;
+      const sel = _gen.selectedTheme === themeId ? ' wo-gen-pill-sel' : '';
+      themesHtml += '<button type="button" class="wo-gen-pill' + sel + '" data-theme="' + themeId + '">' +
+        escapeHtml(t.icon) + ' ' + escapeHtml(t.label) + '</button>';
+    }
+    themesHtml += '</div>';
+
+    // Learning goals (shown when theme selected)
+    let goalsHtml = '';
+    if (_gen.selectedTheme) {
+      const goals = getLearningGoals(_gen.selectedTheme, _gen.selectedAge);
+      if (goals.length) {
+        goalsHtml = '<div class="wo-gen-goals">' +
+          '<div class="wo-gen-goals-title">\uD83C\uDFAF L\u00e6ringsm\u00e5l</div>' +
+          goals.map(g => '<div class="wo-gen-goal">' + escapeHtml(g) + '</div>').join('') +
+        '</div>';
+      }
+    }
+
+    // Age selector
+    let ageHtml = '<div class="wo-gen-label">\u00c5rsklasse</div><div class="wo-gen-ages">';
+    for (const age of ['6-7', '8-9', '10-12', '13-16']) {
+      const sel = _gen.selectedAge === age ? ' wo-gen-pill-sel' : '';
+      ageHtml += '<button type="button" class="wo-gen-pill' + sel + '" data-age="' + age + '">' + age + ' \u00e5r</button>';
+    }
+    ageHtml += '</div>';
+
+    // Duration selector
+    let durHtml = '<div class="wo-gen-label">Varighet</div><div class="wo-gen-durations">';
+    for (const dur of [45, 60, 75, 90]) {
+      const sel = _gen.selectedDuration === dur ? ' wo-gen-pill-sel' : '';
+      durHtml += '<button type="button" class="wo-gen-pill' + sel + '" data-dur="' + dur + '">' + dur + ' min</button>';
+    }
+    durHtml += '</div>';
+
+    // Quick templates for selected age
+    const templates = NFF_TEMPLATES[_gen.selectedAge] || [];
+    let tplHtml = '';
+    if (templates.length) {
+      tplHtml = '<div class="wo-gen-label">Ferdige \u00f8ktmaler</div><div class="wo-gen-themes">';
+      const selDur = _gen.selectedDuration || 60;
+      templates.forEach((tpl, idx) => {
+        const tDur = tpl.duration || 60;
+        const dimStyle = selDur / tDur < 0.4 ? ' style="opacity:0.45;"' : '';
+        const durLabel = tDur !== selDur ? ' (' + tDur + '\u2192' + selDur + ' min)' : '';
+        tplHtml += '<button type="button" class="wo-gen-pill" data-tpl="' + idx + '"' + dimStyle + '>\uD83D\uDCCB ' + escapeHtml(tpl.title.replace(/ \(\d+ min\)$/, '')) + durLabel + '</button>';
+      });
+      tplHtml += '</div>';
+    }
+
+    el.innerHTML =
+      ageHtml +
+      durHtml +
+      tplHtml +
+      '<div style="border-top:1px solid var(--border, #e2e8f0);margin:12px 0;padding-top:10px;"><div class="wo-gen-label" style="opacity:0.6;font-size:12px;">...eller bygg selv:</div></div>' +
+      themesHtml +
+      goalsHtml +
+      '<button type="button" class="wo-gen-submit" id="woGenSubmit"' +
+        (_gen.selectedTheme ? '' : ' disabled') + '>' +
+        'Generer trenings\u00f8kt \u2192' +
+      '</button>';
+
+    // Bind theme pills
+    el.querySelectorAll('[data-theme]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _gen.selectedTheme = btn.dataset.theme === _gen.selectedTheme ? null : btn.dataset.theme;
+        renderGenererFlow();
+      });
+    });
+
+    // Bind age pills
+    el.querySelectorAll('[data-age]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _gen.selectedAge = btn.dataset.age;
+        _gen.selectedTheme = null; // reset theme since available themes change
+        // Set default duration for age group
+        const ageDur = { '6-7': 60, '8-9': 75, '10-12': 90, '13-16': 90 };
+        _gen.selectedDuration = ageDur[_gen.selectedAge] || 60;
+        renderGenererFlow();
+      });
+    });
+
+    // Bind template pills
+    el.querySelectorAll('[data-tpl]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tpls = NFF_TEMPLATES[_gen.selectedAge] || [];
+        const tpl = tpls[parseInt(btn.dataset.tpl, 10)];
+        if (!tpl) return;
+        loadTemplate(tpl);
+        _gen.open = false;
+        renderGenererFlow();
+      });
+    });
+
+    // Bind duration pills
+    el.querySelectorAll('[data-dur]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _gen.selectedDuration = parseInt(btn.dataset.dur, 10);
+        renderGenererFlow();
+      });
+    });
+
+    // Bind generate button
+    const submit = $('woGenSubmit');
+    if (submit) {
+      submit.addEventListener('click', () => {
+        generateNffWorkout(_gen.selectedTheme, _gen.selectedDuration, _gen.selectedAge);
+        _gen.open = false;
+        renderGenererFlow();
+      });
+    }
+  }
+
+  /** Toggle generer-flow panel */
+  function toggleGenererFlow() {
+    _gen.open = !_gen.open;
+    renderGenererFlow();
+
+    // Update CTA button state
+    const btn = $('woGenererBtn');
+    if (btn) {
+      btn.classList.toggle('wo-gen-cta-open', _gen.open);
+    }
+  }
+
+  /**
+   * NFF-aware workout generator.
+   * Builds a complete workout based on theme, duration, and age group.
+   */
+  function generateNffWorkout(themeId, durationMin, ageGroup) {
+    const dist = NFF_TIME_DISTRIBUTION[ageGroup] || NFF_TIME_DISTRIBUTION['8-9'];
+    const drinkMin = 2;
+    const available = durationMin - drinkMin;
+    const is1316 = ageGroup === '13-16';
+
+    // Calculate minutes per category
+    const catMinutes = {};
+    let totalPct = 0;
+    for (const [cat, pct] of Object.entries(dist)) {
+      totalPct += pct;
+    }
+    for (const [cat, pct] of Object.entries(dist)) {
+      catMinutes[cat] = Math.round((pct / totalPct) * available);
+    }
+
+    // Find exercises for each category, preferring those matching the theme
+    function pickExercise(nffCatId, excludeKeys, preferKey) {
+      const candidates = EXERCISES.filter(ex =>
+        ex.category !== 'special' &&
+        ex.nffCategory === nffCatId &&
+        !excludeKeys.has(ex.key) &&
+        (!ex.ages || ex.ages.includes(ageGroup))
+      );
+
+      // If a specific key is preferred (e.g. 'prepp' for 13-16 oppvarming)
+      if (preferKey) {
+        const preferred = candidates.find(ex => ex.key === preferKey);
+        if (preferred) return preferred;
+      }
+
+      // Prefer theme-matching exercises
+      const themed = candidates.filter(ex => ex.themes && ex.themes.includes(themeId));
+      if (themed.length > 0) return themed[Math.floor(Math.random() * themed.length)];
+      if (candidates.length > 0) return candidates[Math.floor(Math.random() * candidates.length)];
+      return null;
+    }
 
     const blocks = [];
-    for (const step of tpl) {
-      if (step.parallel) {
-        const b = makeBlock('parallel');
-        b.a.exerciseKey = step.a.key;
-        b.a.minutes = step.a.min;
-        b.b.exerciseKey = step.b.key;
-        b.b.minutes = step.b.min;
-        blocks.push(b);
-      } else {
+    const usedKeys = new Set();
+
+    // Category order differs for 13-16 (Prepp → Situasjonsøving → Scoring → Spill)
+    // Same categories, but sjef=Prepp, med/mot=Situasjonsøving, spill=Spill
+    const categoryOrder = ['sjef_over_ballen', 'spille_med_og_mot', 'scoringstrening', 'smalagsspill'];
+
+    for (const catId of categoryOrder) {
+      let remaining = catMinutes[catId] || 0;
+      if (remaining <= 0) continue;
+
+      // For 13-16 sjef_over_ballen: prefer 'prepp' exercise
+      const preferKey = (is1316 && catId === 'sjef_over_ballen') ? 'prepp' : null;
+
+      // For large allocations, try to pick 2 exercises
+      const numExercises = remaining >= 20 ? 2 : 1;
+      const perExercise = Math.round(remaining / numExercises);
+
+      for (let i = 0; i < numExercises; i++) {
+        const ex = pickExercise(catId, usedKeys, i === 0 ? preferKey : null);
+        if (!ex) break;
+        usedKeys.add(ex.key);
+
         const b = makeBlock('single');
-        b.a.exerciseKey = step.key;
-        b.a.minutes = step.min;
+        b.a.exerciseKey = ex.key;
+        b.a.minutes = i === numExercises - 1 ? (remaining - perExercise * i) : perExercise;
         blocks.push(b);
       }
+
+      // Insert drikkepause after spille_med_og_mot
+      if (catId === 'spille_med_og_mot') {
+        const drink = makeBlock('single');
+        drink.a.exerciseKey = 'drink';
+        drink.a.minutes = drinkMin;
+        blocks.push(drink);
+      }
+    }
+
+    // Fallback: if no blocks generated, use old SUGGESTIONS
+    if (blocks.length < 2) {
+      suggestWorkoutLegacy();
+      return;
     }
 
     state.blocks = blocks;
     state.groupsCache.clear();
     state.parallelPickB.clear();
+    state.expandedBlockId = null;
+    state.theme = themeId;
+    state.ageGroup = ageGroup;
 
     renderBlocks();
-    if (typeof window.showNotification === 'function') window.showNotification('Forslag generert – juster fritt', 'success');
+    if (typeof window.showNotification === 'function') {
+      const themeMeta = NFF_THEME_BY_ID[themeId];
+      window.showNotification(
+        (themeMeta ? themeMeta.label : 'Trenings\u00f8kt') + ' (' + durationMin + ' min) generert \u2013 juster fritt',
+        'success'
+      );
+    }
+  }
+
+  /** Legacy suggest (fallback from old SUGGESTIONS array) */
+  function suggestWorkoutLegacy() {
+    const idx = Math.floor(Math.random() * SUGGESTIONS.length);
+    const tpl = SUGGESTIONS[idx];
+    loadTemplate({ blocks: tpl.map(s => s.parallel ? s : { key: s.key, min: s.min }), title: 'Forslag' });
+  }
+
+  /** Load a pre-built template into the editor */
+  function loadTemplate(tpl) {
+    const MIN_BLOCK = 8;
+    const tplBlocks = tpl.blocks || [];
+    let tplDur = tpl.duration || 0;
+    const sessDur = _gen.selectedDuration || 60;
+
+    if (!tplDur) {
+      tplDur = tplBlocks.reduce((s, b) => s + (b.min || 0), 0);
+    }
+
+    const ratio = tplDur > 0 ? sessDur / tplDur : 1;
+    const needsAdapt = ratio < 0.85 || ratio > 1.15;
+
+    if (!needsAdapt) {
+      // Close enough — load as-is
+      const blocks = [];
+      for (const step of tplBlocks) {
+        if (step.parallel) {
+          const b = makeBlock('parallel');
+          b.a.exerciseKey = step.a.key; b.a.minutes = step.a.min;
+          b.b.exerciseKey = step.b.key; b.b.minutes = step.b.min;
+          blocks.push(b);
+        } else {
+          const b = makeBlock('single');
+          b.a.exerciseKey = step.key; b.a.minutes = step.min;
+          blocks.push(b);
+        }
+      }
+      state.blocks = blocks;
+    } else {
+      // Adapt template to selected duration
+      let steps = tplBlocks.map(s => ({ key: s.key, min: s.min,
+        parallel: s.parallel || false, a: s.a, b: s.b }));
+
+      // Remove drink breaks if shorter
+      let drinkRemoved = false;
+      if (ratio < 0.85) {
+        const before = steps.length;
+        steps = steps.filter(s => s.key !== 'drink');
+        drinkRemoved = steps.length < before;
+      }
+
+      // Remove shortest non-core blocks until they fit
+      const maxBlocks = Math.max(2, Math.floor(sessDur / MIN_BLOCK));
+      let removed = 0;
+      while (steps.length > maxBlocks) {
+        let shortIdx = -1, shortMin = Infinity;
+        for (let j = 0; j < steps.length; j++) {
+          const isCore = steps[j].key.indexOf('ssg') === 0 || steps[j].key === 'game_activity';
+          if (!isCore && steps[j].min < shortMin) { shortMin = steps[j].min; shortIdx = j; }
+        }
+        if (shortIdx < 0) {
+          for (let j = 0; j < steps.length; j++) {
+            if (steps[j].min < shortMin) { shortMin = steps[j].min; shortIdx = j; }
+          }
+        }
+        if (shortIdx >= 0) { steps.splice(shortIdx, 1); removed++; } else break;
+      }
+
+      // Distribute duration proportionally
+      const origSum = steps.reduce((s, st) => s + st.min, 0);
+      for (const s of steps) {
+        s.scaled = Math.max(MIN_BLOCK, Math.round(s.min / origSum * sessDur));
+      }
+
+      // Adjust longest block to hit target exactly
+      const usedMin = steps.reduce((s, st) => s + st.scaled, 0);
+      const diff = sessDur - usedMin;
+      if (steps.length > 0 && diff !== 0) {
+        let longest = 0;
+        for (let p = 1; p < steps.length; p++) {
+          if (steps[p].scaled > steps[longest].scaled) longest = p;
+        }
+        steps[longest].scaled = Math.max(MIN_BLOCK, steps[longest].scaled + diff);
+      }
+
+      // Build blocks
+      const blocks = [];
+      for (const step of steps) {
+        if (step.parallel) {
+          const parRatio = origSum > 0 ? sessDur / origSum : 1;
+          const b = makeBlock('parallel');
+          b.a.exerciseKey = step.a.key; b.a.minutes = Math.max(MIN_BLOCK, Math.round(step.a.min * parRatio));
+          b.b.exerciseKey = step.b.key; b.b.minutes = Math.max(MIN_BLOCK, Math.round(step.b.min * parRatio));
+          blocks.push(b);
+        } else {
+          const b = makeBlock('single');
+          b.a.exerciseKey = step.key; b.a.minutes = step.scaled;
+          blocks.push(b);
+        }
+      }
+      state.blocks = blocks;
+
+      // Notification
+      const parts = [];
+      if (drinkRemoved) parts.push('drikkepause fjernet');
+      if (removed > 0) parts.push(removed + ' øvelse' + (removed > 1 ? 'r' : '') + ' kuttet');
+      if (parts.length && typeof window.showNotification === 'function') {
+        window.showNotification('Mal tilpasset til ' + sessDur + ' min (' + parts.join(', ') + ')', 'info');
+      }
+    }
+
+    state.groupsCache.clear();
+    state.parallelPickB.clear();
+    state.expandedBlockId = null;
+    if (tpl.theme) state.theme = tpl.theme;
+    if (_gen.selectedAge) state.ageGroup = _gen.selectedAge;
+
+    renderBlocks();
+    if (!needsAdapt && typeof window.showNotification === 'function') {
+      window.showNotification((tpl.title || '\u00d8ktmal') + ' lastet inn \u2013 juster fritt', 'success');
+    }
+  }
+
+  // Keep old name for backward compat (button binding)
+  function suggestWorkout() {
+    // If generer-flow is available, toggle it open instead of random generation
+    if ($('woGenererPanel')) {
+      toggleGenererFlow();
+    } else {
+      suggestWorkoutLegacy();
+    }
   }
 
   // -------------------------
@@ -2302,11 +5062,27 @@ function serializeWorkoutFromState() {
       `;
     }
 
+    // Build table rows with NFF section headers and accumulated minutes
+    let prevNffCat = null;
+    let accumMin = 0;
     const blocksHtml = state.blocks.map((b, idx) => {
       const isPar = b.kind === 'parallel';
       const minutesA = clampInt(b.a?.minutes, 0, 300, 0);
       const minutesB = isPar ? clampInt(b.b?.minutes, 0, 300, 0) : 0;
       const blockMin = isPar ? Math.max(minutesA, minutesB) : minutesA;
+      accumMin += blockMin;
+
+      // NFF section header row
+      const metaA = EX_BY_KEY.get(b.a?.exerciseKey);
+      const curNffCat = (metaA && metaA.nffCategory !== 'pause') ? metaA.nffCategory : null;
+      let sectionRow = '';
+      if (curNffCat && curNffCat !== prevNffCat) {
+        const catObj = NFF_CATEGORY_BY_ID[curNffCat];
+        if (catObj) {
+          sectionRow = '<tr class="exp-nff-section"><td colspan="4" style="border-left:3px solid ' + catObj.color + ';padding:6px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:' + catObj.color + ';background:#f9fafb;">' + escapeHtml(catLabel(catObj, state.ageGroup)) + '</td></tr>';
+        }
+      }
+      if (curNffCat) prevNffCat = curNffCat;
 
       const exAName = displayName(b.a);
       const exBName = isPar ? displayName(b.b) : '';
@@ -2323,8 +5099,19 @@ function serializeWorkoutFromState() {
         if (!meta || !meta.description) return '';
         let info = '';
         info += '<div class="exp-description">' + escapeHtml(meta.description) + '</div>';
+        if (meta.equipment) {
+          info += '<div class="exp-coaching" style="margin-top:4px;"><span class="exp-coaching-h">Utstyr:</span> ' + escapeHtml(meta.equipment) + '</div>';
+        }
+        if (meta.setup) {
+          info += '<div class="exp-coaching" style="margin-top:4px;"><span class="exp-coaching-h">Oppsett:</span> ' + escapeHtml(meta.setup) + '</div>';
+        }
+        if (meta.steps && meta.steps.length) {
+          info += '<div style="margin-top:4px;"><span class="exp-coaching-h">Gjennomføring:</span><ol style="margin:2px 0 0 16px;padding:0;font-size:12px;line-height:1.5;color:var(--muted);">';
+          for (const s of meta.steps) info += '<li>' + escapeHtml(s) + '</li>';
+          info += '</ol></div>';
+        }
         if (meta.coaching && meta.coaching.length) {
-          info += '<div class="exp-coaching"><span class="exp-coaching-h">Tips:</span> ' + meta.coaching.map(c => escapeHtml(c)).join(' · ') + '</div>';
+          info += '<div class="exp-coaching"><span class="exp-coaching-h">Tips:</span> ' + meta.coaching.map(c => escapeHtml(c)).join(' \u00b7 ') + '</div>';
         }
         if (meta.diagram) {
           info += '<div class="exp-svg">' + renderDrillSVG(meta.diagram) + '</div>';
@@ -2337,6 +5124,7 @@ function serializeWorkoutFromState() {
 
       if (!isPar) {
         return `
+          ${sectionRow}
           <tr>
             <td class="exp-col-idx">${idx + 1}</td>
             <td class="exp-col-ex">
@@ -2346,11 +5134,13 @@ function serializeWorkoutFromState() {
               ${groupsA}
             </td>
             <td class="exp-col-min">${blockMin}</td>
+            <td class="exp-col-acc">${accumMin}'</td>
           </tr>
         `;
       }
 
       return `
+        ${sectionRow}
         <tr>
           <td class="exp-col-idx">${idx + 1}</td>
           <td class="exp-col-ex">
@@ -2372,6 +5162,7 @@ function serializeWorkoutFromState() {
             </div>
           </td>
           <td class="exp-col-min">${blockMin}</td>
+          <td class="exp-col-acc">${accumMin}'</td>
         </tr>
       `;
     }).join('');
@@ -2437,6 +5228,7 @@ function serializeWorkoutFromState() {
     th{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:left;}
     .exp-col-idx{width:44px; color:var(--muted); font-weight:800;}
     .exp-col-min{width:86px; text-align:right; font-weight:900;}
+    .exp-col-acc{width:60px; text-align:right; font-weight:700; color:var(--muted); font-size:12px;}
     .exp-ex-name{font-weight:900; margin-bottom:3px;}
     .exp-mini{font-weight:700; color:var(--muted); font-size:12px;}
     .exp-comment{color:var(--muted); font-size:13px; margin-top:6px; margin-bottom:12px; line-height:1.45;}
@@ -2475,6 +5267,7 @@ function serializeWorkoutFromState() {
       .exp-parallel{grid-template-columns:1fr;}
       .meta{display:none;}
       th:nth-child(1),td:nth-child(1){display:none;}
+      th:nth-child(4),td:nth-child(4),.exp-col-acc{display:none;}
       .exp-col-min{width:70px;}
     }
     @media print{
@@ -2493,7 +5286,18 @@ function serializeWorkoutFromState() {
       <div class="logo"><img src="${escapeHtml(logoUrl)}" alt="Barnefotballtrener"></div>
       <div>
         <div class="h-title">${escapeHtml(title)}</div>
-        <div class="h-sub">${date ? `Dato: ${escapeHtml(date)} • ` : ''}Total tid: ${total} min</div>
+        <div class="h-sub">${date ? `Dato: ${escapeHtml(date)} \u00b7 ` : ''}Total tid: ${total} min${state.ageGroup ? ` \u00b7 ${escapeHtml(state.ageGroup)} \u00e5r` : ''}</div>
+        ${(() => {
+          if (!state.theme) return '';
+          const tm = NFF_THEME_BY_ID[state.theme];
+          if (!tm) return '';
+          let s = '<div class="h-sub" style="margin-top:4px;">Tema: <strong>' + escapeHtml(tm.label) + '</strong></div>';
+          const goals = getLearningGoals(state.theme, state.ageGroup || '8-9');
+          if (goals.length) {
+            s += '<div class="h-sub" style="margin-top:2px;font-size:11px;opacity:0.8;">' + goals.map(g => escapeHtml(g)).join(' \u00b7 ') + '</div>';
+          }
+          return s;
+        })()}
       </div>
       <div class="meta">
         <div class="m1">Barnefotballtrener</div>
@@ -2506,8 +5310,9 @@ function serializeWorkoutFromState() {
         <thead>
           <tr>
             <th>#</th>
-            <th>Øvelse</th>
+            <th>\u00d8velse</th>
             <th style="text-align:right;">Min</th>
+            <th style="text-align:right;">Akk.</th>
           </tr>
         </thead>
         <tbody>
@@ -2516,6 +5321,23 @@ function serializeWorkoutFromState() {
       </table>
       ${attendanceHtml}
     </div>
+
+    ${(() => {
+      // NFF balance bar for PDF
+      const bal = calculateNffBalance(state.blocks, state.ageGroup || '8-9');
+      if (bal.totalMinutes <= 0) return '';
+      let s = '<div class="card" style="margin-top:12px;padding:12px 16px;">';
+      s += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin-bottom:8px;">NFF-fordeling</div>';
+      s += '<div style="display:flex;gap:6px;height:28px;">';
+      for (const cat of NFF_CATEGORIES) {
+        const b = bal.balance[cat.id];
+        if (!b) continue;
+        const pct = bal.totalMinutes > 0 ? Math.max(5, Math.round((b.minutes / bal.totalMinutes) * 100)) : 0;
+        s += '<div style="flex:' + pct + ';background:' + cat.color + '20;border-left:3px solid ' + cat.color + ';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:' + cat.color + ';">' + b.minutes + 'm</div>';
+      }
+      s += '</div></div>';
+      return s;
+    })()}
 
     <div class="card" style="text-align:center; margin-top:16px; padding:12px;">
       <div style="font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:900;">Oppsummering</div>
@@ -2594,6 +5416,8 @@ function serializeWorkoutFromState() {
       version: 2,
       title,
       date,
+      theme: state.theme || null,
+      ageGroup: state.ageGroup || null,
       usePlayers: !!state.usePlayers,
       selected: Array.from(state.selected),
       parallelPickB: parallelPickBObj,
@@ -2618,6 +5442,8 @@ function serializeWorkoutFromState() {
 
     state.usePlayers = !!draft.usePlayers;
     state.selected = new Set(Array.isArray(draft.selected) ? draft.selected : []);
+    if (draft.theme) state.theme = draft.theme;
+    if (draft.ageGroup) state.ageGroup = draft.ageGroup;
 
     // restore title/date (if present)
     const dateEl = $('woDate');
@@ -2644,6 +5470,74 @@ function serializeWorkoutFromState() {
     return true;
   }
 
+  // =========================================================
+  // Help dialogs for Del / Importer
+  // =========================================================
+
+  function _woShowHelpDialog(type) {
+    // Remove any existing dialog
+    const existing = document.querySelector('.wo-help-dialog');
+    if (existing) existing.remove();
+
+    const actionsEl = document.querySelector('.wo-actions');
+    if (!actionsEl) return;
+
+    const dialog = document.createElement('div');
+    dialog.className = 'wo-help-dialog';
+
+    if (type === 'share') {
+      dialog.innerHTML =
+        '<strong><i class="fas fa-share-from-square" style="margin-right:6px;color:#2563eb;"></i>Del \u00f8kta med medtrener</strong>' +
+        '<div>Sender \u00f8kta som en \u00f8ktfil (.json) som medtreneren kan importere i sin egen app.</div>' +
+        '<ol>' +
+          '<li>Trykk <b>Send \u00f8ktfil</b> under</li>' +
+          '<li>Velg SMS, e-post, AirDrop eller annen delingsm\u00e5te</li>' +
+          '<li>Medtreneren \u00e5pner filen i Barnefotballtrener og trykker <b>Importer</b></li>' +
+        '</ol>' +
+        '<div style="font-size:12px;opacity:0.75;margin-top:6px;">\u00d8ktfilen inneholder kun \u00f8velser og tider, ikke spillere. Medtreneren velger egne spillere etter import.</div>' +
+        '<div class="wo-help-actions">' +
+          '<button class="wo-help-cancel" type="button">Avbryt</button>' +
+          '<button class="wo-help-go" type="button"><i class="fas fa-share-from-square" style="margin-right:5px;"></i>Send \u00f8ktfil</button>' +
+        '</div>';
+
+      actionsEl.after(dialog);
+
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-go').addEventListener('click', () => {
+        dialog.remove();
+        // Use Web Share if available, otherwise download
+        if (navigator.share) {
+          shareWorkoutFile();
+        } else {
+          downloadWorkoutFile();
+        }
+      });
+
+    } else if (type === 'import') {
+      dialog.innerHTML =
+        '<strong><i class="fas fa-file-import" style="margin-right:6px;color:#2563eb;"></i>Importer \u00f8kt fra medtrener</strong>' +
+        '<div>Har du f\u00e5tt en \u00f8ktfil (.json) fra en medtrener? Importer den her.</div>' +
+        '<ol>' +
+          '<li>Trykk <b>Velg fil</b> under</li>' +
+          '<li>Finn \u00f8ktfilen (.json) du har mottatt</li>' +
+          '<li>\u00d8kta lastes inn og du kan justere \u00f8velser og tider</li>' +
+        '</ol>' +
+        '<div style="font-size:12px;opacity:0.75;margin-top:6px;">Spillere importeres ikke. Velg spillere til \u00f8kta med bryteren over. Husk \u00e5 lagre om du vil ta vare p\u00e5 \u00f8kta.</div>' +
+        '<div class="wo-help-actions">' +
+          '<button class="wo-help-cancel" type="button">Avbryt</button>' +
+          '<button class="wo-help-go" type="button"><i class="fas fa-file-import" style="margin-right:5px;"></i>Velg fil</button>' +
+        '</div>';
+
+      actionsEl.after(dialog);
+
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-go').addEventListener('click', () => {
+        dialog.remove();
+        importWorkoutFileFromPicker();
+      });
+    }
+  }
+
   // -------------------------
   // Init / bind
   // -------------------------
@@ -2665,6 +5559,7 @@ function serializeWorkoutFromState() {
     const shareJsonBtn = $('woShareJsonBtn');
     const importJsonBtn = $('woImportJsonBtn');
     const importFile = $('woImportFile');
+    const shareBtn = $('woShareBtn');
     const selectAllBtn = $('woSelectAllBtn');
     const clearAllBtn = $('woClearAllBtn');
 
@@ -2696,14 +5591,61 @@ function serializeWorkoutFromState() {
     if (addBtn) addBtn.addEventListener('click', () => addBlock('single'));
     if (addBtnBottom) addBtnBottom.addEventListener('click', () => addBlock('single'));
     if (suggestBtn) suggestBtn.addEventListener('click', () => suggestWorkout());
+
+    // Generer-flow CTA button
+    const genererBtn = $('woGenererBtn');
+    if (genererBtn) {
+      genererBtn.addEventListener('click', () => toggleGenererFlow());
+      // Inject "Ny økt" button inline with generer via flex wrapper
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex;gap:8px;align-items:stretch;';
+      genererBtn.parentNode.insertBefore(wrapper, genererBtn);
+      genererBtn.style.flex = '1';
+      wrapper.appendChild(genererBtn);
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'btn-secondary';
+      clearBtn.style.cssText = 'font-size:13px;padding:10px 14px;white-space:nowrap;border-radius:14px;';
+      clearBtn.textContent = '\uD83D\uDDD1\ufe0f Nullstill';
+      clearBtn.title = 'Nullstill alle \u00f8velser og start p\u00e5 nytt';
+      clearBtn.addEventListener('click', clearSession);
+      wrapper.appendChild(clearBtn);
+    }
     if (saveBtn) saveBtn.addEventListener('click', () => saveTemplate());
     if (saveWorkoutBtn) saveWorkoutBtn.addEventListener('click', () => saveWorkout());
     if (exportBtn) exportBtn.addEventListener('click', () => exportWorkout());
 
+    // Legacy hidden buttons (keep for backward compat)
     if (dlJsonBtn) dlJsonBtn.addEventListener('click', () => downloadWorkoutFile());
     if (shareJsonBtn) shareJsonBtn.addEventListener('click', () => shareWorkoutFile());
-    if (importJsonBtn) importJsonBtn.addEventListener('click', () => importWorkoutFileFromPicker());
+
+    // "Del med medtrener" — show help dialog first
+    if (shareBtn) shareBtn.addEventListener('click', () => {
+      _woShowHelpDialog('share');
+    });
+
+    // "Importer øktfil" — show help dialog first
+    if (importJsonBtn) importJsonBtn.addEventListener('click', () => {
+      _woShowHelpDialog('import');
+    });
     if (importFile) importFile.addEventListener('change', handleWorkoutFileInputChange);
+
+    // "Mer" dropdown toggle (opens downward)
+    const moreBtn = $('woMoreBtn');
+    const moreMenu = $('woMoreMenu');
+    if (moreBtn && moreMenu) {
+      moreBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = moreMenu.style.display === 'block';
+        moreMenu.style.display = isOpen ? 'none' : 'block';
+      });
+      document.addEventListener('click', () => {
+        if (moreMenu) moreMenu.style.display = 'none';
+      });
+      moreMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
 
     if (selectAllBtn) selectAllBtn.addEventListener('click', () => {
       if (!state.usePlayers) return;
@@ -2723,6 +5665,27 @@ function serializeWorkoutFromState() {
       renderBlocks();
       if (typeof window.showNotification === 'function') window.showNotification('Fjernet alle valgte spillere', 'info');
     });
+
+    // Pre-populate cache from localStorage for instant first render
+    // (Supabase overwrites later when loadWorkoutCloudData completes)
+    if (!_woCache.loaded) {
+      const lsTpl = loadStore().data.templates || [];
+      const lsWo = loadWorkoutsStore().data.workouts || [];
+      if (lsTpl.length || lsWo.length) {
+        _woCache.templates = lsTpl.map(t => ({
+          id: t.id, title: t.title, blocks: t.blocks, is_template: true,
+          created_at: t.createdAt ? new Date(t.createdAt).toISOString() : null,
+          updated_at: t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+          _local: true  // flag: not yet in Supabase, disable delete/rename
+        }));
+        _woCache.workouts = lsWo.map(w => ({
+          id: w.id, title: w.title, workout_date: w.date || null, blocks: w.blocks, is_template: false,
+          created_at: w.createdAt ? new Date(w.createdAt).toISOString() : null,
+          updated_at: w.updatedAt ? new Date(w.updatedAt).toISOString() : null,
+          _local: true
+        }));
+      }
+    }
 
     // initial render
     renderPlayersPanel();
@@ -2764,13 +5727,37 @@ function serializeWorkoutFromState() {
       try {
         console.log('[workout.js] team:changed', e && e.detail ? e.detail.teamId : '');
         state.groupsCache.clear();
+        state.eventId = null;
+        state.seasonId = null;
+
+        // Clear cache and pre-populate from new team's localStorage
+        _woCache.templates = [];
+        _woCache.workouts = [];
+        _woCache.loaded = false;
+        var lsTpl = loadStore().data.templates || [];
+        var lsWo = loadWorkoutsStore().data.workouts || [];
+        if (lsTpl.length || lsWo.length) {
+          _woCache.templates = lsTpl.map(function(t) {
+            return { id: t.id, title: t.title, blocks: t.blocks, is_template: true,
+              created_at: t.createdAt ? new Date(t.createdAt).toISOString() : null,
+              updated_at: t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+              _local: true };
+          });
+          _woCache.workouts = lsWo.map(function(w) {
+            return { id: w.id, title: w.title, workout_date: w.date || null, blocks: w.blocks, is_template: false,
+              created_at: w.createdAt ? new Date(w.createdAt).toISOString() : null,
+              updated_at: w.updatedAt ? new Date(w.updatedAt).toISOString() : null,
+              _local: true };
+          });
+        }
+
         renderTemplates();
         renderWorkouts();
         restoreDraftIfAny();
         renderPlayersPanel();
         renderBlocks();
 
-        // Last cloud-data for nytt lag
+        // Last data fra Supabase for nytt lag (migrerer + laster)
         loadWorkoutCloudData();
       } catch (err) {
         console.warn('[workout.js] team:changed handler feilet:', err && err.message ? err.message : err);
@@ -2803,61 +5790,119 @@ function serializeWorkoutFromState() {
     })();
   }
 
-  // Last treningsdata fra cloud (Supabase user_data)
+  // Load workouts from Supabase (replaces old user_data cloud sync)
   async function loadWorkoutCloudData() {
-    if (!window._bftCloud) return;
     try {
-      var rows = await window._bftCloud.loadAll();
-      if (rows === null) return; // Supabase feil → ikke gjør noe
-      if (rows.length === 0) {
-        // Cloud tom → bootstrap: push lokal data opp
-        var tRaw = safeGet(STORE_KEY());
-        if (tRaw && tRaw !== '{}' && tRaw !== '[]') window._bftCloud.save('workout_templates_v1', tRaw);
-        var sRaw = safeGet(WORKOUTS_KEY());
-        if (sRaw && sRaw !== '{}' && sRaw !== '[]') window._bftCloud.save('workout_sessions_v1', sRaw);
-        var dRaw = safeGet(DRAFT_KEY());
-        if (dRaw) window._bftCloud.save('workout_draft_v1', dRaw);
-        return;
-      }
-
-      var updated = false;
-      rows.forEach(function(row) {
-        if (row.key === 'workout_templates_v1' && row.value) {
-          var localRaw = safeGet(STORE_KEY());
-          var cloudStr = JSON.stringify(row.value);
-          if (!localRaw || localRaw === '{}' || localRaw === '[]') {
-            safeSet(STORE_KEY(), cloudStr);
-            updated = true;
-          }
-        }
-        if (row.key === 'workout_sessions_v1' && row.value) {
-          var localRaw = safeGet(WORKOUTS_KEY());
-          var cloudStr = JSON.stringify(row.value);
-          if (!localRaw || localRaw === '{}' || localRaw === '[]') {
-            safeSet(WORKOUTS_KEY(), cloudStr);
-            updated = true;
-          }
-        }
-        if (row.key === 'workout_draft_v1' && row.value) {
-          var localRaw = safeGet(DRAFT_KEY());
-          if (!localRaw) {
-            safeSet(DRAFT_KEY(), JSON.stringify(row.value));
-            updated = true;
-          }
-        }
-      });
-
-      if (updated) {
-        console.log('[workout.js] Cloud data lastet');
-        renderTemplates();
-        renderWorkouts();
-        restoreDraftIfAny();
-      }
+      await _woMigrateToDb();
+      await _woLoadFromDb();
+      await _woLoadFavoritesFromDb();
     } catch (e) {
-      console.warn('[workout.js] Cloud load feilet:', e.message);
+      console.warn('[workout.js] loadWorkoutCloudData feilet:', e.message || e);
     }
   }
 
+  // =========================================================
+  // SESONG-INTEGRASJON: workoutPrefill bridge
+  // =========================================================
+
+  /**
+   * Pre-fill workout editor from a season training event.
+   * Called by season.js when user clicks "Planlegg treningsøkt".
+   */
+  window.workoutPrefill = function(opts) {
+    if (!opts) return;
+    console.log('[workout.js] workoutPrefill:', opts.eventId || 'standalone');
+
+    // Set date
+    const dateEl = $('woDate');
+    if (dateEl && opts.date) dateEl.value = opts.date;
+
+    // Set title
+    const titleEl = $('woTitle');
+    if (titleEl && opts.title) titleEl.value = opts.title;
+
+    // Set session metadata
+    state.ageGroup = opts.ageGroup || state.ageGroup;
+    state.theme = opts.theme || null;
+    state.eventId = opts.eventId || null;
+    state.seasonId = opts.seasonId || null;
+
+    // Set player attendance if provided
+    if (opts.playerIds && Array.isArray(opts.playerIds)) {
+      state.usePlayers = true;
+      state.selected = new Set(opts.playerIds);
+      const toggle = $('woUsePlayersToggle');
+      if (toggle) toggle.checked = true;
+      renderPlayersPanel();
+    }
+
+    // If existing workout for this event, load it
+    if (opts.eventId && _woCache.loaded) {
+      const existing = _woCache.workouts.find(w => w.event_id === opts.eventId);
+      if (existing) {
+        applyWorkoutToState(existing);
+        if (typeof window.showNotification === 'function') {
+          window.showNotification('Eksisterende \u00f8kt lastet inn', 'info');
+        }
+        return;
+      }
+    }
+
+    // If duration provided, set up generer-flow defaults
+    if (opts.duration) {
+      _gen.selectedDuration = opts.duration;
+    }
+
+    // Render fresh state
+    updateTotalUI();
+    renderBlocks();
+    persistDraft();
+  };
+
   document.addEventListener('DOMContentLoaded', initIfPresent);
+
+  // =========================================================
+  // SHARED API: Exposed for sesong-workout.js embedding
+  // =========================================================
+
+  /**
+   * Open the exercise picker (bottom sheet) from an external context.
+   * ctxOverride = { ageGroup, blocks } — sesong-workout.js passes its own state.
+   */
+  function openExercisePicker(onSelect, ctxOverride) {
+    _bs.ctxOverride = ctxOverride || null;
+    // Re-render pills with the overridden age group
+    if (_bs.el) _bsRenderPills();
+    openBottomSheet('__ext__', 'a', function(key) {
+      _bs.ctxOverride = null;
+      onSelect(key);
+    });
+  }
+
+  window._woShared = {
+    EXERCISES: EXERCISES,
+    EX_BY_KEY: EX_BY_KEY,
+    NFF_CATEGORIES: NFF_CATEGORIES,
+    NFF_CATEGORY_BY_ID: NFF_CATEGORY_BY_ID,
+    NFF_THEMES: NFF_THEMES,
+    NFF_THEME_BY_ID: NFF_THEME_BY_ID,
+    NFF_THEMES_BY_AGE: NFF_THEMES_BY_AGE,
+    NFF_TIME_DISTRIBUTION: NFF_TIME_DISTRIBUTION,
+    NFF_LEARNING_GOALS: NFF_LEARNING_GOALS,
+    NFF_TEMPLATES: NFF_TEMPLATES,
+    renderDrillSVG: renderDrillSVG,
+    catLabel: catLabel,
+    catShort: catShort,
+    getLearningGoals: getLearningGoals,
+    calculateNffBalance: calculateNffBalance,
+    escapeHtml: escapeHtml,
+    // Extended API for sesong-workout.js
+    openExercisePicker: openExercisePicker,
+    renderExerciseTrigger: renderExerciseTrigger,
+    renderInfoPanel: renderInfoPanel,
+    displayName: displayName,
+    saveWorkoutToDb: _woSaveToDb,
+    clampInt: clampInt,
+  };
 
 })();
