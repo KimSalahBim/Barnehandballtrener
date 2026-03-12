@@ -6749,6 +6749,7 @@
     window.sesongWorkout.init(container, embeddedWorkoutPlayers, {
       minutes: ev.duration_minutes || 60,
       ageGroup: woAge,
+      date: ev.start_time ? ev.start_time.slice(0, 10) : '',
       eventId: ev.id,
       seasonId: currentSeason ? currentSeason.id : null,
       title: ev.title || 'Trening',

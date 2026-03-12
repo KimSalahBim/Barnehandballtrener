@@ -1,21 +1,16 @@
 // © 2026 Barnefotballtrener.no. All rights reserved.
 // sesong-workout.js — Innebygd treningsøkt-editor for Sesong-modulen.
 // Full feature-paritet med workout.js via window._woShared.
-// Eksporterer window.sesongWorkout = { init, destroy }
+// Eksporterer window.sesongWorkout = { init, destroy, isActive }
 //
-// Arkitektur: window.sesongWorkout.init(container, players, opts)
-//   opts = { ageGroup, theme, title, date, eventId, seasonId,
-//            workoutId, blocks, onSave, onBack }
+// API: window.sesongWorkout.init(container, players, opts)
+//   opts = { ageGroup, existingTheme, title, date, eventId, seasonId,
+//            existingDbId, existingBlocks, minutes, onSave, onBack }
 //   onSave(payload) → Promise<{ id }>
 //   onBack(finalDbId) → void
 //
-// Bugfikser inkludert:
-//  [1] Singel _swSaveTimer-referanse
-//  [2] _swDbId oppdateres etter onSave FØR onBack
-//  [5] _swActive = false FØR onBack kalles
-//  [7] _swDirty + reschedule-logikk ved concurrent save
-//  [8] updateHeader() kalles etter addBlock
-//  [9] bindGenererHandlers scoped til container, ikke document
+// Bugfikser [1-9] alle inkludert.
+// Spillervalg + gruppeinndeling (window.Grouping + window.GroupDragDrop).
 
 (function () {
   'use strict';
@@ -23,122 +18,145 @@
   // ══════════════════════════════════════════════════════════
   // State
   // ══════════════════════════════════════════════════════════
-  let _swActive    = false;
-  let _swBlocks    = [];
-  let _swDbId      = null;     // Supabase workouts.id for UPDATE vs INSERT
-  let _swSaving    = false;    // [Bug 7] guard mot concurrent saves
-  let _swDirty     = false;    // [Bug 7] uflushed endringer
-  let _swSaveTimer = null;     // [Bug 1] singel timer-referanse
-  let _swContainer = null;
-  let _swPlayers   = [];
-  let _swExpandedId = null;    // accordion: kun én blokk expanded om gangen
-  let _swCallbacks = { onSave: null, onBack: null };
-  let _swMeta      = {
-    ageGroup: null, theme: null,
-    title: '', date: '',
-    eventId: null, seasonId: null,
+  var _swActive      = false;
+  var _swBlocks      = [];
+  var _swDbId        = null;
+  var _swSaving      = false;
+  var _swDirty       = false;
+  var _swSaveTimer   = null;    // [Bug 1]
+  var _swContainer   = null;
+  var _swPlayers     = [];
+  var _swSelected    = new Set();
+  var _swGroupsCache = new Map();
+  var _swParPickB    = new Map();
+  var _swExpandedId  = null;
+  var _swCallbacks   = { onSave: null, onBack: null };
+  var _swUseSkill    = false;
+  var _swMeta        = {
+    ageGroup: null, theme: null, title: '', date: '',
+    eventId: null, seasonId: null, duration: 60,
   };
 
-  // ══════════════════════════════════════════════════════════
-  // Helpers — wraps _woShared
-  // ══════════════════════════════════════════════════════════
-  function sh()    { return window._woShared; }
-  function esc(s)  { return sh().escapeHtml(s); }
-  function clamp(v, min, max, fb) { return sh().clampInt(v, min, max, fb); }
-  function exMeta(key) { return sh().EX_BY_KEY.get(key); }
+  var _PC_COLORS = [
+    '#93c5fd','#a5b4fc','#f9a8d4','#fcd34d','#6ee7b7',
+    '#fca5a5','#67e8f9','#c4b5fd','#f0abfc','#5eead4',
+    '#fdba74','#bef264','#fb7185','#7dd3fc','#d8b4fe',
+    '#86efac','#fed7aa','#99f6e4',
+  ];
 
-  function uid() {
-    return 'sw_' + Math.random().toString(16).slice(2) + Date.now().toString(16);
+  // ══════════════════════════════════════════════════════════
+  // Helpers
+  // ══════════════════════════════════════════════════════════
+  function sh()   { return window._woShared; }
+  function esc(s) { return sh().escapeHtml(String(s == null ? '' : s)); }
+
+  function clampInt(v, min, max, fb) {
+    var n = parseInt(v, 10);
+    return (isNaN(n) || n < min || n > max) ? fb : n;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Exercise / block factory
-  // ──────────────────────────────────────────────────────────
+  function uid() {
+    return 'sw_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function exMeta(key) { return sh().EX_BY_KEY.get(key); }
+
+  function displayName(ex) {
+    if (!ex) return '';
+    if (ex.exerciseKey === 'custom')
+      return (ex.customName || '').trim() || 'Egendefinert øvelse';
+    var m = exMeta(ex.exerciseKey);
+    return m ? m.label : 'Øvelse';
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // Block / exercise factory
+  // ══════════════════════════════════════════════════════════
   function makeEx() {
     return { exerciseKey: 'tag', customName: '', minutes: 10,
-             groupCount: 1, groupMode: 'even', comment: '' };
+             groupCount: 2, groupMode: 'even', comment: '',
+             _groupCountManual: false };
   }
 
   function makeBlock(kind) {
-    const id = uid();
+    var id = uid();
     if (kind === 'parallel') {
-      return { id, kind: 'parallel',
-               a: makeEx(),
-               b: { ...makeEx(), exerciseKey: 'keeper', minutes: 12 } };
+      var exB = makeEx();
+      exB.exerciseKey = 'keeper'; exB.minutes = 12;
+      return { id: id, kind: 'parallel', a: makeEx(), b: exB };
     }
-    return { id, kind: 'single', a: makeEx() };
+    return { id: id, kind: 'single', a: makeEx() };
   }
 
   function migrateEx(raw) {
     return {
-      exerciseKey: raw.exerciseKey || 'tag',
-      customName:  String(raw.customName || ''),
-      minutes:     clamp(raw.minutes, 0, 300, 10),
-      groupCount:  clamp(raw.groupCount, 1, 20, 1),
-      groupMode:   raw.groupMode || 'even',
-      comment:     String(raw.comment || ''),
+      exerciseKey:       raw.exerciseKey || 'tag',
+      customName:        String(raw.customName || ''),
+      minutes:           clampInt(raw.minutes, 0, 300, 10),
+      groupCount:        clampInt(raw.groupCount, 1, 20, 2),
+      groupMode:         raw.groupMode || 'even',
+      comment:           String(raw.comment || ''),
+      _groupCountManual: !!raw._groupCountManual,
     };
   }
 
   function loadBlocks(raw) {
     if (!Array.isArray(raw) || !raw.length) return [makeBlock('single')];
-    return raw.map(b => {
-      const id = uid();
-      if (b.kind === 'parallel') {
-        return { id, kind: 'parallel',
+    return raw.map(function(b) {
+      var id = uid();
+      if (b.kind === 'parallel')
+        return { id: id, kind: 'parallel',
                  a: migrateEx(b.a || {}), b: migrateEx(b.b || {}) };
-      }
-      return { id, kind: 'single', a: migrateEx(b.a || {}) };
+      return { id: id, kind: 'single', a: migrateEx(b.a || {}) };
     });
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Display
-  // ──────────────────────────────────────────────────────────
-  function displayName(ex) {
-    if (!ex) return '';
-    const meta = exMeta(ex.exerciseKey);
-    if (ex.exerciseKey === 'custom') return String(ex.customName || '').trim() || 'Egendefinert øvelse';
-    if (meta) return meta.label;
-    return 'Øvelse';
-  }
-
+  // ══════════════════════════════════════════════════════════
+  // Save payload (feltnavn matcher season.js)
+  // ══════════════════════════════════════════════════════════
   function totalMin() {
-    let s = 0;
-    for (const b of _swBlocks) {
-      if (b.kind === 'parallel')
-        s += Math.max(clamp(b.a?.minutes, 0, 300, 0), clamp(b.b?.minutes, 0, 300, 0));
-      else
-        s += clamp(b.a?.minutes, 0, 300, 0);
+    var s = 0;
+    for (var i = 0; i < _swBlocks.length; i++) {
+      var b = _swBlocks[i];
+      s += b.kind === 'parallel'
+        ? Math.max(clampInt(b.a ? b.a.minutes : 0, 0, 300, 0),
+                   clampInt(b.b ? b.b.minutes : 0, 0, 300, 0))
+        : clampInt(b.a ? b.a.minutes : 0, 0, 300, 0);
     }
     return s;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Save payload
-  // ──────────────────────────────────────────────────────────
-  function buildSavePayload() {
+  function serEx(ex) {
     return {
-      dbId:             _swDbId,
-      title:            _swMeta.title || '',
-      date:             _swMeta.date  || null,
-      age_group:        _swMeta.ageGroup  || null,
-      theme:            _swMeta.theme     || null,
-      event_id:         _swMeta.eventId   || null,
-      season_id:        _swMeta.seasonId  || null,
-      duration_minutes: totalMin() || null,
-      is_template:      false,
-      source:           'sesong',
-      blocks: _swBlocks.map(b => {
+      exerciseKey: ex.exerciseKey, customName: ex.customName,
+      minutes: ex.minutes, groupCount: ex.groupCount,
+      groupMode: ex.groupMode, comment: ex.comment,
+      _groupCountManual: !!ex._groupCountManual,
+    };
+  }
+
+  function buildPayload() {
+    return {
+      dbId:        _swDbId,
+      title:       _swMeta.title    || '',
+      date:        _swMeta.date     || null,
+      ageGroup:    _swMeta.ageGroup || null,
+      theme:       _swMeta.theme    || null,
+      eventId:     _swMeta.eventId  || null,
+      seasonId:    _swMeta.seasonId || null,
+      duration:    totalMin()       || null,
+      is_template: false,
+      source:      'sesong',
+      blocks: _swBlocks.map(function(b) {
         if (b.kind === 'parallel')
-          return { kind: 'parallel', a: { ...b.a }, b: { ...b.b } };
-        return { kind: 'single', a: { ...b.a } };
+          return { kind: 'parallel', a: serEx(b.a), b: serEx(b.b) };
+        return { kind: 'single', a: serEx(b.a) };
       }),
     };
   }
 
   // ══════════════════════════════════════════════════════════
-  // Auto-save — [Bug 1] singel timer, [Bug 7] dirty + reschedule
+  // Auto-save
   // ══════════════════════════════════════════════════════════
   function scheduleSave() {
     _swDirty = true;
@@ -146,29 +164,23 @@
     _swSaveTimer = setTimeout(doAutoSave, 1500);
   }
 
-  async function doAutoSave() {
+  function doAutoSave() {
     if (!_swActive) return;
-    if (_swSaving) {
-      // [Bug 7] Save pågår — reschedule, ikke mist endringene
-      _swSaveTimer = setTimeout(doAutoSave, 600);
-      return;
-    }
-    _swDirty   = false;
-    _swSaving  = true;
-    try {
-      const result = await _swCallbacks.onSave(buildSavePayload());
-      // [Bug 2] Oppdater _swDbId så neste save blir UPDATE, ikke INSERT
-      if (result?.id && !_swDbId) _swDbId = result.id;
-    } catch (e) {
-      console.warn('[sesong-workout] auto-save feilet:', e?.message || e);
-      _swDirty = true; // prøv på nytt ved neste endring
-    } finally {
-      _swSaving = false;
-    }
+    if (_swSaving) { _swSaveTimer = setTimeout(doAutoSave, 600); return; } // [Bug 7]
+    _swDirty  = false;
+    _swSaving = true;
+    var p = _swCallbacks.onSave ? _swCallbacks.onSave(buildPayload()) : Promise.resolve(null);
+    Promise.resolve(p)
+      .then(function(res) { if (res && res.id && !_swDbId) _swDbId = res.id; }) // [Bug 2]
+      .catch(function(e) {
+        console.warn('[sesong-workout] auto-save feilet:', e && e.message || e);
+        _swDirty = true;
+      })
+      .finally(function() { _swSaving = false; });
   }
 
   // ══════════════════════════════════════════════════════════
-  // Render — hoved-layout
+  // Render
   // ══════════════════════════════════════════════════════════
   function render() {
     if (!_swContainer) return;
@@ -177,365 +189,752 @@
   }
 
   function buildHTML() {
-    return `
-      <div class="sw-root">
-        ${buildHeader()}
-        <div id="swNffBar">${buildNffBar()}</div>
-        ${buildGenPanel()}
-        <div id="swBlocks" class="sw-blocks"></div>
-        <div class="sw-add-row">
-          <button type="button" class="btn-secondary sw-add-btn" id="swAddBtn">
-            <i class="fas fa-plus"></i> Legg til øvelse
-          </button>
-          <button type="button" class="btn-secondary sw-add-btn" id="swAddParBtn">
-            <i class="fas fa-code-branch"></i> Parallelt
-          </button>
-        </div>
-        <div class="sw-footer-actions">
-          <button type="button" class="btn-primary" id="swSaveManBtn">
-            <i class="fas fa-save"></i> Lagre
-          </button>
-          <button type="button" class="btn-secondary" id="swExportBtn">
-            <i class="fas fa-file-pdf"></i> PDF
-          </button>
-        </div>
-      </div>
-    `;
+    return '<div class="sw-root">' +
+      buildHeader() +
+      '<div id="swNffBar">' + buildNffBar() + '</div>' +
+      buildPlayersPanel() +
+      buildGenPanel() +
+      '<div id="swBlocks" class="sw-blocks"></div>' +
+      '<div class="sw-add-row">' +
+        '<button type="button" class="btn-secondary sw-add-btn" id="swAddBtn">' +
+          '<i class="fas fa-plus"></i> Legg til øvelse</button>' +
+        '<button type="button" class="btn-secondary sw-add-btn" id="swAddParBtn">' +
+          '<i class="fas fa-code-branch"></i> Parallelt</button>' +
+      '</div>' +
+      '<div class="sw-footer-actions">' +
+        '<button type="button" class="btn-primary" id="swSaveManBtn">' +
+          '<i class="fas fa-save"></i> Lagre</button>' +
+        '<button type="button" class="btn-secondary" id="swExportBtn">' +
+          '<i class="fas fa-file-pdf"></i> PDF</button>' +
+      '</div>' +
+    '</div>';
   }
 
   function buildHeader() {
-    const ageBadge = _swMeta.ageGroup
-      ? `<span class="sw-meta-age">${esc(_swMeta.ageGroup)} år</span>` : '';
-    const themeMeta = _swMeta.theme ? sh().NFF_THEME_BY_ID[_swMeta.theme] : null;
-    const themePill = themeMeta
-      ? `<span class="sw-meta-theme">${esc(themeMeta.icon)} ${esc(themeMeta.label)}</span>` : '';
-
-    return `
-      <div class="sw-header">
-        <div class="sw-header-top">
-          <button type="button" class="sw-back-btn" id="swBackBtn" title="Tilbake">
-            <i class="fas fa-arrow-left"></i>
-          </button>
-          <div class="sw-header-info">
-            <div class="sw-header-title">${esc(_swMeta.title || 'Treningsøkt')}</div>
-            <div class="sw-header-sub">
-              ${_swMeta.date ? esc(_swMeta.date) + ' &middot; ' : ''}<strong id="swTotalMin">${totalMin()}</strong> min
-              ${ageBadge}${themePill}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+    var ageBadge = _swMeta.ageGroup
+      ? '<span class="sw-meta-age">' + esc(_swMeta.ageGroup) + ' år</span>' : '';
+    var themeMeta = _swMeta.theme ? sh().NFF_THEME_BY_ID[_swMeta.theme] : null;
+    var themePill = themeMeta
+      ? '<span class="sw-meta-theme">' + esc(themeMeta.icon) + ' ' + esc(themeMeta.label) + '</span>' : '';
+    return '<div class="sw-header">' +
+      '<div class="sw-header-top">' +
+        '<button type="button" class="sw-back-btn" id="swBackBtn" title="Tilbake">' +
+          '<i class="fas fa-arrow-left"></i></button>' +
+        '<div class="sw-header-info">' +
+          '<div class="sw-header-title">' + esc(_swMeta.title || 'Treningsøkt') + '</div>' +
+          '<div class="sw-header-sub">' +
+            (_swMeta.date ? esc(_swMeta.date) + ' &middot; ' : '') +
+            '<strong id="swTotalMin">' + totalMin() + '</strong> min ' +
+            ageBadge + themePill +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
   function buildNffBar() {
-    const shared = sh();
-    const bal = shared.calculateNffBalance(_swBlocks, _swMeta.ageGroup || '8-9');
-    if (bal.totalMinutes <= 0) return '';
-    const age = _swMeta.ageGroup || '8-9';
-    let html = '<div class="wo-meta-balance" style="margin:6px 0 10px;">';
-    for (const cat of shared.NFF_CATEGORIES) {
-      const b = bal.balance[cat.id];
+    var shared = sh();
+    var bal = shared.calculateNffBalance(_swBlocks, _swMeta.ageGroup || '8-9');
+    if (!bal || bal.totalMinutes <= 0) return '';
+    var age  = _swMeta.ageGroup || '8-9';
+    var html = '<div class="wo-meta-balance" style="margin:6px 0 10px;">';
+    for (var ci = 0; ci < shared.NFF_CATEGORIES.length; ci++) {
+      var cat = shared.NFF_CATEGORIES[ci];
+      var b   = bal.balance[cat.id];
       if (!b) continue;
-      const pct = bal.totalMinutes > 0 ? Math.round((b.minutes / bal.totalMinutes) * 100) : 0;
-      const recPct = b.recommendedPct || 0;
-      html += `<div class="wo-meta-bal-seg" style="--bal-color:${cat.color};--bal-pct:${pct}%"
-        title="${esc(shared.catShort(cat, age))}: ${b.minutes} min (${pct}%) — anbefalt ${recPct}%">
-        <div class="wo-meta-bal-fill"></div>
-        <span class="wo-meta-bal-label">${esc(shared.catShort(cat, age))}</span>
-      </div>`;
+      var pct = bal.totalMinutes > 0 ? Math.round((b.minutes / bal.totalMinutes) * 100) : 0;
+      html += '<div class="wo-meta-bal-seg" style="--bal-color:' + cat.color +
+        ';--bal-pct:' + pct + '%"' +
+        ' title="' + esc(shared.catShort(cat, age)) + ': ' + b.minutes + ' min (' + pct +
+        '%) — anbefalt ' + (b.recommendedPct || 0) + '%">' +
+        '<div class="wo-meta-bal-fill"></div>' +
+        '<span class="wo-meta-bal-label">' + esc(shared.catShort(cat, age)) + '</span>' +
+      '</div>';
     }
-    html += '</div>';
-    return html;
+    return html + '</div>';
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Spillerpanel
+  // ──────────────────────────────────────────────────────────
+  function buildPlayersPanel() {
+    if (!_swPlayers || !_swPlayers.length) return '';
+    return '<div class="sw-players-wrap">' +
+      '<div id="swPlayersToggle" style="cursor:pointer;display:flex;align-items:center;' +
+        'justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0;margin-bottom:4px;">' +
+        '<span style="font-weight:700;font-size:14px;">' +
+          '<i class="fas fa-users" style="margin-right:6px;opacity:0.7;"></i>' +
+          'Spillere til økten <span id="swPlayerCount">' + _swSelected.size + '</span>/' + _swPlayers.length +
+        '</span>' +
+        '<span id="swPlayersChevron" style="opacity:0.5;font-size:12px;">▼</span>' +
+      '</div>' +
+      '<div id="swPlayersBody" style="display:none;margin-bottom:12px;">' +
+        buildPlayerList() +
+        '<label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;cursor:pointer;">' +
+          '<input type="checkbox" id="swSkillToggle"' + (_swUseSkill ? ' checked' : '') + '>' +
+          'Bruk ferdighetsnivå ved "Etter nivå"-inndeling' +
+        '</label>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function buildPlayerList() {
+    var sorted = _swPlayers.slice().sort(function(a, b) {
+      return (a.name || '').localeCompare(b.name || '', 'nb');
+    });
+    var html = '<div class="wo-pick-list" id="swPlayerList">';
+    for (var i = 0; i < sorted.length; i++) {
+      var p       = sorted[i];
+      var checked = _swSelected.has(p.id) ? ' checked' : '';
+      var color   = _PC_COLORS[i % _PC_COLORS.length];
+      html += '<label class="player-checkbox" style="--pc-color:' + color + '">' +
+        '<input type="checkbox" data-pid="' + esc(p.id) + '"' + checked + '>' +
+        '<div class="pc-avatar">' + esc((p.name || '?').charAt(0).toUpperCase()) + '</div>' +
+        '<div class="pc-info">' +
+          '<div class="player-name">' + esc(p.name || '') + '</div>' +
+          (p.goalie ? '<span class="pc-keeper">🧤 Keeper</span>' : '') +
+        '</div>' +
+        '<div class="pc-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"' +
+          ' stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+          '<polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '</label>';
+    }
+    return html + '</div>';
   }
 
   function buildGenPanel() {
-    const templates = sh().NFF_TEMPLATES[_swMeta.ageGroup || '8-9'] || [];
+    var templates = (sh().NFF_TEMPLATES || {})[_swMeta.ageGroup || '8-9'] || [];
     if (!templates.length) return '';
-    let html = '<div class="sw-gen-wrap">';
-    html += '<button type="button" class="btn-secondary sw-gen-toggle" id="swGenToggle">' +
-            '📋 Øktmaler</button>';
-    html += '<div class="sw-gen-pills" id="swGenPills" style="display:none;flex-wrap:wrap;gap:6px;margin-top:8px;">';
-    templates.forEach((tpl, i) => {
-      html += `<button type="button" class="wo-gen-pill" data-swTpl="${i}">${esc(tpl.title)}</button>`;
-    });
-    html += '</div></div>';
-    return html;
+    var pills = '';
+    for (var i = 0; i < templates.length; i++)
+      pills += '<button type="button" class="wo-gen-pill" data-swTpl="' + i + '">' +
+               esc(templates[i].title) + '</button>';
+    return '<div class="sw-gen-wrap">' +
+      '<button type="button" class="btn-secondary sw-gen-toggle" id="swGenToggle">📋 Øktmaler</button>' +
+      '<div id="swGenPills" style="display:none;flex-wrap:wrap;gap:6px;margin-top:8px;">' +
+        pills +
+      '</div>' +
+    '</div>';
   }
 
   // ══════════════════════════════════════════════════════════
-  // Block rendering
+  // Blokk-rendering
   // ══════════════════════════════════════════════════════════
   function renderBlocks() {
-    const el = document.getElementById('swBlocks');
+    var el = document.getElementById('swBlocks');
     if (!el) return;
 
     if (!_swBlocks.length) {
       el.innerHTML = '<div class="sw-empty" style="padding:20px;text-align:center;color:#888;">' +
-                     'Ingen øvelser ennå. Legg til med knappen under.</div>';
-      updateHeader(); // [Bug 8]
+                     'Ingen øvelser ennå.</div>';
+      updateHeader();
       return;
     }
 
-    el.innerHTML = _swBlocks.map((b, i) =>
-      _swExpandedId === b.id ? renderExpanded(b, i) : renderCollapsed(b, i)
-    ).join('');
+    var html = '';
+    for (var i = 0; i < _swBlocks.length; i++) {
+      var b = _swBlocks[i];
+      html += _swExpandedId === b.id ? renderExpanded(b) : renderCollapsed(b);
+    }
+    el.innerHTML = html;
 
-    // Bind events per block
-    for (let i = 0; i < _swBlocks.length; i++) {
-      const b = _swBlocks[i];
-      if (_swExpandedId === b.id) {
-        bindExpanded(b, i);
-      } else {
-        const card = el.querySelector(`.sw-card[data-bid="${b.id}"]`);
-        if (card) {
-          card.addEventListener('click', (e) => {
-            if (e.target.closest('.sw-mintap')) return;
-            _swExpandedId = b.id;
-            renderBlocks();
-          });
+    for (var j = 0; j < _swBlocks.length; j++) {
+      (function(block) {
+        if (_swExpandedId === block.id) {
+          bindExpanded(block);
+        } else {
+          var card = el.querySelector('.sw-card[data-bid="' + block.id + '"]');
+          if (card) {
+            card.addEventListener('click', function(e) {
+              if (e.target.closest && e.target.closest('.sw-mintap')) return;
+              _swExpandedId = block.id;
+              renderBlocks();
+            });
+          }
+          var mintap = document.getElementById('sw_' + block.id + '_mintap');
+          if (mintap) {
+            mintap.addEventListener('click', function(e) {
+              e.stopPropagation();
+              inlineEditMin(block, mintap);
+            });
+          }
         }
-        const minTap = document.getElementById(`sw_${b.id}_mintap`);
-        if (minTap) {
-          minTap.addEventListener('click', (e) => {
-            e.stopPropagation();
-            inlineEditMin(b, minTap);
-          });
-        }
-      }
+      })(_swBlocks[j]);
     }
 
-    updateHeader(); // [Bug 8] alltid oppdater header etter render
+    updateHeader(); // [Bug 8]
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Collapsed card (bruker workout.js CSS-klasser for konsistens)
-  // ──────────────────────────────────────────────────────────
-  function renderCollapsed(b, idx) {
-    const meta  = exMeta(b.a?.exerciseKey);
-    const cat   = meta ? sh().NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
-    const color = cat ? cat.color : '#ccc';
-    const name  = displayName(b.a);
-    const isDrink = b.a?.exerciseKey === 'drink';
-    const minutes = b.kind === 'parallel'
-      ? Math.max(clamp(b.a?.minutes, 0, 300, 0), clamp(b.b?.minutes, 0, 300, 0))
-      : clamp(b.a?.minutes, 0, 300, 0);
+  function renderCollapsed(b) {
+    var meta    = exMeta(b.a ? b.a.exerciseKey : 'tag');
+    var cat     = meta ? sh().NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
+    var color   = cat ? cat.color : '#ccc';
+    var name    = displayName(b.a);
+    var isDrink = b.a && b.a.exerciseKey === 'drink';
+    var minutes = b.kind === 'parallel'
+      ? Math.max(clampInt(b.a ? b.a.minutes : 0, 0, 300, 0),
+                 clampInt(b.b ? b.b.minutes : 0, 0, 300, 0))
+      : clampInt(b.a ? b.a.minutes : 0, 0, 300, 0);
 
-    const badges = [];
+    var badges = '';
     if (b.kind === 'parallel')
-      badges.push(`<span class="wo-h1-badge wo-h1-badge-par">∥ ${esc(displayName(b.b))}</span>`);
-    if ((b.a?.comment || '').trim())
-      badges.push('<span class="wo-h1-badge">📝</span>');
+      badges += '<span class="wo-h1-badge wo-h1-badge-par">∥ ' + esc(displayName(b.b)) + '</span>';
+    if (b.a && b.a.groupMode !== 'none' && b.a.groupCount > 1 && _swSelected.size > 0)
+      badges += '<span class="wo-h1-badge">👥 ' + b.a.groupCount + ' gr</span>';
+    if (b.a && (b.a.comment || '').trim())
+      badges += '<span class="wo-h1-badge">📝</span>';
 
-    return `<div class="sw-card wo-h1-collapsed" data-bid="${b.id}" style="--h1-color:${color}">
-      <div class="wo-h1-stripe"></div>
-      <div class="wo-h1-main">
-        <div class="wo-h1-name">${isDrink ? '💧 ' : ''}${esc(name)}</div>
-        ${badges.length ? `<div class="wo-h1-badges">${badges.join('')}</div>` : ''}
-      </div>
-      <div class="wo-h1-min sw-mintap" id="sw_${b.id}_mintap">
-        ${minutes}<span class="wo-h1-min-unit">min</span>
-      </div>
-    </div>`;
+    return '<div class="sw-card wo-h1-collapsed" data-bid="' + b.id + '" style="--h1-color:' + color + '">' +
+      '<div class="wo-h1-stripe"></div>' +
+      '<div class="wo-h1-main">' +
+        '<div class="wo-h1-name">' + (isDrink ? '💧 ' : '') + esc(name) + '</div>' +
+        (badges ? '<div class="wo-h1-badges">' + badges + '</div>' : '') +
+      '</div>' +
+      '<div class="wo-h1-min sw-mintap" id="sw_' + b.id + '_mintap">' +
+        minutes + '<span class="wo-h1-min-unit">min</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderExpanded(b) {
+    var meta  = exMeta(b.a ? b.a.exerciseKey : 'tag');
+    var cat   = meta ? sh().NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
+    var color = cat ? cat.color : '#ccc';
+    var isP   = b.kind === 'parallel';
+
+    return '<div class="sw-card wo-h1-expanded" data-bid="' + b.id + '" style="--h1-color:' + color + '">' +
+      '<div class="wo-h1-stripe"></div>' +
+      '<div class="wo-h1-exp-body">' +
+        renderEditor(b, 'a') +
+        (isP ? renderParallelSplit(b) : '') +
+        (isP ? renderEditor(b, 'b') : '') +
+        (isP ? '<div class="small-text" style="opacity:0.75;margin-top:4px;">Parallelt: teller lengste varighet.</div>' : '') +
+        '<div class="wo-h1-actions">' +
+          '<button class="btn-small" type="button" id="sw_' + b.id + '_up">↑</button>' +
+          '<button class="btn-small" type="button" id="sw_' + b.id + '_down">↓</button>' +
+          (!isP ? '<button class="btn-small" type="button" id="sw_' + b.id + '_mkpar">∥ Parallelt</button>' : '') +
+          '<button class="btn-small btn-danger" type="button" id="sw_' + b.id + '_del">🗑 Slett</button>' +
+          '<button class="btn-small" type="button" id="sw_' + b.id + '_close">▲ Lukk</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
   // ──────────────────────────────────────────────────────────
-  // Expanded card
+  // Parallell spillerfordeling — alltid-synlig 2-kolonne
   // ──────────────────────────────────────────────────────────
-  function renderExpanded(b, idx) {
-    const meta  = exMeta(b.a?.exerciseKey);
-    const cat   = meta ? sh().NFF_CATEGORY_BY_ID[meta.nffCategory] : null;
-    const color = cat ? cat.color : '#ccc';
-    const isP   = b.kind === 'parallel';
+  function renderParallelSplit(b) {
+    var bid  = b.id;
 
-    return `<div class="sw-card wo-h1-expanded" data-bid="${b.id}" style="--h1-color:${color}">
-      <div class="wo-h1-stripe"></div>
-      <div class="wo-h1-exp-body">
-        ${renderEditor(b, 'a')}
-        ${isP ? renderEditor(b, 'b') : ''}
-        ${isP ? '<div class="small-text" style="opacity:0.75;margin-top:4px;">Parallelt: teller lengste varighet av A/B.</div>' : ''}
-        <div class="wo-h1-actions">
-          <button class="btn-small" type="button" id="sw_${b.id}_up" title="Flytt opp">↑</button>
-          <button class="btn-small" type="button" id="sw_${b.id}_down" title="Flytt ned">↓</button>
-          ${!isP ? `<button class="btn-small" type="button" id="sw_${b.id}_mkpar" title="Legg til parallell øvelse">∥ Parallelt</button>` : ''}
-          <button class="btn-small btn-danger" type="button" id="sw_${b.id}_del">🗑 Slett</button>
-          <button class="btn-small" type="button" id="sw_${b.id}_close">▲ Lukk</button>
-        </div>
-      </div>
-    </div>`;
+    // Ingen spillere valgt → kompakt info-linje, ingen widget
+    if (!_swSelected.size) {
+      return '<div class="wo-parallel-pick" style="margin:10px 0;padding:10px 12px;' +
+        'background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">' +
+        '<div class="small-text" style="opacity:0.75;">Legg til spillere øverst for å fordele mellom øvelse A og B.</div>' +
+      '</div>';
+    }
+
+    // Bygg sortert eligibleliste
+    var map      = playerMap();
+    var eligible = [];
+    _swSelected.forEach(function(id) { var p = map.get(id); if (p) eligible.push(p); });
+    eligible.sort(function(a, b) { return (a.name || '').localeCompare(b.name || '', 'nb'); });
+
+    // Rens _swParPickB: fjern IDs som ikke lenger er i selected
+    var validIds = new Set(eligible.map(function(p) { return p.id; }));
+    var setB     = _swParPickB.get(bid) || new Set();
+    var cleanB   = new Set();
+    setB.forEach(function(id) { if (validIds.has(id)) cleanB.add(id); });
+    _swParPickB.set(bid, cleanB);
+
+    var countB   = cleanB.size;
+    var countA   = eligible.length - countB;
+
+    // Bygg spillerkort — klikk toggler mellom A og B
+    var playersHtml = eligible.map(function(p, i) {
+      var inB    = cleanB.has(p.id);
+      var color  = _PC_COLORS[i % _PC_COLORS.length];
+      var side   = inB ? 'B' : 'A';
+      var bgB    = inB ? '#dbeafe' : '#f0fdf4';
+      var border = inB ? '#93c5fd' : '#86efac';
+      return '<button type="button" class="sw-split-chip" data-splitpid="' + esc(p.id) + '"' +
+        ' data-bid="' + bid + '"' +
+        ' style="background:' + bgB + ';border:1.5px solid ' + border + ';border-radius:20px;' +
+        'padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;' +
+        'display:inline-flex;align-items:center;gap:5px;--pc-color:' + color + '">' +
+        '<span style="width:18px;height:18px;border-radius:50%;background:' + color + ';' +
+          'display:inline-flex;align-items:center;justify-content:center;' +
+          'font-size:9px;font-weight:900;color:#fff;">' +
+          esc((p.name || '?').charAt(0).toUpperCase()) + '</span>' +
+        esc(p.name) + (p.goalie ? ' 🧤' : '') +
+        '<span style="font-size:10px;font-weight:900;opacity:0.6;margin-left:2px;">' + side + '</span>' +
+      '</button>';
+    }).join('');
+
+    return '<div class="wo-parallel-pick" style="margin:10px 0;padding:10px 12px;' +
+      'background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+        '<span style="font-weight:800;font-size:13px;">Spillerfordeling</span>' +
+        '<span class="small-text" style="opacity:0.7;">Klikk en spiller for å bytte side</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:12px;margin-bottom:8px;">' +
+        '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:800;color:#166534;">' +
+          'Øvelse A: <strong>' + countA + '</strong>' +
+        '</div>' +
+        '<div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:800;color:#1e40af;">' +
+          'Øvelse B: <strong>' + countB + '</strong>' +
+        '</div>' +
+        '<button type="button" class="btn-small" id="sw_' + bid + '_pickGoalies">Keepere → B</button>' +
+        '<button type="button" class="btn-small" id="sw_' + bid + '_pickNone">Alle → A</button>' +
+      '</div>' +
+      '<div class="sw-split-chips" id="sw_' + bid + '_splitChips"' +
+        ' style="display:flex;flex-wrap:wrap;gap:5px;">' +
+        playersHtml +
+      '</div>' +
+    '</div>';
   }
-
-  // ──────────────────────────────────────────────────────────
-  // Exercise editor (bruker _woShared.renderExerciseTrigger)
-  // ──────────────────────────────────────────────────────────
   function renderEditor(b, track) {
-    const ex   = track === 'a' ? b.a : b.b;
-    const idp  = `sw_${b.id}_${track}`;
-    const meta = exMeta(ex.exerciseKey);
-    const hasInfo = meta && meta.description && meta.steps;
-    const showCustom = ex.exerciseKey === 'custom';
+    var ex         = track === 'a' ? b.a : b.b;
+    var idp        = 'sw_' + b.id + '_' + track;
+    var meta       = exMeta(ex.exerciseKey);
+    var hasInfo    = meta && meta.description && meta.steps;
+    var showCust   = ex.exerciseKey === 'custom';
+    var mode       = ex.groupMode || 'even';
+    var groupCount = clampInt(ex.groupCount, 1, 20, 2);
+    var hasPl      = _swSelected.size > 0;
+    var sgHint     = (meta && meta.suggestedGroupSize)
+      ? '<span style="color:#2e8b57;">ℹ️ ' + meta.suggestedGroupSize + ' per gruppe</span>' : '';
+    var parHint    = track === 'b' ? ' Parallelt: grupper av spillere til denne øvelsen.' : '';
 
-    return `<div class="wo-subcard">
-      <div class="wo-subheader">
-        <div class="wo-subtitle">${track === 'a' ? 'Øvelse' : 'Parallell øvelse'}</div>
-      </div>
-      <div class="wo-row">
-        <div class="wo-field">
-          <label class="wo-label">Velg øvelse</label>
-          <div class="wo-select-row">
-            ${sh().renderExerciseTrigger(b.id, track, ex)}
-          </div>
-          ${hasInfo ? `<button type="button" id="${idp}_infobtn" class="wo-info-expand" aria-label="Vis øvelsesinfo">
-            <span class="wo-info-expand-text"><span class="wo-info-expand-icon">📖</span> Vis beskrivelse og trenertips</span>
-            <span class="wo-info-expand-chevron">▼</span>
-          </button>` : ''}
-        </div>
-        <div class="wo-field ${showCustom ? '' : 'wo-hidden'}" id="${idp}_cwrap">
-          <label class="wo-label">Navn (manuelt)</label>
-          <input id="${idp}_cname" class="input wo-input" type="text"
-                 value="${esc(ex.customName || '')}" placeholder="Skriv inn navn">
-        </div>
-        <div class="wo-field wo-minutes">
-          <label class="wo-label">Minutter</label>
-          <input id="${idp}_min" class="input wo-input" type="number"
-                 min="0" max="300" value="${clamp(ex.minutes, 0, 300, 10)}">
-        </div>
-      </div>
-      <div id="${idp}_infopanel" class="wo-info-panel wo-hidden"></div>
-      <div class="wo-row">
-        <div class="wo-field">
-          <label class="wo-label">Kommentar</label>
-          <textarea id="${idp}_comment" class="input wo-input" rows="2">${esc(ex.comment || '')}</textarea>
-        </div>
-      </div>
-    </div>`;
+    return '<div class="wo-subcard">' +
+      '<div class="wo-subheader"><div class="wo-subtitle">' +
+        (track === 'a' ? 'Øvelse' : 'Parallell øvelse') +
+      '</div></div>' +
+      '<div class="wo-row">' +
+        '<div class="wo-field">' +
+          '<label class="wo-label">Velg øvelse</label>' +
+          '<div class="wo-select-row">' + sh().renderExerciseTrigger(b.id, track, ex) + '</div>' +
+          (hasInfo
+            ? '<button type="button" id="' + idp + '_infobtn" class="wo-info-expand">' +
+              '<span class="wo-info-expand-text"><span class="wo-info-expand-icon">📖</span>' +
+              ' Vis beskrivelse og trenertips</span><span class="wo-info-expand-chevron">▼</span></button>'
+            : '') +
+        '</div>' +
+        '<div class="wo-field ' + (showCust ? '' : 'wo-hidden') + '" id="' + idp + '_cwrap">' +
+          '<label class="wo-label">Navn (manuelt)</label>' +
+          '<input id="' + idp + '_cname" class="input wo-input" type="text"' +
+            ' value="' + esc(ex.customName || '') + '" placeholder="Skriv inn navn">' +
+        '</div>' +
+        '<div class="wo-field wo-minutes">' +
+          '<label class="wo-label">Minutter</label>' +
+          '<input id="' + idp + '_min" class="input wo-input" type="number" min="0" max="300"' +
+            ' value="' + clampInt(ex.minutes, 0, 300, 10) + '">' +
+        '</div>' +
+      '</div>' +
+      '<div id="' + idp + '_infopanel" class="wo-info-panel wo-hidden"></div>' +
+      '<div class="wo-row">' +
+        '<div class="wo-field wo-groups-settings">' +
+          '<label class="wo-label">Grupper</label>' +
+          '<div class="wo-inline">' +
+            '<input id="' + idp + '_groups" class="input wo-input" type="number"' +
+              ' min="1" max="20" value="' + groupCount + '" style="max-width:90px;">' +
+            '<select id="' + idp + '_mode" class="input wo-input">' +
+              '<option value="none"' + (mode === 'none' ? ' selected' : '') + '>Ingen inndeling</option>' +
+              '<option value="even"' + (mode === 'even' ? ' selected' : '') + '>Jevne grupper</option>' +
+              '<option value="diff"' + (mode === 'diff' ? ' selected' : '') + '>Etter nivå</option>' +
+            '</select>' +
+          '</div>' +
+          ((sgHint || parHint)
+            ? '<div class="small-text" style="opacity:0.85;margin-top:6px;">' + sgHint + parHint + '</div>'
+            : '') +
+        '</div>' +
+        (hasPl
+          ? '<div class="wo-field wo-group-actions">' +
+              '<label class="wo-label">&nbsp;</label>' +
+              '<div class="wo-inline" style="justify-content:flex-end;">' +
+                '<button id="' + idp + '_make" class="btn-secondary" type="button">' +
+                  '<i class="fas fa-users"></i> Lag grupper</button>' +
+                '<button id="' + idp + '_refresh" class="btn-secondary" type="button">' +
+                  '<i class="fas fa-rotate"></i> Refresh</button>' +
+              '</div></div>'
+          : '<div class="wo-field"><div class="small-text" style="opacity:0.7;padding-top:22px;">' +
+              'Legg til spillere over for gruppeinndeling.</div></div>') +
+      '</div>' +
+      '<div class="wo-row">' +
+        '<div class="wo-field">' +
+          '<label class="wo-label">Kommentar</label>' +
+          '<textarea id="' + idp + '_comment" class="input wo-input" rows="2">' +
+            esc(ex.comment || '') + '</textarea>' +
+        '</div>' +
+      '</div>' +
+      '<div id="' + idp + '_groupsOut" class="wo-groupsout"></div>' +
+    '</div>';
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // Gruppeinndeling
+  // ══════════════════════════════════════════════════════════
+  function playerMap() {
+    var map = new Map();
+    for (var i = 0; i < _swPlayers.length; i++) map.set(_swPlayers[i].id, _swPlayers[i]);
+    return map;
+  }
+
+  function getParticipantsFor(block, track) {
+    if (!_swSelected.size) return [];
+    var map = playerMap();
+    var sel = [];
+    _swSelected.forEach(function(id) { var p = map.get(id); if (p) sel.push(p); });
+
+    if (block.kind !== 'parallel') return sel;
+
+    var setB = _swParPickB.get(block.id) || new Set();
+    if (track === 'b') return sel.filter(function(p) { return setB.has(p.id); });
+    return sel.filter(function(p) { return !setB.has(p.id); });
+  }
+
+  function computeGroupsFor(block, track, isRefresh) {
+    var bid      = block.id;
+    var ex       = track === 'a' ? block.a : block.b;
+    var outKey   = bid + ':' + track;
+    var idp      = 'sw_' + bid + '_' + track;
+    var outEl    = document.getElementById(idp + '_groupsOut');
+    if (!outEl) return;
+
+    if (!_swSelected.size) {
+      outEl.innerHTML = '<div class="small-text" style="opacity:0.85;">Ingen spillere valgt.</div>';
+      return;
+    }
+
+    var participants = getParticipantsFor(block, track);
+    if (!participants.length) {
+      outEl.innerHTML = '<div class="small-text" style="opacity:0.85;">Ingen deltakere til denne øvelsen.</div>';
+      return;
+    }
+
+    var groupMode  = ex.groupMode || 'even';
+    var groupCount = clampInt(ex.groupCount, 1, 20, 2);
+
+    // Auto-størrelse fra suggestedGroupSize
+    var meta = sh().EX_BY_KEY.get(ex.exerciseKey);
+    if (meta && meta.suggestedGroupSize >= 2 && !ex._groupCountManual) {
+      var auto = Math.max(1, Math.ceil(participants.length / meta.suggestedGroupSize));
+      groupCount = auto;
+      ex.groupCount = auto;
+      var gi = document.getElementById(idp + '_groups');
+      if (gi) gi.value = String(auto);
+    }
+
+    if (groupMode === 'none' || groupCount <= 1) {
+      _swGroupsCache.set(outKey, [participants]);
+      renderGroupsOut(bid, track);
+      return;
+    }
+
+    if (!isRefresh && _swGroupsCache.has(outKey)) {
+      renderGroupsOut(bid, track);
+      return;
+    }
+
+    var alg = window.Grouping;
+    if (!alg) {
+      if (window.showNotification) window.showNotification('Mangler grouping.js', 'error');
+      return;
+    }
+
+    if (groupMode === 'diff' && !_swUseSkill) {
+      if (window.showNotification)
+        window.showNotification('Slå på "Bruk ferdighetsnivå" for "Etter nivå"', 'error');
+      return;
+    }
+
+    var groups = groupMode === 'diff'
+      ? alg.makeDifferentiatedGroups(participants, groupCount, _swUseSkill)
+      : alg.makeBalancedGroups(participants, groupCount, _swUseSkill);
+
+    if (!groups) {
+      if (window.showNotification) window.showNotification('Kunne ikke lage grupper', 'error');
+      return;
+    }
+
+    _swGroupsCache.set(outKey, groups);
+    renderGroupsOut(bid, track);
+  }
+
+  function renderGroupsOut(blockId, track) {
+    var outKey = blockId + ':' + track;
+    var outEl  = document.getElementById('sw_' + blockId + '_' + track + '_groupsOut');
+    if (!outEl) return;
+
+    var cached = _swGroupsCache.get(outKey);
+    if (!cached) { outEl.innerHTML = ''; return; }
+
+    var groups      = Array.isArray(cached) ? cached : [];
+    var hasMultiple = groups.length > 1;
+    var html        = '<div class="wo-groups-compact">';
+
+    if (hasMultiple)
+      html += '<div class="grpdd-hint small-text" style="opacity:0.6;margin-bottom:4px;' +
+              'text-align:center;font-size:11px;">' +
+              '<i class="fas fa-hand-pointer" style="margin-right:3px;"></i>' +
+              ' Hold inne for å bytte/flytte</div>';
+
+    for (var gi = 0; gi < groups.length; gi++) {
+      var g = groups[gi];
+      html += '<div class="wo-group-card grpdd-group" data-grpdd-gi="' + gi + '">' +
+        '<div class="wo-group-title grpdd-group" data-grpdd-gi="' + gi + '">' +
+          (groups.length === 1 ? 'Deltakere' : 'Gruppe ' + (gi + 1)) +
+          ' <span style="opacity:0.7;">(' + g.length + ')</span></div>' +
+        '<div class="wo-group-names">';
+      for (var pi = 0; pi < g.length; pi++) {
+        var p = g[pi];
+        html += '<span class="wo-group-name grpdd-player"' +
+          ' data-grpdd-gi="' + gi + '" data-grpdd-pi="' + pi + '">' +
+          esc(p.name) + (p.goalie ? ' 🧤' : '') + '</span>';
+      }
+      html += '</div></div>';
+    }
+    html += '</div>';
+    outEl.innerHTML = html;
+
+    if (hasMultiple && window.GroupDragDrop && window.GroupDragDrop.enable) {
+      (function(key) {
+        window.GroupDragDrop.enable(outEl, groups, function(updated) {
+          _swGroupsCache.set(key, updated);
+          renderGroupsOut(blockId, track);
+        }, { notify: window.showNotification || function() {} });
+      })(outKey);
+    }
   }
 
   // ══════════════════════════════════════════════════════════
   // Event binding
   // ══════════════════════════════════════════════════════════
   function bindAll() {
-    // [Bug 9] Bruk _swContainer som scope, ikke document
-    const c = _swContainer;
+    var c = _swContainer;
     if (!c) return;
 
-    c.querySelector('#swBackBtn')?.addEventListener('click', handleBack);
-    c.querySelector('#swAddBtn')?.addEventListener('click', () => addBlock('single'));
-    c.querySelector('#swAddParBtn')?.addEventListener('click', () => addBlock('parallel'));
-    c.querySelector('#swSaveManBtn')?.addEventListener('click', handleManualSave);
-    c.querySelector('#swExportBtn')?.addEventListener('click', exportPdf);
+    function on(id, ev, fn) { var el = c.querySelector('#' + id); if (el) el.addEventListener(ev, fn); }
 
-    // Øktmaler-toggle
-    const genToggle = c.querySelector('#swGenToggle');
-    const genPills  = c.querySelector('#swGenPills');
-    if (genToggle && genPills) {
-      genToggle.addEventListener('click', () => {
-        const open = genPills.style.display !== 'none';
-        genPills.style.display = open ? 'none' : 'flex';
+    on('swBackBtn',    'click', handleBack);
+    on('swAddBtn',     'click', function() { addBlock('single'); });
+    on('swAddParBtn',  'click', function() { addBlock('parallel'); });
+    on('swSaveManBtn', 'click', handleManualSave);
+    on('swExportBtn',  'click', exportPdf);
+
+    // Spillerpanel toggle
+    var pToggle  = c.querySelector('#swPlayersToggle');
+    var pBody    = c.querySelector('#swPlayersBody');
+    var pChevron = c.querySelector('#swPlayersChevron');
+    if (pToggle && pBody) {
+      pToggle.addEventListener('click', function() {
+        var open = pBody.style.display !== 'none';
+        pBody.style.display = open ? 'none' : 'block';
+        if (pChevron) pChevron.textContent = open ? '▼' : '▲';
       });
-      // [Bug 9] Scoped querySelectorAll
-      genPills.querySelectorAll('[data-swTpl]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx  = parseInt(btn.dataset.swTpl, 10);
-          const tpls = sh().NFF_TEMPLATES[_swMeta.ageGroup || '8-9'] || [];
-          const tpl  = tpls[idx];
-          if (tpl) loadTemplate(tpl);
-          genPills.style.display = 'none';
+    }
+
+    // Spillervalg — [Bug 9] scoped til container
+    if (pBody) {
+      var cbs = pBody.querySelectorAll('input[type="checkbox"][data-pid]');
+      for (var i = 0; i < cbs.length; i++) {
+        (function(cb) {
+          cb.addEventListener('change', function() {
+            var pid = cb.getAttribute('data-pid');
+            if (!pid) return;
+            if (cb.checked) _swSelected.add(pid);
+            else            _swSelected.delete(pid);
+            _swGroupsCache.clear();
+            var cnt = c.querySelector('#swPlayerCount');
+            if (cnt) cnt.textContent = String(_swSelected.size);
+            renderBlocks();
+          });
+        })(cbs[i]);
+      }
+      var skillToggle = pBody.querySelector('#swSkillToggle');
+      if (skillToggle) {
+        skillToggle.addEventListener('change', function() {
+          _swUseSkill = skillToggle.checked;
+          _swGroupsCache.clear();
         });
+      }
+    }
+
+    // Øktmaler — [Bug 9] scoped
+    var genToggle = c.querySelector('#swGenToggle');
+    var genPills  = c.querySelector('#swGenPills');
+    if (genToggle && genPills) {
+      genToggle.addEventListener('click', function() {
+        genPills.style.display = genPills.style.display !== 'none' ? 'none' : 'flex';
       });
+      var pills = genPills.querySelectorAll('[data-swTpl]');
+      for (var j = 0; j < pills.length; j++) {
+        (function(btn) {
+          btn.addEventListener('click', function() {
+            var idx  = parseInt(btn.getAttribute('data-swTpl'), 10);
+            var tpls = (sh().NFF_TEMPLATES || {})[_swMeta.ageGroup || '8-9'] || [];
+            if (tpls[idx]) loadTemplate(tpls[idx]);
+            genPills.style.display = 'none';
+          });
+        })(pills[j]);
+      }
     }
 
     renderBlocks();
   }
 
-  function bindExpanded(b, idx) {
-    const $ = id => document.getElementById(id);
+  function bindExpanded(b) {
+    function q(id) { return document.getElementById(id); }
+    function on(id, fn) { var el = q(id); if (el) el.addEventListener('click', fn); }
 
-    $(`sw_${b.id}_up`)?.addEventListener('click', () => moveBlock(b.id, -1));
-    $(`sw_${b.id}_down`)?.addEventListener('click', () => moveBlock(b.id, 1));
-    $(`sw_${b.id}_del`)?.addEventListener('click', () => deleteBlock(b.id));
-    $(`sw_${b.id}_mkpar`)?.addEventListener('click', () => convertToParallel(b.id));
-    $(`sw_${b.id}_close`)?.addEventListener('click', () => {
-      _swExpandedId = null;
-      renderBlocks();
-    });
+    on('sw_' + b.id + '_up',    function() { moveBlock(b.id, -1); });
+    on('sw_' + b.id + '_down',  function() { moveBlock(b.id, 1); });
+    on('sw_' + b.id + '_del',   function() { deleteBlock(b.id); });
+    on('sw_' + b.id + '_mkpar', function() { convertToParallel(b.id); });
+    on('sw_' + b.id + '_close', function() { _swExpandedId = null; renderBlocks(); });
 
+    if (b.kind === 'parallel') bindParallelSplit(b);
     bindEditor(b, 'a');
     if (b.kind === 'parallel') bindEditor(b, 'b');
   }
 
-  function bindEditor(b, track) {
-    const ex  = track === 'a' ? b.a : b.b;
-    const idp = `sw_${b.id}_${track}`;
-    const $   = id => document.getElementById(id);
+  function bindParallelSplit(b) {
+    var bid = b.id;
+    function q(id) { return document.getElementById(id); }
 
-    // Trigger → bottom sheet (via _woShared.openExercisePicker)
-    const trigger = $(`wo_${b.id}_${track}_trigger`);
-    if (trigger) {
-      trigger.addEventListener('click', () => {
-        sh().openExercisePicker(
-          (newKey) => {
-            ex.exerciseKey = newKey;
-            ex.customName  = '';
-            const m = sh().EX_BY_KEY.get(newKey);
-            if (m && clamp(ex.minutes, 0, 300, 0) <= 0) ex.minutes = m.defaultMin ?? 10;
-            scheduleSave();
-            renderBlocks();
-          },
-          { ageGroup: _swMeta.ageGroup, blocks: _swBlocks }
-        );
+    // "Keepere → B"
+    var goBtn = q('sw_' + bid + '_pickGoalies');
+    if (goBtn) {
+      goBtn.addEventListener('click', function() {
+        var map = playerMap();
+        var set = new Set(_swParPickB.get(bid) || []);
+        _swSelected.forEach(function(id) {
+          var p = map.get(id);
+          if (p && p.goalie) set.add(id);
+        });
+        _swParPickB.set(bid, set);
+        _swGroupsCache.delete(bid + ':a');
+        _swGroupsCache.delete(bid + ':b');
+        renderBlocks();
       });
     }
 
-    // Custom name
-    const cname = $(`${idp}_cname`);
-    if (cname) cname.addEventListener('input', () => { ex.customName = cname.value; scheduleSave(); });
-
-    // Minutes
-    const min = $(`${idp}_min`);
-    if (min) min.addEventListener('input', () => {
-      ex.minutes = clamp(min.value, 0, 300, 0);
-      updateHeader();
-      scheduleSave();
-    });
-
-    // Comment
-    const comment = $(`${idp}_comment`);
-    if (comment) comment.addEventListener('input', () => { ex.comment = comment.value; scheduleSave(); });
-
-    // Custom wrap visibility (when exercise changes to/from 'custom')
-    const cwrap = $(`${idp}_cwrap`);
-    if (cwrap) {
-      const visible = ex.exerciseKey === 'custom';
-      cwrap.classList.toggle('wo-hidden', !visible);
+    // "Alle → A"
+    var noneBtn = q('sw_' + bid + '_pickNone');
+    if (noneBtn) {
+      noneBtn.addEventListener('click', function() {
+        _swParPickB.set(bid, new Set());
+        _swGroupsCache.delete(bid + ':a');
+        _swGroupsCache.delete(bid + ':b');
+        renderBlocks();
+      });
     }
 
-    // Info panel toggle (lazy render via _woShared.renderInfoPanel)
-    const infoBtn   = $(`${idp}_infobtn`);
-    const infoPanel = $(`${idp}_infopanel`);
-    if (infoBtn && infoPanel) {
-      infoBtn.addEventListener('click', () => {
-        const open = !infoPanel.classList.contains('wo-hidden');
-        if (open) {
-          infoPanel.classList.add('wo-hidden');
-          infoBtn.classList.remove('wo-info-expand-active');
-        } else {
-          if (!infoPanel.dataset.rendered) {
-            infoPanel.innerHTML = sh().renderInfoPanel(ex.exerciseKey);
-            infoPanel.dataset.rendered = '1';
-          }
-          infoPanel.classList.remove('wo-hidden');
-          infoBtn.classList.add('wo-info-expand-active');
-        }
+    // Chip-klikk — toggle A ↔ B
+    var chipsEl = q('sw_' + bid + '_splitChips');
+    if (chipsEl) {
+      chipsEl.addEventListener('click', function(e) {
+        var chip = e.target.closest('.sw-split-chip');
+        if (!chip) return;
+        var pid = chip.getAttribute('data-splitpid');
+        if (!pid) return;
+        var set = new Set(_swParPickB.get(bid) || []);
+        if (set.has(pid)) set.delete(pid);
+        else              set.add(pid);
+        _swParPickB.set(bid, set);
+        _swGroupsCache.delete(bid + ':a');
+        _swGroupsCache.delete(bid + ':b');
+        renderBlocks();
       });
     }
   }
 
+  function bindEditor(b, track) {
+    var ex  = track === 'a' ? b.a : b.b;
+    var idp = 'sw_' + b.id + '_' + track;
+    function q(id) { return document.getElementById(id); }
+
+    // Trigger → bottom sheet
+    var trigger = q('wo_' + b.id + '_' + track + '_trigger');
+    if (trigger) {
+      trigger.addEventListener('click', function() {
+        sh().openExercisePicker(function(newKey) {
+          ex.exerciseKey       = newKey;
+          ex.customName        = '';
+          ex._groupCountManual = false;
+          var m = sh().EX_BY_KEY.get(newKey);
+          if (m && clampInt(ex.minutes, 0, 300, 0) <= 0) ex.minutes = m.defaultMin || 10;
+          _swGroupsCache.delete(b.id + ':' + track);
+          scheduleSave();
+          renderBlocks();
+        }, { ageGroup: _swMeta.ageGroup, blocks: _swBlocks });
+      });
+    }
+
+    var cname = q(idp + '_cname');
+    if (cname) cname.addEventListener('input', function() { ex.customName = cname.value; scheduleSave(); });
+
+    var min = q(idp + '_min');
+    if (min) min.addEventListener('input', function() {
+      ex.minutes = clampInt(min.value, 0, 300, 0);
+      updateHeader(); scheduleSave();
+    });
+
+    var comment = q(idp + '_comment');
+    if (comment) comment.addEventListener('input', function() { ex.comment = comment.value; scheduleSave(); });
+
+    var cwrap = q(idp + '_cwrap');
+    if (cwrap) cwrap.classList.toggle('wo-hidden', ex.exerciseKey !== 'custom');
+
+    // Info panel
+    var infoBtn   = q(idp + '_infobtn');
+    var infoPanel = q(idp + '_infopanel');
+    if (infoBtn && infoPanel) {
+      infoBtn.addEventListener('click', function() {
+        var open = !infoPanel.classList.contains('wo-hidden');
+        infoPanel.classList.toggle('wo-hidden', open);
+        infoBtn.classList.toggle('wo-info-expand-active', !open);
+        if (!open && !infoPanel.dataset.rendered) {
+          infoPanel.innerHTML    = sh().renderInfoPanel(ex.exerciseKey);
+          infoPanel.dataset.rendered = '1';
+        }
+      });
+    }
+
+    // Gruppeinndeling
+    var groupsInput = q(idp + '_groups');
+    if (groupsInput) {
+      groupsInput.addEventListener('input', function() {
+        ex.groupCount        = clampInt(groupsInput.value, 1, 20, 2);
+        ex._groupCountManual = true;
+        _swGroupsCache.delete(b.id + ':' + track);
+        scheduleSave();
+      });
+    }
+
+    var modeInput = q(idp + '_mode');
+    if (modeInput) {
+      modeInput.addEventListener('change', function() {
+        ex.groupMode = String(modeInput.value || 'even');
+        _swGroupsCache.delete(b.id + ':' + track);
+        scheduleSave();
+      });
+    }
+
+    var makeBtn    = q(idp + '_make');
+    var refreshBtn = q(idp + '_refresh');
+    if (makeBtn)    makeBtn.addEventListener('click',    function() { computeGroupsFor(b, track, false); });
+    if (refreshBtn) refreshBtn.addEventListener('click', function() { computeGroupsFor(b, track, true);  });
+
+    // Render eksisterende cached grupper
+    renderGroupsOut(b.id, track);
+  }
+
   // ══════════════════════════════════════════════════════════
-  // Block operations
+  // Block-operasjoner
   // ══════════════════════════════════════════════════════════
   function addBlock(kind) {
-    const b = makeBlock(kind);
+    var b = makeBlock(kind);
     _swBlocks.push(b);
     _swExpandedId = b.id;
     renderBlocks(); // [Bug 8] renderBlocks kaller updateHeader
@@ -544,286 +943,260 @@
 
   function deleteBlock(blockId) {
     if (!confirm('Slette denne øvelsen?')) return;
-    _swBlocks = _swBlocks.filter(b => b.id !== blockId);
+    _swBlocks = _swBlocks.filter(function(b) { return b.id !== blockId; });
+    _swGroupsCache.delete(blockId + ':a');
+    _swGroupsCache.delete(blockId + ':b');
+    _swParPickB.delete(blockId);
     if (_swExpandedId === blockId) _swExpandedId = null;
     renderBlocks();
     scheduleSave();
   }
 
   function moveBlock(blockId, delta) {
-    const idx = _swBlocks.findIndex(b => b.id === blockId);
+    var idx = -1;
+    for (var i = 0; i < _swBlocks.length; i++) { if (_swBlocks[i].id === blockId) { idx = i; break; } }
     if (idx === -1) return;
-    const next = idx + delta;
+    var next = idx + delta;
     if (next < 0 || next >= _swBlocks.length) return;
-    const [b] = _swBlocks.splice(idx, 1);
-    _swBlocks.splice(next, 0, b);
+    var moved = _swBlocks.splice(idx, 1)[0];
+    _swBlocks.splice(next, 0, moved);
     renderBlocks();
     scheduleSave();
   }
 
   function convertToParallel(blockId) {
-    const idx = _swBlocks.findIndex(b => b.id === blockId);
-    if (idx === -1) return;
-    const b = _swBlocks[idx];
-    if (b.kind === 'parallel') return;
-    if (!confirm('Legge til en parallell øvelse i samme tidsblokk? (Total tid teller lengste varighet)')) return;
-    _swBlocks[idx] = {
-      id: b.id, kind: 'parallel',
-      a: b.a,
-      b: { ...makeEx(), exerciseKey: 'keeper', minutes: 12 },
-    };
-    renderBlocks();
-    scheduleSave();
+    var idx = -1;
+    for (var i = 0; i < _swBlocks.length; i++) { if (_swBlocks[i].id === blockId) { idx = i; break; } }
+    if (idx === -1 || _swBlocks[idx].kind === 'parallel') return;
+    if (!confirm('Legge til parallell øvelse? (Teller lengste varighet)')) return;
+    var exB = makeEx(); exB.exerciseKey = 'keeper'; exB.minutes = 12;
+    _swBlocks[idx] = { id: blockId, kind: 'parallel', a: _swBlocks[idx].a, b: exB };
+    renderBlocks(); scheduleSave();
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Inline minutt-redigering (collapsed-modus)
-  // ──────────────────────────────────────────────────────────
   function inlineEditMin(b, el) {
-    const cur = b.kind === 'parallel'
-      ? Math.max(clamp(b.a?.minutes, 0, 300, 0), clamp(b.b?.minutes, 0, 300, 0))
-      : clamp(b.a?.minutes, 0, 300, 0);
+    var cur = b.kind === 'parallel'
+      ? Math.max(clampInt(b.a ? b.a.minutes : 0, 0, 300, 0),
+                 clampInt(b.b ? b.b.minutes : 0, 0, 300, 0))
+      : clampInt(b.a ? b.a.minutes : 0, 0, 300, 0);
 
-    const input = document.createElement('input');
-    input.type      = 'number';
-    input.className = 'wo-h1-min-input';
-    input.min = '0'; input.max = '300';
-    input.value = String(cur);
-    el.textContent = '';
-    el.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'number'; input.className = 'wo-h1-min-input';
+    input.min = '0'; input.max = '300'; input.value = String(cur);
+    el.textContent = ''; el.appendChild(input);
     input.focus(); input.select();
 
-    const commit = () => {
-      const val = clamp(input.value, 0, 300, cur);
+    var committed = false;
+    function commit() {
+      if (committed) return; committed = true;
+      var val = clampInt(input.value, 0, 300, cur);
       b.a.minutes = val;
-      if (b.kind === 'parallel' && b.b && clamp(b.b.minutes, 0, 300, 0) >= cur)
+      if (b.kind === 'parallel' && b.b && clampInt(b.b.minutes, 0, 300, 0) >= cur)
         b.b.minutes = val;
-      renderBlocks();
-      scheduleSave();
-    };
+      renderBlocks(); scheduleSave();
+    }
     input.addEventListener('blur', commit);
-    input.addEventListener('keydown', e => {
+    input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter')  input.blur();
-      if (e.key === 'Escape') { input.value = String(cur); input.blur(); }
+      if (e.key === 'Escape') { committed = true; renderBlocks(); }
     });
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Load øktmal fra NFF_TEMPLATES
-  // ──────────────────────────────────────────────────────────
   function loadTemplate(tpl) {
-    _swBlocks = tpl.blocks.map(step => {
+    var blocks = tpl.blocks || [];
+    _swBlocks = blocks.map(function(step) {
       if (step.parallel) {
-        const b = makeBlock('parallel');
+        var b = makeBlock('parallel');
         b.a.exerciseKey = step.a.key; b.a.minutes = step.a.min;
         b.b.exerciseKey = step.b.key; b.b.minutes = step.b.min;
         return b;
       }
-      const b = makeBlock('single');
-      b.a.exerciseKey = step.key;
-      b.a.minutes     = step.min;
-      return b;
+      var b2 = makeBlock('single');
+      b2.a.exerciseKey = step.key; b2.a.minutes = step.min;
+      return b2;
     });
     if (tpl.theme) _swMeta.theme = tpl.theme;
     _swExpandedId = null;
-    renderBlocks();
-    scheduleSave();
+    _swGroupsCache.clear();
+    _swParPickB.clear();
+    renderBlocks(); scheduleSave();
     if (window.showNotification)
-      window.showNotification((tpl.title || 'Øktmal') + ' lastet inn — juster fritt', 'success');
+      window.showNotification((tpl.title || 'Øktmal') + ' lastet inn', 'success');
   }
 
   // ══════════════════════════════════════════════════════════
-  // Header-oppdatering (total tid + NFF-bar)
+  // Header-oppdatering
   // ══════════════════════════════════════════════════════════
   function updateHeader() {
-    const tot = document.getElementById('swTotalMin');
+    var tot = document.getElementById('swTotalMin');
     if (tot) tot.textContent = String(totalMin());
-
-    const barEl = document.getElementById('swNffBar');
+    var barEl = document.getElementById('swNffBar');
     if (barEl) barEl.innerHTML = buildNffBar();
   }
 
   // ══════════════════════════════════════════════════════════
-  // Manuell lagring + tilbake-navigasjon
+  // Lagring + navigasjon
   // ══════════════════════════════════════════════════════════
-  async function handleManualSave() {
+  function handleManualSave() {
     if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
-    await doAutoSave();
-    if (window.showNotification)
-      window.showNotification('Treningsøkt lagret', 'success');
+    doAutoSave();
+    setTimeout(function() {
+      if (window.showNotification) window.showNotification('Treningsøkt lagret', 'success');
+    }, 400);
   }
 
-  async function handleBack() {
-    // Flush ventende endringer
-    if (_swDirty || _swSaveTimer) {
-      if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
-      if (_swDirty) await doAutoSave();
+  function handleBack() {
+    if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
+    if (_swDirty) doAutoSave();
+
+    // Vent på pågående save maks 3s, [Bug 5] _swActive = false FØR onBack
+    var waited = 0;
+    function tryBack() {
+      if (_swSaving && waited < 3000) {
+        waited += 100; setTimeout(tryBack, 100); return;
+      }
+      var finalId = _swDbId;
+      _swActive = false;
+      if (_swCallbacks.onBack) _swCallbacks.onBack(finalId);
     }
-    // Vent på pågående save (maks 3s)
-    let waited = 0;
-    while (_swSaving && waited < 3000) {
-      await new Promise(r => setTimeout(r, 100));
-      waited += 100;
-    }
-    const finalId = _swDbId;
-    // [Bug 5] _swActive = false FØR onBack kalles
-    _swActive = false;
-    if (_swCallbacks.onBack) _swCallbacks.onBack(finalId);
+    tryBack();
   }
 
   // ══════════════════════════════════════════════════════════
-  // PDF-eksport (standalone, ikke avhengig av workout.js DOM)
+  // PDF-eksport
   // ══════════════════════════════════════════════════════════
   function exportPdf() {
-    const shared  = sh();
-    const title   = _swMeta.title || 'Treningsøkt';
-    const date    = _swMeta.date  || '';
-    const total   = totalMin();
+    var shared  = sh();
+    var title   = _swMeta.title || 'Treningsøkt';
+    var date    = _swMeta.date  || '';
+    var total   = totalMin();
+    var prevCat = null;
+    var acc     = 0;
 
-    let prevCat = null;
-    let acc     = 0;
-
-    const blocksHtml = _swBlocks.map((b, i) => {
-      const isP  = b.kind === 'parallel';
-      const minA = clamp(b.a?.minutes, 0, 300, 0);
-      const minB = isP ? clamp(b.b?.minutes, 0, 300, 0) : 0;
-      const bMin = isP ? Math.max(minA, minB) : minA;
+    var blocksHtml = '';
+    for (var bi = 0; bi < _swBlocks.length; bi++) {
+      var b    = _swBlocks[bi];
+      var isP  = b.kind === 'parallel';
+      var minA = clampInt(b.a ? b.a.minutes : 0, 0, 300, 0);
+      var minB = isP ? clampInt(b.b ? b.b.minutes : 0, 0, 300, 0) : 0;
+      var bMin = isP ? Math.max(minA, minB) : minA;
       acc += bMin;
 
-      const metaA  = shared.EX_BY_KEY.get(b.a?.exerciseKey);
-      const curCat = (metaA && metaA.nffCategory !== 'pause') ? metaA.nffCategory : null;
-      let secRow   = '';
+      var metaA  = shared.EX_BY_KEY.get(b.a ? b.a.exerciseKey : 'tag');
+      var curCat = (metaA && metaA.nffCategory !== 'pause') ? metaA.nffCategory : null;
+      var secRow = '';
       if (curCat && curCat !== prevCat) {
-        const catObj = shared.NFF_CATEGORY_BY_ID[curCat];
-        if (catObj) {
-          secRow = `<tr><td colspan="4" style="border-left:4px solid ${catObj.color};` +
-                   `padding:5px 10px;font-size:11px;font-weight:800;` +
-                   `color:${catObj.color};background:#f9fafb;">` +
-                   `${esc(shared.catLabel(catObj, _swMeta.ageGroup))}</td></tr>`;
-        }
+        var catObj = shared.NFF_CATEGORY_BY_ID[curCat];
+        if (catObj)
+          secRow = '<tr><td colspan="4" style="border-left:4px solid ' + catObj.color +
+            ';padding:5px 10px;font-size:11px;font-weight:800;color:' + catObj.color +
+            ';background:#f9fafb;">' + esc(shared.catLabel(catObj, _swMeta.ageGroup)) + '</td></tr>';
       }
       if (curCat) prevCat = curCat;
 
-      const nameA  = displayName(b.a);
-      const nameB  = isP ? displayName(b.b) : '';
-      const commA  = esc(String(b.a?.comment || '').trim());
-      const commB  = isP ? esc(String(b.b?.comment || '').trim()) : '';
-      const svgA   = metaA?.diagram
-        ? `<div style="margin:6px 0 2px;">${shared.renderDrillSVG(metaA.diagram)}</div>` : '';
+      var nameA = displayName(b.a);
+      var commA = esc(String(b.a && b.a.comment ? b.a.comment : '').trim());
+      var svgA  = metaA && metaA.diagram
+        ? '<div style="margin:6px 0 2px;">' + shared.renderDrillSVG(metaA.diagram) + '</div>' : '';
 
       if (!isP) {
-        return `${secRow}<tr>
-          <td style="color:#888;font-weight:800;width:40px;">${i + 1}</td>
-          <td>
-            <div style="font-weight:900;">${esc(nameA)}</div>
-            ${svgA}
-            ${commA ? `<div style="color:#666;font-size:12px;margin-top:3px;">${commA}</div>` : ''}
-          </td>
-          <td style="text-align:right;font-weight:900;width:70px;">${bMin}</td>
-          <td style="text-align:right;color:#888;font-size:12px;width:50px;">${acc}'</td>
-        </tr>`;
+        blocksHtml += secRow + '<tr>' +
+          '<td style="color:#888;font-weight:800;width:40px;">' + (bi + 1) + '</td>' +
+          '<td><div style="font-weight:900;">' + esc(nameA) + '</div>' + svgA +
+            (commA ? '<div style="color:#666;font-size:12px;margin-top:3px;">' + commA + '</div>' : '') +
+          '</td>' +
+          '<td style="text-align:right;font-weight:900;width:70px;">' + bMin + '</td>' +
+          '<td style="text-align:right;color:#888;font-size:12px;width:50px;">' + acc + '\'</td>' +
+        '</tr>';
+      } else {
+        var nameB = displayName(b.b);
+        var commB = esc(String(b.b && b.b.comment ? b.b.comment : '').trim());
+        blocksHtml += secRow + '<tr>' +
+          '<td style="color:#888;font-weight:800;">' + (bi + 1) + '</td>' +
+          '<td><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+            '<div style="border:1px solid #e2e8f0;border-radius:10px;padding:8px;">' +
+              '<div style="font-size:11px;color:#888;font-weight:800;margin-bottom:3px;">ØVELSE A</div>' +
+              '<div style="font-weight:900;">' + esc(nameA) +
+                ' <span style="color:#888;font-size:12px;">(' + minA + ' min)</span></div>' +
+              (commA ? '<div style="color:#666;font-size:12px;">' + commA + '</div>' : '') +
+            '</div>' +
+            '<div style="border:1px solid #e2e8f0;border-radius:10px;padding:8px;">' +
+              '<div style="font-size:11px;color:#888;font-weight:800;margin-bottom:3px;">ØVELSE B</div>' +
+              '<div style="font-weight:900;">' + esc(nameB) +
+                ' <span style="color:#888;font-size:12px;">(' + minB + ' min)</span></div>' +
+              (commB ? '<div style="color:#666;font-size:12px;">' + commB + '</div>' : '') +
+            '</div>' +
+          '</div></td>' +
+          '<td style="text-align:right;font-weight:900;">' + bMin + '</td>' +
+          '<td style="text-align:right;color:#888;font-size:12px;">' + acc + '\'</td>' +
+        '</tr>';
       }
+    }
 
-      return `${secRow}<tr>
-        <td style="color:#888;font-weight:800;">${i + 1}</td>
-        <td>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:8px;">
-              <div style="font-size:11px;color:#888;font-weight:800;margin-bottom:3px;">ØVELSE A</div>
-              <div style="font-weight:900;">${esc(nameA)} <span style="color:#888;font-size:12px;">(${minA} min)</span></div>
-              ${commA ? `<div style="color:#666;font-size:12px;">${commA}</div>` : ''}
-            </div>
-            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:8px;">
-              <div style="font-size:11px;color:#888;font-weight:800;margin-bottom:3px;">ØVELSE B</div>
-              <div style="font-weight:900;">${esc(nameB)} <span style="color:#888;font-size:12px;">(${minB} min)</span></div>
-              ${commB ? `<div style="color:#666;font-size:12px;">${commB}</div>` : ''}
-            </div>
-          </div>
-        </td>
-        <td style="text-align:right;font-weight:900;">${bMin}</td>
-        <td style="text-align:right;color:#888;font-size:12px;">${acc}'</td>
-      </tr>`;
-    }).join('');
-
-    // NFF-fordelingsbar
-    const bal = shared.calculateNffBalance(_swBlocks, _swMeta.ageGroup || '8-9');
-    let balHtml = '';
-    if (bal.totalMinutes > 0) {
+    // NFF-balanse
+    var bal = shared.calculateNffBalance(_swBlocks, _swMeta.ageGroup || '8-9');
+    var balHtml = '';
+    if (bal && bal.totalMinutes > 0) {
       balHtml = '<div style="margin-top:12px;">' +
-                '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;' +
-                'color:#888;font-weight:800;margin-bottom:6px;">NFF-fordeling</div>' +
-                '<div style="display:flex;gap:4px;height:22px;">';
-      for (const cat of shared.NFF_CATEGORIES) {
-        const b   = bal.balance[cat.id];
-        if (!b || !b.minutes) continue;
-        const pct = Math.max(4, Math.round((b.minutes / bal.totalMinutes) * 100));
-        balHtml += `<div style="flex:${pct};background:${cat.color}22;border-left:3px solid ${cat.color};` +
-                   `border-radius:4px;display:flex;align-items:center;justify-content:center;` +
-                   `font-size:9px;font-weight:800;color:${cat.color};">${b.minutes}m</div>`;
+        '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;' +
+          'font-weight:800;margin-bottom:6px;">NFF-fordeling</div>' +
+        '<div style="display:flex;gap:4px;height:22px;">';
+      for (var ci = 0; ci < shared.NFF_CATEGORIES.length; ci++) {
+        var cat = shared.NFF_CATEGORIES[ci];
+        var bx  = bal.balance[cat.id];
+        if (!bx || !bx.minutes) continue;
+        var pct2 = Math.max(4, Math.round((bx.minutes / bal.totalMinutes) * 100));
+        balHtml += '<div style="flex:' + pct2 + ';background:' + cat.color + '22;' +
+          'border-left:3px solid ' + cat.color + ';border-radius:4px;' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'font-size:9px;font-weight:800;color:' + cat.color + ';">' + bx.minutes + 'm</div>';
       }
       balHtml += '</div></div>';
     }
 
-    // Temabeskrivelse
-    const themeMeta = _swMeta.theme ? shared.NFF_THEME_BY_ID[_swMeta.theme] : null;
-    const themeHtml = themeMeta
-      ? `<div style="margin-top:3px;font-size:13px;opacity:0.9;">Tema: <strong>${esc(themeMeta.label)}</strong></div>` : '';
+    var themeMeta = _swMeta.theme ? shared.NFF_THEME_BY_ID[_swMeta.theme] : null;
+    var themeHtml = themeMeta
+      ? '<div style="margin-top:3px;font-size:13px;opacity:0.9;">Tema: <strong>' +
+        esc(themeMeta.label) + '</strong></div>' : '';
 
-    const html = `<!doctype html><html lang="nb"><head><meta charset="utf-8">
-<title>${esc(title)}</title>
-<style>
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f6f8fc;}
-  .wrap{max-width:900px;margin:0 auto;padding:16px;}
-  .hdr{background:linear-gradient(135deg,#0b5bd3,#19b0ff);color:#fff;border-radius:16px;padding:14px 18px;margin-bottom:10px;}
-  .hdr-t{font-size:18px;font-weight:900;line-height:1.2;}
-  .hdr-s{font-size:13px;opacity:0.9;margin-top:2px;}
-  .card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;}
-  table{width:100%;border-collapse:collapse;}
-  th,td{vertical-align:top;padding:8px 10px;border-bottom:1px solid #e2e8f0;}
-  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;}
-  tr{page-break-inside:avoid;}
-  .actions{margin-top:12px;text-align:center;}
-  .btn{border:0;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer;margin:4px;}
-  .btn-p{background:#0b5bd3;color:#fff;}
-  .btn-s{background:#1f2a3d;color:#fff;}
-  .footer{text-align:center;margin-top:14px;font-size:11px;color:#888;}
-  @media print{
-    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    body{background:#fff;}
-    .wrap{padding:0;}
-    .actions{display:none!important;}
-    .hdr,.card{border-radius:0;border-left:0;border-right:0;}
-  }
-</style></head><body>
-<div class="wrap">
-  <div class="hdr">
-    <div class="hdr-t">${esc(title)}</div>
-    <div class="hdr-s">${date ? esc(date) + ' &middot; ' : ''}Total: ${total} min${_swMeta.ageGroup ? ' &middot; ' + esc(_swMeta.ageGroup) + ' år' : ''}</div>
-    ${themeHtml}
-  </div>
-  <div class="card">
-    <table>
-      <thead><tr>
-        <th>#</th><th>Øvelse</th>
-        <th style="text-align:right">Min</th>
-        <th style="text-align:right">Akk.</th>
-      </tr></thead>
-      <tbody>${blocksHtml}</tbody>
-    </table>
-    ${balHtml}
-  </div>
-  <div style="text-align:center;font-size:1.5rem;font-weight:900;margin-top:14px;">${total} min totalt</div>
-  <div class="actions">
-    <button class="btn btn-p" onclick="window.print()">Lagre som PDF</button>
-    <button class="btn btn-s" onclick="window.close()">Lukk</button>
-  </div>
-  <div class="footer">Laget med Barnefotballtrener.no</div>
-</div></body></html>`;
+    var html = '<!doctype html><html lang="nb"><head><meta charset="utf-8">' +
+      '<title>' + esc(title) + '</title><style>' +
+      'body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f6f8fc;}' +
+      '.wrap{max-width:900px;margin:0 auto;padding:16px;}' +
+      '.hdr{background:linear-gradient(135deg,#0b5bd3,#19b0ff);color:#fff;border-radius:16px;padding:14px 18px;margin-bottom:10px;}' +
+      '.hdr-t{font-size:18px;font-weight:900;}.hdr-s{font-size:13px;opacity:0.9;margin-top:2px;}' +
+      '.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;}' +
+      'table{width:100%;border-collapse:collapse;}' +
+      'th,td{vertical-align:top;padding:8px 10px;border-bottom:1px solid #e2e8f0;}' +
+      'th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;}' +
+      'tr{page-break-inside:avoid;}' +
+      '.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer;margin:4px;}' +
+      '.btn-p{background:#0b5bd3;color:#fff;}.btn-s{background:#1f2a3d;color:#fff;}' +
+      '.footer{text-align:center;margin-top:14px;font-size:11px;color:#888;}' +
+      '@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      'body{background:#fff;}.wrap{padding:0;}' +
+      '.actions{display:none!important;}.hdr,.card{border-radius:0;border-left:0;border-right:0;}}' +
+      '</style></head><body><div class="wrap">' +
+        '<div class="hdr"><div class="hdr-t">' + esc(title) + '</div>' +
+          '<div class="hdr-s">' + (date ? esc(date) + ' &middot; ' : '') + 'Total: ' + total + ' min' +
+            (_swMeta.ageGroup ? ' &middot; ' + esc(_swMeta.ageGroup) + ' år' : '') + '</div>' +
+          themeHtml + '</div>' +
+        '<div class="card"><table><thead><tr>' +
+          '<th>#</th><th>Øvelse</th>' +
+          '<th style="text-align:right">Min</th><th style="text-align:right">Akk.</th>' +
+        '</tr></thead><tbody>' + blocksHtml + '</tbody></table>' + balHtml + '</div>' +
+        '<div style="text-align:center;font-size:1.5rem;font-weight:900;margin-top:14px;">' +
+          total + ' min totalt</div>' +
+        '<div class="actions" style="margin-top:12px;text-align:center;">' +
+          '<button class="btn btn-p" onclick="window.print()">Lagre som PDF</button>' +
+          '<button class="btn btn-s" onclick="window.close()">Lukk</button>' +
+        '</div>' +
+        '<div class="footer">Laget med Barnefotballtrener.no</div>' +
+      '</div></body></html>';
 
-    const w = window.open('', '_blank');
+    var w = window.open('', '_blank');
     if (!w) {
-      if (window.showNotification)
-        window.showNotification('Popup blokkert. Tillat popups for å eksportere.', 'error');
+      if (window.showNotification) window.showNotification('Popup blokkert. Tillat popups.', 'error');
       return;
     }
     w.document.open(); w.document.write(html); w.document.close();
@@ -834,75 +1207,73 @@
   // ══════════════════════════════════════════════════════════
 
   /**
-   * Initialiser den innebygde treningsøkt-editoren.
-   * @param {HTMLElement} container  - DOM-element økteeditoren rendres i
-   * @param {Array}       players    - spillerliste fra season.js (for evt. fremtidig bruk)
-   * @param {Object}      opts
-   *   opts.ageGroup   {string|null}
-   *   opts.theme      {string|null}
-   *   opts.title      {string}
-   *   opts.date       {string}  ISO-dato e.g. '2026-04-01'
-   *   opts.eventId    {string|null}  Supabase event UUID
-   *   opts.seasonId   {string|null}  Supabase season UUID
-   *   opts.workoutId  {string|null}  Eksisterende workouts.id (for oppdatering)
-   *   opts.blocks     {Array|null}   Eksisterende blokker å laste inn
-   *   opts.onSave     {Function}     async (payload) => { id: string }
-   *   opts.onBack     {Function}     (finalDbId) => void
+   * Initialiser embedded treningsøkt-editor.
+   * players = oppmøteliste fra sesong (settes alle valgt som standard).
    */
   function init(container, players, opts) {
     if (!window._woShared) {
-      console.error('[sesong-workout] window._woShared ikke tilgjengelig. Er workout.js lastet?');
+      console.error('[sesong-workout] window._woShared mangler. Er workout.js lastet?');
       return;
     }
-
-    _swContainer   = container;
-    _swPlayers     = players || [];
-    _swCallbacks   = {
-      onSave: opts.onSave || (async () => null),
-      onBack: opts.onBack || (() => {}),
+    _swContainer  = container;
+    // Normaliser spillerformat: season.js sender skill_level, Grouping.js forventer skill
+    _swPlayers = (Array.isArray(players) ? players : []).map(function(p) {
+      return {
+        id:     p.id,
+        name:   p.name    || '',
+        skill:  Number(p.skill || p.skill_level || 0),
+        goalie: !!p.goalie
+      };
+    });
+    _swSelected   = new Set(_swPlayers.map(function(p) { return p.id; }));
+    _swCallbacks  = {
+      onSave: opts.onSave || function() { return Promise.resolve(null); },
+      onBack: opts.onBack || function() {},
     };
     _swMeta = {
-      ageGroup:  opts.ageGroup  || null,
-      theme:     opts.theme     || null,
-      title:     opts.title     || 'Treningsøkt',
-      date:      opts.date      || '',
-      eventId:   opts.eventId   || null,
-      seasonId:  opts.seasonId  || null,
+      ageGroup: opts.ageGroup      || null,
+      theme:    opts.existingTheme || opts.theme || null,
+      title:    opts.title         || 'Treningsøkt',
+      date:     opts.date          || '',
+      eventId:  opts.eventId       || null,
+      seasonId: opts.seasonId      || null,
+      duration: opts.minutes       || 60,
     };
-    _swDbId       = opts.workoutId || null;
-    _swBlocks     = opts.blocks ? loadBlocks(opts.blocks) : [makeBlock('single')];
-    _swExpandedId = null;
-    _swSaving     = false;
-    _swDirty      = false;
+    _swDbId        = opts.existingDbId || opts.workoutId || null;
+    _swBlocks      = (opts.existingBlocks || opts.blocks)
+      ? loadBlocks(opts.existingBlocks || opts.blocks)
+      : [makeBlock('single')];
+    _swExpandedId  = null;
+    _swGroupsCache = new Map();
+    _swParPickB    = new Map();
+    _swUseSkill    = false;
+    _swSaving      = false;
+    _swDirty       = false;
     if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
-    _swActive     = true;
+    _swActive      = true;
 
     render();
-    console.log('[sesong-workout] init — eventId:', _swMeta.eventId, '| dbId:', _swDbId);
+    console.log('[sesong-workout] init — eventId:', _swMeta.eventId,
+                '| dbId:', _swDbId, '| spillere:', _swPlayers.length);
   }
 
-  /**
-   * Rydder opp og klargjør for GC.
-   * Brann-og-glem sluttlagring av uflushed endringer.
-   */
   function destroy() {
-    // [Bug 5] Sett inaktiv FØR alt annet
-    _swActive = false;
-
+    _swActive = false; // [Bug 5] FØR alt annet
     if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
-
-    // Brann-og-glem sluttlagring
     if (_swDirty && _swCallbacks.onSave) {
-      _swCallbacks.onSave(buildSavePayload())
-        .then(r => { if (r?.id && !_swDbId) _swDbId = r.id; })
-        .catch(() => {});
+      _swCallbacks.onSave(buildPayload())
+        .then(function(r) { if (r && r.id && !_swDbId) _swDbId = r.id; })
+        .catch(function() {});
     }
-
     _swContainer = null;
     _swCallbacks = { onSave: null, onBack: null };
     console.log('[sesong-workout] destroy');
   }
 
-  window.sesongWorkout = { init, destroy };
+  window.sesongWorkout = {
+    init:     init,
+    destroy:  destroy,
+    isActive: function() { return _swActive; },
+  };
 
 })();

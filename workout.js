@@ -1885,7 +1885,8 @@
     const groups = _bsGroupExercises();
     const inSession = _bsKeysInSession();
     const missing = _bsMissingCategories();
-    const currentTheme = state.theme || null;
+    const currentTheme = (_bs.ctxOverride && _bs.ctxOverride.theme) ? _bs.ctxOverride.theme : state.theme;
+    const effectiveAge = (_bs.ctxOverride ? _bs.ctxOverride.ageGroup : state.ageGroup) || null;
     const favs = loadFavorites();
 
     let html = '';
@@ -1895,13 +1896,13 @@
       html += '<div class="wo-bs-hint">';
       html += '<span class="wo-bs-hint-icon">\uD83D\uDCA1</span> ';
       html += 'Mangler i \u00f8kta: ';
-      html += missing.map(c => '<strong>' + escapeHtml(catShort(c, state.ageGroup)) + '</strong>').join(', ');
+      html += missing.map(c => '<strong>' + escapeHtml(catShort(c, effectiveAge)) + '</strong>').join(', ');
       html += '</div>';
     }
 
     // Favorites section
     if (favs.size > 0) {
-      const age = state.ageGroup || null;
+      const age = effectiveAge;
       const favExercises = EXERCISES.filter(ex =>
         ex.category !== 'special' && favs.has(ex.key) &&
         (!age || !ex.ages || ex.ages.includes(age))
@@ -1920,7 +1921,7 @@
     if (currentTheme) {
       const themeMeta = NFF_THEME_BY_ID[currentTheme];
       if (themeMeta) {
-        const age = state.ageGroup || null;
+        const age = effectiveAge;
         const themeExercises = EXERCISES.filter(ex =>
           ex.category !== 'special' && ex.themes && ex.themes.includes(currentTheme) &&
           (!age || !ex.ages || ex.ages.includes(age))
@@ -1953,7 +1954,7 @@
 
       html += '<div class="wo-bs-section" data-cat="' + cat.id + '">';
       html += '<div class="wo-bs-section-head" style="--cat-color:' + cat.color + '">';
-      html += catLabel(cat, state.ageGroup) + '</div>';
+      html += catLabel(cat, effectiveAge) + '</div>';
 
       for (const ex of exs) {
         html += _bsRenderCard(ex, inSession, favs);
