@@ -206,9 +206,13 @@
           '<i class="fas fa-save"></i> Lagre</button>' +
         '<button type="button" class="btn-secondary" id="swExportBtn">' +
           '<i class="fas fa-file-pdf"></i> PDF</button>' +
+        '<button type="button" class="btn-secondary" id="swResetBtn" style="margin-left:auto;">' +
+          '<i class="fas fa-rotate-left"></i> Nullstill</button>' +
       '</div>' +
       '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-500,#64748b);margin-top:6px;cursor:pointer;">' +
         '<input type="checkbox" id="swExportDetailToggle" checked> Inkluder beskrivelser og diagrammer</label>' +
+      '<button type="button" class="btn-secondary" id="swShareBtn" style="width:100%;margin-top:8px;">' +
+        '<i class="fas fa-share-from-square"></i> Del med medtrener</button>' +
     '</div>';
   }
 
@@ -802,6 +806,8 @@
     on('swAddParBtn',  'click', function() { addBlock('parallel'); });
     on('swSaveManBtn', 'click', handleManualSave);
     on('swExportBtn',  'click', exportPdf);
+    on('swResetBtn',   'click', handleReset);
+    on('swShareBtn',   'click', handleShare);
 
     // Spillerpanel toggle
     var pToggle  = c.querySelector('#swPlayersToggle');
@@ -1131,6 +1137,72 @@
     setTimeout(function() {
       if (window.showNotification) window.showNotification('Treningsøkt lagret', 'success');
     }, 400);
+  }
+
+  function handleReset() {
+    if (_swBlocks.length === 0) return;
+    if (!window.confirm('Tøm hele økta og start på nytt?')) return;
+    _swBlocks = [];
+    _swGroupsCache.clear();
+    _swParPickB.clear();
+    _swExpandedId = null;
+    _swMeta.theme = null;
+    _swDirty = true;
+    scheduleSave();
+    renderBlocks();
+    updateHeader();
+  }
+
+  function handleShare() {
+    if (_swBlocks.length === 0) {
+      if (window.showNotification) window.showNotification('Legg til øvelser først.', 'warning');
+      return;
+    }
+    var fileObj = {
+      type: 'bft_workout',
+      v: 1,
+      title: _swMeta.title || 'Treningsøkt',
+      date: _swMeta.date || '',
+      ageGroup: _swMeta.ageGroup || null,
+      theme: _swMeta.theme || null,
+      duration: _swMeta.duration || null,
+      blocks: _swBlocks.map(function(b) {
+        var out = { kind: b.kind, a: { exerciseKey: b.a.exerciseKey, minutes: b.a.minutes, comment: b.a.comment || '' } };
+        if (b.kind === 'parallel' && b.b) {
+          out.b = { exerciseKey: b.b.exerciseKey, minutes: b.b.minutes, comment: b.b.comment || '' };
+        }
+        return out;
+      })
+    };
+    var jsonStr = JSON.stringify(fileObj, null, 2);
+    var filename = (fileObj.title || 'trening').replace(/[^a-zA-Z0-9æøåÆØÅ _-]/g, '') + '.json';
+
+    // Web Share API (mobile), fallback to download
+    try {
+      if (navigator.share && navigator.canShare) {
+        var file = new File([jsonStr], filename, { type: 'application/json' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({
+            title: fileObj.title,
+            text: 'Treningsøkt fra Barnefotballtrener',
+            files: [file]
+          }).then(function() {
+            if (window.showNotification) window.showNotification('Øktfil delt', 'success');
+          }).catch(function() {});
+          return;
+        }
+      }
+    } catch (e) { /* fallback */ }
+
+    // Fallback: download
+    var blob = new Blob([jsonStr], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if (window.showNotification) window.showNotification('Øktfil lastet ned', 'success');
   }
 
   function handleBack() {
