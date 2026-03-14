@@ -816,6 +816,7 @@
         '<span class="team-item-name">' + escapeHtml(t.name) + '</span>' +
         '<span class="team-item-actions">' +
           '<button class="team-item-invite" data-team-id="' + t.id + '" title="Inviter trener"><i class="fas fa-user-plus"></i></button>' +
+          '<button class="team-item-lagside" data-team-id="' + t.id + '" title="Lagside for foreldre"><i class="fas fa-link"></i></button>' +
           '<button class="team-item-edit" data-team-id="' + t.id + '" title="Rediger"><i class="fas fa-pen"></i></button>' +
           (ownTeams.length > 1 ? '<button class="team-item-delete" data-team-id="' + t.id + '" title="Slett"><i class="fas fa-trash"></i></button>' : '') +
         '</span>' +
@@ -871,6 +872,18 @@
         if (dd) dd.classList.remove('show');
         if (btn) btn.classList.remove('open');
         showInviteModal(tid);
+      });
+    });
+
+    // Lagside buttons
+    container.querySelectorAll('.team-item-lagside').forEach(function(lsBtn) {
+      lsBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var tid = lsBtn.getAttribute('data-team-id');
+        var dd = $('teamDropdown');
+        if (dd) dd.classList.remove('show');
+        if (btn) btn.classList.remove('open');
+        showLagsideModal(tid);
       });
     });
 
@@ -1293,6 +1306,148 @@
       var input = $('inviteEmailInput');
       if (input) input.focus();
     }, 100);
+  }
+
+  // Lagside-modal (team page for parents)
+  function showLagsideModal(teamId) {
+    var team = state.teams.find(function(t) { return t.id === teamId; });
+    if (!team || team._isShared) return;
+
+    var existing = $('lagsideModal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'lagsideModal';
+    modal.className = 'team-modal-overlay';
+
+    function renderContent(body) {
+      modal.innerHTML =
+        '<div class="team-modal-box">' +
+          '<h3>Lagside for foreldre</h3>' +
+          body +
+          '<div class="team-modal-actions">' +
+            '<button class="team-modal-cancel" type="button">Lukk</button>' +
+          '</div>' +
+        '</div>';
+      modal.querySelector('.team-modal-cancel').addEventListener('click', function() {
+        modal.remove();
+      });
+    }
+
+    renderContent('<p style="font-size:13px;color:var(--text-400);text-align:center;padding:16px 0;">Laster...</p>');
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.remove();
+    });
+
+    (async function() {
+      try {
+        var sb = getSupabaseClient();
+        if (!sb) throw new Error('Ikke innlogget');
+
+        var res = await sb.from('team_pages').select('token, active').eq('team_id', teamId).maybeSingle();
+        if (res.error) throw res.error;
+
+        if (res.data && res.data.active) {
+          showActiveState(res.data.token);
+        } else {
+          showCreateState();
+        }
+      } catch (e) {
+        renderContent('<p style="font-size:13px;color:var(--error);">Kunne ikke laste lagside-status: ' + escapeHtml(e.message || 'Ukjent feil') + '</p>');
+      }
+    })();
+
+    function showCreateState() {
+      renderContent(
+        '<p style="font-size:13px;color:var(--text-400);margin:0 0 14px;">Opprett en lagside som foreldre kan bruke til å se kalender og melde oppmøte.</p>' +
+        '<button class="team-modal-create" type="button" id="lagsideCreateBtn" style="width:100%;">Opprett lagside for foreldre</button>'
+      );
+      var createBtn = $('lagsideCreateBtn');
+      if (createBtn) {
+        createBtn.addEventListener('click', async function() {
+          createBtn.disabled = true;
+          createBtn.textContent = 'Oppretter...';
+          try {
+            var sb = getSupabaseClient();
+            var session = await sb.auth.getSession();
+            var token = session.data.session ? session.data.session.access_token : null;
+            if (!token) throw new Error('Ingen sesjon');
+
+            var response = await fetch('/api/team-page?action=create', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify({ team_id: teamId }),
+            });
+            var result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Noe gikk galt');
+            showActiveState(result.token);
+            showNotification('Lagside opprettet!', 'success');
+          } catch (e) {
+            createBtn.disabled = false;
+            createBtn.textContent = 'Opprett lagside for foreldre';
+            showNotification(e.message || 'Kunne ikke opprette lagside.', 'error');
+          }
+        });
+      }
+    }
+
+    function showActiveState(pageToken) {
+      var url = 'https://barnefotballtrener.no/lag/' + pageToken;
+      renderContent(
+        '<p style="font-size:13px;color:var(--text-400);margin:0 0 10px;">Del denne lenken med foreldre i laget. Alle med lenken kan se lagets kalender og melde oppmøte.</p>' +
+        '<input type="text" id="lagsideUrl" value="' + escapeHtml(url) + '" readonly style="width:100%;box-sizing:border-box;font-size:13px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);margin-bottom:10px;cursor:text;">' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="team-modal-create" type="button" id="lagsideCopyBtn" style="flex:1;">Kopier lenke</button>' +
+          '<button class="team-modal-cancel" type="button" id="lagsideRegenBtn" style="flex:1;color:var(--text-400);">Ny lenke</button>' +
+        '</div>'
+      );
+
+      var copyBtn = $('lagsideCopyBtn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+          var input = $('lagsideUrl');
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              showNotification('Lenke kopiert!', 'success');
+            });
+          } else if (input) {
+            input.select();
+            document.execCommand('copy');
+            showNotification('Lenke kopiert!', 'success');
+          }
+        });
+      }
+
+      var regenBtn = $('lagsideRegenBtn');
+      if (regenBtn) {
+        regenBtn.addEventListener('click', async function() {
+          if (!confirm('Gjeldende lenke slutter å virke. Fortsett?')) return;
+          regenBtn.disabled = true;
+          regenBtn.textContent = 'Genererer...';
+          try {
+            var sb = getSupabaseClient();
+            var session = await sb.auth.getSession();
+            var tok = session.data.session ? session.data.session.access_token : null;
+            if (!tok) throw new Error('Ingen sesjon');
+
+            var response = await fetch('/api/team-page?action=regenerate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+              body: JSON.stringify({ team_id: teamId }),
+            });
+            var result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Noe gikk galt');
+            showActiveState(result.token);
+            showNotification('Ny lenke generert.', 'success');
+          } catch (e) {
+            regenBtn.disabled = false;
+            regenBtn.textContent = 'Ny lenke';
+            showNotification(e.message || 'Kunne ikke generere ny lenke.', 'error');
+          }
+        });
+      }
+    }
   }
 
 

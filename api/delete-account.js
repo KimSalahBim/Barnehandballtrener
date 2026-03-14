@@ -190,7 +190,7 @@ export default async function handler(req, res) {
 
           // Update all data ownership for this team
           // This ensures the new owner's user_id is on all data
-          const tables = ['players', 'user_data', 'seasons', 'workouts'];
+          const tables = ['players', 'user_data', 'seasons', 'team_pages'];
           for (const table of tables) {
             await supabaseAdmin
               .from(table)
@@ -207,7 +207,7 @@ export default async function handler(req, res) {
 
           const seasonIds = (teamSeasons || []).map(s => s.id);
           if (seasonIds.length > 0) {
-            for (const table of ['events', 'season_players', 'event_players', 'training_series']) {
+            for (const table of ['events', 'season_players', 'event_players', 'training_series', 'workouts']) {
               await supabaseAdmin
                 .from(table)
                 .update({ user_id: newOwnerId })

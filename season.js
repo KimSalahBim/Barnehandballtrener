@@ -6258,6 +6258,43 @@
       }
     }
 
+    // --- LAGSIDE SHARING SECTION ---
+    html += '<div class="sn-section">Lagside</div><div class="settings-card">';
+
+    html += '<div style="padding:10px 14px;">' +
+      '<label style="font-size:13px;font-weight:500;display:block;margin-bottom:4px;">Beskjed til foreldre</label>' +
+      '<textarea id="snParentMessage" rows="2" maxlength="500" placeholder="F.eks. Husk leggskinn, vi trenger kj\u00f8ring..." ' +
+      'style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;resize:vertical;">' +
+      escapeHtml(ev.parent_message || '') + '</textarea>' +
+      '</div>';
+
+    if (ev.type === 'training') {
+      html += '<div style="padding:6px 14px;display:flex;align-items:center;gap:8px;">' +
+        '<input type="checkbox" id="snShareWorkout"' + (ev.share_workout ? ' checked' : '') + '>' +
+        '<label for="snShareWorkout" style="font-size:13px;">Del treningsinnhold p\u00e5 lagside</label>' +
+        '</div>';
+    }
+
+    if (isMatch && ev.status === 'completed') {
+      html += '<div style="padding:6px 14px;display:flex;align-items:center;gap:8px;">' +
+        '<input type="checkbox" id="snShareFairness"' + (ev.share_fairness ? ' checked' : '') + '>' +
+        '<label for="snShareFairness" style="font-size:13px;">Del deltakerantall p\u00e5 lagside</label>' +
+        '</div>';
+
+      html += '<div style="padding:10px 14px;">' +
+        '<label style="font-size:13px;font-weight:500;display:block;margin-bottom:4px;">Kampkommentar for foreldre</label>' +
+        '<textarea id="snShareComment" rows="2" maxlength="500" placeholder="F.eks. Bra innsats, vi jobbet med \u00e5 spille fremover..." ' +
+        'style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;resize:vertical;">' +
+        escapeHtml(ev.share_comment || '') + '</textarea>' +
+        '</div>';
+    }
+
+    html += '<div style="padding:6px 14px 10px;">' +
+      '<button class="btn-secondary" id="snSaveLagside" style="width:100%;"><i class="fas fa-save" style="margin-right:5px;"></i>Lagre lagside-innstillinger</button>' +
+      '</div>';
+
+    html += '</div>';
+
     root.innerHTML = html;
 
     // Start realtime sync for matches (shared coaching only — solo users don't need it)
@@ -6271,6 +6308,25 @@
     }
 
     // --- BIND HANDLERS ---
+    var saveLsBtn = $('snSaveLagside');
+    if (saveLsBtn) {
+      saveLsBtn.addEventListener('click', async function() {
+        var fields = {
+          parent_message: ($('snParentMessage') ? $('snParentMessage').value : null) || null,
+          share_workout: $('snShareWorkout') ? $('snShareWorkout').checked : false,
+          share_fairness: $('snShareFairness') ? $('snShareFairness').checked : false,
+          share_comment: ($('snShareComment') ? $('snShareComment').value : null) || null,
+        };
+        var res = await updateEvent(ev.id, fields);
+        if (res) {
+          ev.parent_message = fields.parent_message;
+          ev.share_workout = fields.share_workout;
+          ev.share_fairness = fields.share_fairness;
+          ev.share_comment = fields.share_comment;
+        }
+      });
+    }
+
     $('snBackFromDetail').addEventListener('click', goToDashboard);
 
     if ($('snOpenKampdag')) {

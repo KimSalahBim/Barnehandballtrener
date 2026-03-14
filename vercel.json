@@ -21,6 +21,10 @@
       "destination": "/sesong.html"
     },
     {
+      "source": "/lag/:token",
+      "destination": "/lagside.html"
+    },
+    {
       "source": "/stats/api/:match*",
       "destination": "https://api-gateway.umami.dev/api/:match*"
     },
@@ -171,6 +175,25 @@
     },
     {
       "source": "/api/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/lag/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store, max-age=0" }
+      ]
+    },
+    {
+      "source": "/lagside.html",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/lagside.js",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/lagside.css",
       "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     }
   ]

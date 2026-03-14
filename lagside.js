@@ -68,7 +68,7 @@
 
   async function loadData() {
     try {
-      var url = '/api/team-page-read?token=' + encodeURIComponent(token);
+      var url = '/api/team-page?token=' + encodeURIComponent(token);
       if (selectedPlayerId) url += '&player_id=' + encodeURIComponent(selectedPlayerId);
 
       var res = await fetch(url);
@@ -128,7 +128,7 @@
       b.classList.add('disabled');
     });
     try {
-      var res = await fetch('/api/team-page-attend', {
+      var res = await fetch('/api/team-page?action=attend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
