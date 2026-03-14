@@ -28,7 +28,14 @@ var supabaseAdmin = createClient(
 // ========================================
 
 function generateToken() {
-  return crypto.randomBytes(9).toString('base64url');
+  // Unambiguous alphabet: no I/l/O/0 confusion
+  var chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+  var bytes = crypto.randomBytes(12);
+  var token = '';
+  for (var i = 0; i < 12; i++) {
+    token += chars[bytes[i] % chars.length];
+  }
+  return token;
 }
 
 function isValidToken(t) {
