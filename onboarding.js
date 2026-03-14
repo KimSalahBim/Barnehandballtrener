@@ -244,7 +244,7 @@
     var cx = typeof originX === 'number' ? originX : canvas.width * 0.5;
     var cy = typeof originY === 'number' ? originY : canvas.height * 0.6;
 
-    var colors = ['#2563eb', '#059669', '#d97706', '#ec4899', '#8b5cf6', '#f59e0b'];
+    var colors = ['#456C4B', '#059669', '#d97706', '#ec4899', '#8b5cf6', '#f59e0b'];
     var particles = [];
     for (var i = 0; i < 80; i++) {
       particles.push({
