@@ -1560,7 +1560,7 @@
       <div class="wo-parallel-pick">
         <div class="wo-parallel-pick-head">
           <div>
-            <div style="font-weight:800;">Fordel spillere mellom parallelle øvelser</div>
+            <div style="font-weight:500;">Fordel spillere mellom parallelle øvelser</div>
             <div class="small-text" style="opacity:0.85;">
               Øvelse A: <strong>${countA}</strong> • Øvelse B: <strong>${countB}</strong>
               ${countAll === 0 ? ' • (Velg oppmøte først)' : ''}
@@ -2377,7 +2377,7 @@
       return `
         <div class="wo-template-item">
           <div>
-            <div style="font-weight:800;">${escapeHtml(t.title || 'Uten navn')}</div>
+            <div style="font-weight:500;">${escapeHtml(t.title || 'Uten navn')}</div>
             <div class="small-text" style="opacity:0.85;">Sist endret: ${escapeHtml(when)}</div>
           </div>
           <div class="wo-template-actions">
@@ -2852,7 +2852,7 @@ function serializeWorkoutFromState() {
       return `
         <div class="wo-template-item">
           <div>
-            <div style="font-weight:900;">${escapeHtml(w.title || 'Trenings\u00f8kt')}${eventBadge}</div>
+            <div style="font-weight:500;">${escapeHtml(w.title || 'Trenings\u00f8kt')}${eventBadge}</div>
             ${dateTxt}
           </div>
           <div class="wo-template-actions">
@@ -3322,7 +3322,7 @@ function serializeWorkoutFromState() {
       if (curNffCat && curNffCat !== prevNffCat) {
         const catObj = NFF_CATEGORY_BY_ID[curNffCat];
         if (catObj) {
-          sectionRow = '<tr class="exp-nff-section"><td colspan="4" style="border-left:3px solid ' + catObj.color + ';padding:6px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:' + catObj.color + ';background:#f9fafb;">' + escapeHtml(catLabel(catObj, state.ageGroup)) + '</td></tr>';
+          sectionRow = '<tr class="exp-nff-section"><td colspan="4" style="border-left:3px solid ' + catObj.color + ';padding:6px 12px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:' + catObj.color + ';background:#f9fafb;">' + escapeHtml(catLabel(catObj, state.ageGroup)) + '</td></tr>';
         }
       }
       if (curNffCat) prevNffCat = curNffCat;
@@ -3460,49 +3460,49 @@ function serializeWorkoutFromState() {
     }
     .logo{width:96px; height:96px; border-radius:14px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;}
     .logo img{width:96px; height:96px; object-fit:cover;}
-    .h-title{font-size:18px; font-weight:900; line-height:1.2;}
+    .h-title{font-size:18px; font-weight:700; line-height:1.2;}
     .h-sub{opacity:0.9; font-size:13px; margin-top:2px;}
     .meta{margin-left:auto; text-align:right;}
-    .meta .m1{font-weight:800;}
+    .meta .m1{font-weight:500;}
     .meta .m2{opacity:0.9; font-size:13px; margin-top:2px;}
     .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px; margin-top:12px;}
     table{width:100%; border-collapse:separate; border-spacing:0;}
     th,td{vertical-align:top; padding:10px 10px; border-bottom:1px solid var(--line);}
     th{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:left;}
-    .exp-col-idx{width:44px; color:var(--muted); font-weight:800;}
-    .exp-col-min{width:86px; text-align:right; font-weight:900;}
-    .exp-col-acc{width:60px; text-align:right; font-weight:700; color:var(--muted); font-size:12px;}
-    .exp-ex-name{font-weight:900; margin-bottom:3px;}
-    .exp-mini{font-weight:700; color:var(--muted); font-size:12px;}
+    .exp-col-idx{width:44px; color:var(--muted); font-weight:500;}
+    .exp-col-min{width:86px; text-align:right; font-weight:500;}
+    .exp-col-acc{width:60px; text-align:right; font-weight:500; color:var(--muted); font-size:12px;}
+    .exp-ex-name{font-weight:500; margin-bottom:3px;}
+    .exp-mini{font-weight:500; color:var(--muted); font-size:12px;}
     .exp-comment{color:var(--muted); font-size:13px; margin-top:6px; margin-bottom:12px; line-height:1.45;}
     .exp-description{color:#374151; font-size:12.5px; margin-top:4px; margin-bottom:6px; line-height:1.5;}
     .exp-coaching{color:var(--muted); font-size:12px; margin-bottom:8px; line-height:1.5;}
-    .exp-coaching-h{font-weight:700; color:#374151;}
+    .exp-coaching-h{font-weight:500; color:#374151;}
     .exp-svg{margin:8px 0; display:flex; justify-content:center;}
     .exp-svg svg{max-width:220px; width:100%; height:auto; background:#3d8b37; border-radius:8px; padding:6px;}
     .exp-parallel{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
     .exp-par{border:1px solid var(--line); border-radius:14px; padding:10px; background:#fff;}
-    .exp-par-h{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-weight:800; margin-bottom:6px;}
+    .exp-par-h{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-weight:500; margin-bottom:6px;}
     .exp-groups{margin-top:12px; display:flex; flex-direction:column; gap:10px;}
-    .exp-groups-h{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:900; margin-bottom:6px; margin-top:4px;}
+    .exp-groups-h{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:500; margin-bottom:6px; margin-top:4px;}
     .exp-group{background:var(--soft); border:1px solid var(--line); border-left:4px solid rgba(11,91,211,0.35); border-radius:12px; padding:10px;}
-    .exp-group-title{font-weight:900; font-size:13px; color:#1a2333; margin-bottom:6px;}
+    .exp-group-title{font-weight:500; font-size:13px; color:#1a2333; margin-bottom:6px;}
     .exp-group-list{color:var(--muted); font-size:13px; line-height:1.55;}
     .exp-attendance{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
-    .exp-att-h{font-weight:900;}
+    .exp-att-h{font-weight:500;}
     .exp-att-list{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.45;}
     .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
     .btn{
-      border:0; border-radius:12px; padding:10px 12px; font-weight:800;
+      border:0; border-radius:12px; padding:10px 12px; font-weight:500;
       background:var(--brand); color:#fff; cursor:pointer;
     }
     .btn.secondary{background:#1f2a3d;}
     .note{color:var(--muted); font-size:12px; margin-top:8px;}
     .guide{margin-top:12px;}
-    .guide-title{font-weight:900; font-size:13px; margin-bottom:8px; color:#1a2333;}
+    .guide-title{font-weight:500; font-size:13px; margin-bottom:8px; color:#1a2333;}
     .guide-steps{display:flex; flex-direction:column; gap:6px;}
     .guide-step{display:flex; align-items:center; gap:8px; font-size:13px; color:#374151; padding:8px 10px; background:var(--soft); border-radius:10px; border-left:3px solid var(--brand);}
-    .step-num{background:var(--brand); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex-shrink:0;}
+    .step-num{background:var(--brand); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0;}
     .step-icon{font-size:16px;}
     .footer{text-align:center; margin-top:20px; font-size:11px; color:var(--muted); padding:10px 0; border-top:1px solid var(--line);}
     tr{page-break-inside:avoid;}
@@ -3570,21 +3570,21 @@ function serializeWorkoutFromState() {
       const bal = calculateNffBalance(state.blocks, state.ageGroup || '8-9');
       if (bal.totalMinutes <= 0) return '';
       let s = '<div class="card" style="margin-top:12px;padding:12px 16px;">';
-      s += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin-bottom:8px;">NFF-fordeling</div>';
+      s += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;margin-bottom:8px;">NFF-fordeling</div>';
       s += '<div style="display:flex;gap:6px;height:28px;">';
       for (const cat of NFF_CATEGORIES) {
         const b = bal.balance[cat.id];
         if (!b) continue;
         const pct = bal.totalMinutes > 0 ? Math.max(5, Math.round((b.minutes / bal.totalMinutes) * 100)) : 0;
-        s += '<div style="flex:' + pct + ';background:' + cat.color + '20;border-left:3px solid ' + cat.color + ';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:' + cat.color + ';">' + b.minutes + 'm</div>';
+        s += '<div style="flex:' + pct + ';background:' + cat.color + '20;border-left:3px solid ' + cat.color + ';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:' + cat.color + ';">' + b.minutes + 'm</div>';
       }
       s += '</div></div>';
       return s;
     })()}
 
     <div class="card" style="text-align:center; margin-top:16px; padding:12px;">
-      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:900;">Oppsummering</div>
-      <div style="font-size:1.5rem; font-weight:900; margin-top:4px;">Total tid: ${totalMinutes()} min</div>
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:500;">Oppsummering</div>
+      <div style="font-size:1.5rem; font-weight:500; margin-top:4px;">Total tid: ${totalMinutes()} min</div>
     </div>
 
     <div class="actions">
