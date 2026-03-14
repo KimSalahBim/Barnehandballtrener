@@ -47,7 +47,7 @@
       right: 20px;
       padding: 14px 20px;
       border-radius: 12px;
-      background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
+      background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#456C4B'};
       color: white;
       font-weight: 600;
       z-index: 10000;
