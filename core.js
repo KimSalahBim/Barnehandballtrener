@@ -337,7 +337,7 @@
   // Team management (Supabase)
   // ------------------------------
   const MAX_TEAMS = 6;
-  const TEAM_COLORS = ['#1976d2', '#d32f2f', '#2e7d32', '#f57c00', '#7b1fa2', '#00838f'];
+  const TEAM_COLORS = ['#456C4B', '#d32f2f', '#2e7d32', '#f57c00', '#7b1fa2', '#00838f'];
 
   function generateTeamId() {
     var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -575,7 +575,7 @@
     }
 
     // Opprett standardlag
-    var team = await createTeam('Mitt lag', '#1976d2');
+    var team = await createTeam('Mitt lag', '#456C4B');
     if (!team) return;
 
     // Migrer spillere uten team_id (server-side migration bør ha gjort dette,
@@ -2724,19 +2724,19 @@
           row.innerHTML = `
             <div class="liga-match-card" style="display:flex; align-items:stretch; justify-content:space-between; gap:8px; padding:8px 10px; border:1px solid rgba(0,0,0,0.06); border-radius:10px; background:var(--bg-card); box-shadow:0 1px 4px rgba(0,0,0,0.03);">
               <div class="liga-side home" style="flex:1; min-width:0;">
-                <div style="font-size:10px; font-weight:700; opacity:.5; margin-bottom:2px;">Hjemme</div>
-                <div class="liga-team-name" style="font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;">${escapeHtml(m.home)}</div>
+                <div style="font-size:10px; font-weight:500; opacity:.5; margin-bottom:2px;">Hjemme</div>
+                <div class="liga-team-name" style="font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;">${escapeHtml(m.home)}</div>
                 <input type="number" min="0" step="1" inputmode="numeric" class="input liga-score" data-mid="${m.id}" data-side="home"
                   placeholder="0" value="${m.homeGoals ?? ''}"
-                  style="width:100%; text-align:center; font-size:16px; font-weight:900; padding:6px 8px; border-radius:8px;">
+                  style="width:100%; text-align:center; font-size:16px; font-weight:500; padding:6px 8px; border-radius:8px;">
               </div>
-              <div class="liga-mid" aria-hidden="true" style="display:flex; align-items:center; justify-content:center; width:16px; font-weight:900; opacity:.4; font-size:14px;">–</div>
+              <div class="liga-mid" aria-hidden="true" style="display:flex; align-items:center; justify-content:center; width:16px; font-weight:500; opacity:.4; font-size:14px;">–</div>
               <div class="liga-side away" style="flex:1; min-width:0;">
-                <div style="font-size:10px; font-weight:700; opacity:.5; margin-bottom:2px; text-align:right;">Borte</div>
-                <div class="liga-team-name" style="font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px; text-align:right;">${escapeHtml(m.away)}</div>
+                <div style="font-size:10px; font-weight:500; opacity:.5; margin-bottom:2px; text-align:right;">Borte</div>
+                <div class="liga-team-name" style="font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px; text-align:right;">${escapeHtml(m.away)}</div>
                 <input type="number" min="0" step="1" inputmode="numeric" class="input liga-score" data-mid="${m.id}" data-side="away"
                   placeholder="0" value="${m.awayGoals ?? ''}"
-                  style="width:100%; text-align:center; font-size:16px; font-weight:900; padding:6px 8px; border-radius:8px;">
+                  style="width:100%; text-align:center; font-size:16px; font-weight:500; padding:6px 8px; border-radius:8px;">
               </div>
             </div>
           `;
@@ -2824,7 +2824,7 @@
       // Show editable inputs above matches
       const editNamesHtml = `
         <div style="margin-bottom:12px;">
-          <div style="font-weight:800; font-size:13px; margin-bottom:6px;">Rediger lagnavn:</div>
+          <div style="font-weight:500; font-size:13px; margin-bottom:6px;">Rediger lagnavn:</div>
           <div style="display:flex; flex-wrap:wrap; gap:6px;">
             ${league.teams.map((t, i) => `
               <input class="input liga-edit-name" data-team-idx="${i}" type="text" value="${escapeHtml(t.name)}" 
@@ -2965,7 +2965,7 @@
     banner.innerHTML =
       '<span><strong>Invitasjon:</strong> Du er invitert til <strong>' + escapeHtml(team.name) + '</strong></span>' +
       '<span style="display:flex;gap:8px;">' +
-        '<button id="invAccept_' + membershipId + '" style="background:white;color:var(--primary);border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px;">Aksepter</button>' +
+        '<button id="invAccept_' + membershipId + '" style="background:white;color:var(--primary);border:none;padding:6px 14px;border-radius:6px;font-weight:500;cursor:pointer;font-size:13px;">Aksepter</button>' +
         '<button id="invDecline_' + membershipId + '" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.5);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Avslå</button>' +
       '</span>';
 
