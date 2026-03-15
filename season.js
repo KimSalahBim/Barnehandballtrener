@@ -2692,6 +2692,7 @@
           '<i class="fas fa-copy" style="margin-right:4px;"></i>Kopier' +
         '</button>' +
       '</div>' +
+      '<div style="font-size:11px;color:var(--text-400);margin-top:6px;text-align:center;">Trykk for \u00e5 legge til beskjeder, kontaktinfo og innstillinger</div>' +
     '</div>';
 
     var copyBtn = document.getElementById('snLagsideCopyBtn');
