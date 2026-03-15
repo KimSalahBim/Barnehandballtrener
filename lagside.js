@@ -15,6 +15,7 @@
   }
 
   var pageData = null;
+  var LAST_SEEN_KEY = 'bf_lagside_seen_' + token;
 
   // ========================================
   // Helpers
@@ -44,7 +45,7 @@
     'juli', 'august', 'september', 'oktober', 'november', 'desember'];
 
   function isUpcoming(e) {
-    return e.status !== 'completed' && e.status !== 'cancelled' &&
+    return e.status !== 'completed' &&
       new Date(e.start_time) > new Date(Date.now() - 3 * 60 * 60 * 1000);
   }
 
@@ -112,6 +113,55 @@
       '</div>';
   }
 
+  function generateIcal(events, teamName) {
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function icsLocalDate(iso) {
+      var d = new Date(iso);
+      return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+        'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
+    }
+    function icsEscape(s) {
+      return (s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;')
+        .replace(/,/g, '\\,').replace(/\n/g, '\\n');
+    }
+
+    var lines = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0',
+      'PRODID:-//Barnefotballtrener//Lagside//NO',
+      'CALSCALE:GREGORIAN',
+      'X-WR-CALNAME:' + icsEscape(teamName),
+      'BEGIN:VTIMEZONE', 'TZID:Europe/Oslo',
+      'BEGIN:STANDARD', 'DTSTART:19701025T030000',
+      'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10',
+      'TZOFFSETFROM:+0200', 'TZOFFSETTO:+0100', 'TZNAME:CET',
+      'END:STANDARD',
+      'BEGIN:DAYLIGHT', 'DTSTART:19700329T020000',
+      'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3',
+      'TZOFFSETFROM:+0100', 'TZOFFSETTO:+0200', 'TZNAME:CEST',
+      'END:DAYLIGHT', 'END:VTIMEZONE'
+    ];
+
+    events.forEach(function (e) {
+      if (e.status === 'cancelled') return;
+      var isMatch = e.type === 'match' || e.type === 'cup_match';
+      var title = e.title || e.opponent || (isMatch ? 'Kamp' : 'Trening');
+      if (isMatch && e.opponent && !e.title) title = teamName + ' vs ' + e.opponent;
+      var dur = e.duration_minutes || 60;
+      var endDate = new Date(new Date(e.start_time).getTime() + dur * 60000);
+
+      lines.push('BEGIN:VEVENT');
+      lines.push('DTSTART;TZID=Europe/Oslo:' + icsLocalDate(e.start_time));
+      lines.push('DTEND;TZID=Europe/Oslo:' + icsLocalDate(endDate.toISOString()));
+      lines.push('SUMMARY:' + icsEscape(title));
+      if (e.location) lines.push('LOCATION:' + icsEscape(e.location));
+      lines.push('UID:' + e.id + '@barnefotballtrener.no');
+      lines.push('END:VEVENT');
+    });
+
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+  }
+
   // ========================================
   // Render
   // ========================================
@@ -121,9 +171,26 @@
     var d = pageData;
     var html = '';
 
+    var hasNewAnnouncement = false;
+    if (d.announcements && d.announcements.length > 0) {
+      var lastSeen = null;
+      try { lastSeen = localStorage.getItem(LAST_SEEN_KEY); } catch (_) {}
+      var newestDate = d.announcements.reduce(function (max, a) {
+        var t = new Date(a.created_at).getTime();
+        return t > max ? t : max;
+      }, 0);
+      if (!lastSeen || newestDate > new Date(lastSeen).getTime()) {
+        hasNewAnnouncement = true;
+      }
+      setTimeout(function () {
+        try { localStorage.setItem(LAST_SEEN_KEY, new Date().toISOString()); } catch (_) {}
+      }, 3000);
+    }
+
     // Header
     html += '<div class="ls-header">' +
-      '<h1>' + esc(d.team.name) + '</h1>';
+      '<h1>' + esc(d.team.name) +
+      (hasNewAnnouncement ? '<span class="ls-new-dot"></span>' : '') + '</h1>';
     if (d.season) {
       html += '<div class="ls-header-sub">' + esc(d.season.name || '');
       if (d.nff) html += ' &middot; ' + esc(d.nff.age_class);
@@ -204,6 +271,11 @@
         html += '</div>';
       }
 
+      if (d.events && d.events.length > 0) {
+        html += '<button class="ls-ical-btn" id="lsIcalBtn">' +
+          '<i class="fa-solid fa-calendar-plus"></i> Legg til i kalender</button>';
+      }
+
       // Month summary
       if (upcoming.length > 0) {
         var monthGroups = {};
@@ -272,6 +344,29 @@
       '</div>';
 
     root.innerHTML = html;
+
+    var icalBtn = document.getElementById('lsIcalBtn');
+    if (icalBtn && d.events) {
+      icalBtn.addEventListener('click', function () {
+        var ics = generateIcal(d.events, d.team.name || 'Lag');
+        var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+        var filename = (d.team.name || 'lag').replace(/[^a-zA-Z0-9\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]/g, '_') + '-kalender.ics';
+        try {
+          var file = new File([blob], filename, { type: 'text/calendar' });
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: d.team.name + ' - kalender' }).catch(function () {});
+            return;
+          }
+        } catch (_) {}
+        try {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = filename;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+        } catch (_) { showToast('Kunne ikke eksportere kalender'); }
+      });
+    }
   }
 
   // ========================================
@@ -284,7 +379,9 @@
     var html = '<div class="ls-card">';
 
     // Badge
-    if (isMatch) {
+    if (e.status === 'cancelled') {
+      html += '<div class="ls-badge ls-badge-cancelled">Avlyst</div>';
+    } else if (isMatch) {
       var isToday = new Date(e.start_time).toDateString() === new Date().toDateString();
       html += '<div class="ls-badge ls-badge-match">' + (isToday ? 'Kamp i dag' : 'Neste kamp') + '</div>';
     } else {
@@ -300,19 +397,55 @@
       html += '<div class="ls-hero-title">' + esc(e.title || 'Trening ' + f.day) + '</div>';
     }
 
-    // Meta
-    html += '<div class="ls-hero-meta">';
-    html += esc(f.day.charAt(0).toUpperCase() + f.day.slice(1)) + ' ' + f.num + '. ' +
-      esc(monthNames[f.month]) + ' kl ' + f.time;
-    if (e.location) html += '<br>' + esc(e.location);
-    if (isMatch && e.is_home != null) html += ' (' + (e.is_home ? 'hjemme' : 'borte') + ')';
-    if (e.duration_minutes) html += '<br>' + e.duration_minutes + ' min';
-    html += '</div>';
+    if (isMatch) {
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      html += '<div class="ls-logistics">';
+
+      html += '<div class="ls-logistics-row">' +
+        '<i class="fa-regular fa-clock"></i><div>' +
+        '<div class="ls-logistics-primary">' +
+        esc(f.day.charAt(0).toUpperCase() + f.day.slice(1)) + ' ' + f.num + '. ' +
+        esc(monthNames[f.month]) + ' kl ' + f.time + '</div>' +
+        (e.duration_minutes ? '<div class="ls-logistics-secondary">' + e.duration_minutes + ' min</div>' : '') +
+        '</div></div>';
+
+      if (e.location) {
+        var mapsUrl = isIOS
+          ? 'https://maps.apple.com/?q=' + encodeURIComponent(e.location)
+          : 'https://maps.google.com/?q=' + encodeURIComponent(e.location);
+        html += '<div class="ls-logistics-row">' +
+          '<i class="fa-solid fa-location-dot"></i>' +
+          '<a href="' + mapsUrl + '" target="_blank" rel="noopener" class="ls-logistics-link">' +
+          esc(e.location) + ' <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a></div>';
+      }
+
+      html += '<div class="ls-logistics-row">' +
+        '<i class="fa-solid fa-' + (e.is_home ? 'house' : 'bus') + '"></i>' +
+        '<div class="ls-logistics-primary">' + (e.is_home ? 'Hjemmekamp' : 'Bortekamp') + '</div></div>';
+
+      if (e.format) {
+        html += '<div class="ls-logistics-row"><i class="fa-solid fa-people-group"></i>' +
+          '<div class="ls-logistics-primary">' + e.format + '-er fotball</div></div>';
+      }
+
+      if (e.parent_message) {
+        html += '<div class="ls-logistics-row ls-logistics-message">' +
+          '<i class="fa-solid fa-bullhorn"></i><div>' + esc(e.parent_message) + '</div></div>';
+      }
+
+      html += '</div>';
+    } else {
+      html += '<div class="ls-hero-meta">';
+      html += esc(f.day.charAt(0).toUpperCase() + f.day.slice(1)) + ' ' + f.num + '. ' +
+        esc(monthNames[f.month]) + ' kl ' + f.time;
+      if (e.location) html += '<br>' + esc(e.location);
+      if (e.duration_minutes) html += '<br>' + e.duration_minutes + ' min';
+      html += '</div>';
+    }
 
     html += '</div>';
 
-    // Coach message
-    if (e.parent_message) {
+    if (!isMatch && e.parent_message) {
       html += '<div class="ls-card"><div class="ls-message">' +
         '<i class="fa-solid fa-bullhorn"></i>' + esc(e.parent_message) +
         '</div></div>';
@@ -455,6 +588,10 @@
     if (e.location) sub += ' &middot; ' + esc(e.location);
     html += '<div class="ls-cal-info-sub">' + sub + '</div>';
     html += '</div>';
+
+    if (e.status === 'cancelled') {
+      html += '<span class="ls-cal-cancelled">Avlyst</span>';
+    }
 
     html += '</div>';
 

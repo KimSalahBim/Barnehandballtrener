@@ -103,6 +103,20 @@ body {
   margin-top: 2px;
 }
 
+.ls-new-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: #dc2626;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: super;
+  animation: ls-pulse 2s ease-in-out infinite;
+}
+@keyframes ls-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* Content area */
 .ls-content {
   padding: 12px 12px 24px;
@@ -130,6 +144,9 @@ body {
 .ls-badge-match { background: var(--ls-danger-bg); color: var(--ls-danger); }
 .ls-badge-training { background: var(--ls-info-bg); color: var(--ls-info); }
 .ls-badge-completed { background: var(--ls-bg); color: var(--ls-text-secondary); }
+.ls-badge-cancelled {
+  background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+}
 
 /* Hero card */
 .ls-hero-title {
@@ -237,6 +254,10 @@ body {
 .ls-cal-info-sub {
   font-size: 12px;
   color: var(--ls-text-secondary);
+}
+.ls-cal-cancelled {
+  font-size: 10px; font-weight: 700; color: #dc2626;
+  background: #fef2f2; padding: 1px 6px; border-radius: 99px;
 }
 
 /* Workout info */
@@ -356,6 +377,45 @@ body {
 .ls-grid { display: flex; flex-direction: column; gap: 16px; }
 @media (min-width: 700px) {
   .ls-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 16px; }
+}
+
+/* --- iCal button --- */
+.ls-ical-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 12px; margin-top: 12px;
+  background: transparent; border: 1px solid var(--ls-border, #e5e7eb);
+  border-radius: 12px; font-size: 14px; font-weight: 500;
+  color: var(--ls-green, #456C4B); cursor: pointer;
+}
+.ls-ical-btn:active { transform: scale(0.98); }
+
+/* --- Kampdag logistikkort --- */
+.ls-logistics {
+  display: flex; flex-direction: column; gap: 2px;
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--ls-bg, #f9fafb); border-radius: 10px;
+}
+.ls-logistics-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 6px 0;
+}
+.ls-logistics-row > i:first-child {
+  width: 20px; text-align: center; color: var(--ls-green, #456C4B);
+  font-size: 14px; margin-top: 2px; flex-shrink: 0;
+}
+.ls-logistics-primary { font-size: 14px; font-weight: 500; }
+.ls-logistics-secondary { font-size: 12px; color: var(--ls-text-secondary, #6b7280); }
+.ls-logistics-link {
+  color: var(--ls-green, #456C4B); text-decoration: none;
+  font-weight: 500; font-size: 14px;
+}
+.ls-logistics-link:hover { text-decoration: underline; }
+.ls-logistics-message {
+  margin-top: 4px; padding-top: 8px;
+  border-top: 1px solid var(--ls-border, #e5e7eb);
+}
+.ls-logistics-message div {
+  font-size: 13px; line-height: 1.4;
+  color: var(--ls-text-secondary, #6b7280);
 }
 
 /* --- Kontaktboks --- */

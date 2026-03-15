@@ -30,6 +30,13 @@
 .sn-event-title { font-size:15px; font-weight:500; color:var(--text-800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .sn-event-meta { font-size:13px; color:var(--text-500); }
 .sn-event-arrow { color:var(--text-400); font-size:14px; flex-shrink:0; }
+.sn-cancel-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+  padding: 1px 7px; border-radius: 99px; margin-left: 6px;
+}
+.sn-event-cancelled { opacity: 0.5; }
+.sn-event-cancelled:hover { opacity: 0.8; }
 
 /* Section headers */
 .sn-section { font-size:14px; font-weight:500; color:var(--text-600); margin:20px 0 8px 2px; text-transform:uppercase; letter-spacing:0.5px; }

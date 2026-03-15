@@ -5390,12 +5390,19 @@
         regBadge = ''; // Don't show both
       }
 
+      var cancelledBadge = '';
+      var cancelledClass = '';
+      if (ev.status === 'cancelled') {
+        cancelledBadge = '<span class="sn-cancel-badge">Avlyst</span>';
+        cancelledClass = ' sn-event-cancelled';
+      }
+
       html +=
-        '<div class="sn-event-item" data-eid="' + ev.id + '">' +
+        '<div class="sn-event-item' + cancelledClass + '" data-eid="' + ev.id + '">' +
           '<div class="sn-event-icon">' + typeIcon(ev.type) + '</div>' +
           '<div class="sn-event-info">' +
             '<div class="sn-event-title">' + escapeHtml(title) + '</div>' +
-            '<div class="sn-event-meta">' + escapeHtml(meta) + stEvBadge + '</div>' +
+            '<div class="sn-event-meta">' + escapeHtml(meta) + stEvBadge + cancelledBadge + '</div>' +
           '</div>' +
           scoreBadge +
           workoutBadge +
@@ -6282,6 +6289,19 @@
         '<button class="sn-btn-danger" id="snDeleteEvent"><i class="fas fa-trash" style="margin-right:5px;"></i>Slett</button>' +
       '</div>';
 
+    if (ev.status === 'planned') {
+      html += '<button class="btn-secondary" id="snCancelEvent" ' +
+        'style="width:100%;margin-top:6px;color:#dc2626;">' +
+        '<i class="fas fa-ban" style="margin-right:5px;"></i>Avlys hendelse</button>';
+    }
+    if (ev.status === 'cancelled') {
+      html += '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;' +
+        'padding:10px 14px;margin-top:8px;text-align:center;">' +
+        '<div style="font-size:14px;font-weight:600;color:#dc2626;">Avlyst</div>' +
+        '<button class="btn-secondary" id="snUncancelEvent" ' +
+        'style="margin-top:6px;font-size:13px;">Gjenopprett</button></div>';
+    }
+
     html += '</div>';
 
     // --- ABSENCE REASONS (shared) ---
@@ -6758,6 +6778,44 @@
           ev.parent_message = fields.parent_message;
           ev.share_workout = fields.share_workout;
           ev.share_comment = fields.share_comment;
+        }
+      });
+    }
+
+    var cancelBtn = document.getElementById('snCancelEvent');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', async function() {
+        if (!confirm('Avlyse denne hendelsen?\nDen blir markert som avlyst p\u00e5 lagsiden.')) return;
+        cancelBtn.disabled = true;
+        try {
+          var sb = getSb();
+          await sb.from('events')
+            .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+            .eq('id', ev.id)
+            .eq('status', 'planned');
+          ev.status = 'cancelled';
+          render();
+          notify('Hendelse avlyst', 'success');
+        } catch (e) {
+          cancelBtn.disabled = false;
+          notify('Kunne ikke avlyse', 'error');
+        }
+      });
+    }
+
+    var uncancelBtn = document.getElementById('snUncancelEvent');
+    if (uncancelBtn) {
+      uncancelBtn.addEventListener('click', async function() {
+        try {
+          var sb = getSb();
+          await sb.from('events')
+            .update({ status: 'planned', updated_at: new Date().toISOString() })
+            .eq('id', ev.id);
+          ev.status = 'planned';
+          render();
+          notify('Hendelse gjenopprettet', 'success');
+        } catch (e) {
+          notify('Kunne ikke gjenopprette', 'error');
         }
       });
     }

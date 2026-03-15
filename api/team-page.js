@@ -368,7 +368,8 @@ async function handleRead(req, res) {
     .from('events').select('id, type, title, start_time, duration_minutes, location, opponent, is_home, format, status, result_home, result_away, parent_message, share_workout, share_fairness, share_comment')
     .eq('season_id', season.id).eq('user_id', ownerId)
     .gte('start_time', new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())
-    .neq('status', 'cancelled').order('start_time', { ascending: true }).limit(20);
+    .in('status', ['planned', 'cancelled'])
+    .order('start_time', { ascending: true }).limit(20);
 
   var { data: recentEvents } = await supabaseAdmin
     .from('events').select('id, type, title, start_time, duration_minutes, location, opponent, is_home, format, status, result_home, result_away, parent_message, share_workout, share_fairness, share_comment')
