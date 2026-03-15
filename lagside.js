@@ -1,5 +1,7 @@
 // © 2026 Barnefotballtrener.no. All rights reserved.
 // lagside.js — Parent-facing team page (standalone, no app dependencies)
+// Information board only: calendar, announcements, results, training content.
+// No player names, no attendance, no picker, no localStorage.
 (() => {
   'use strict';
 
@@ -12,11 +14,7 @@
     return;
   }
 
-  var STORAGE_KEY = 'bf_lagside_' + token;
-  var selectedPlayerId = null;
   var pageData = null;
-
-  try { selectedPlayerId = localStorage.getItem(STORAGE_KEY); } catch (_) {}
 
   // ========================================
   // Helpers
@@ -69,7 +67,6 @@
   async function loadData() {
     try {
       var url = '/api/team-page?token=' + encodeURIComponent(token);
-      if (selectedPlayerId) url += '&player_id=' + encodeURIComponent(selectedPlayerId);
 
       var res = await fetch(url);
       if (res.status === 404) {
@@ -77,37 +74,21 @@
         return;
       }
       if (!res.ok) {
-        showError('Noe gikk galt', 'Kunne ikke laste lagsiden. Prøv igjen om litt.');
+        showError('Noe gikk galt', 'Kunne ikke laste lagsiden. Pr\u00f8v igjen om litt.');
         return;
       }
 
       pageData = await res.json();
-
-      // Validate stored player - might have been removed from season
-      if (selectedPlayerId && pageData.players) {
-        var stillExists = pageData.players.some(function (p) { return p.id === selectedPlayerId; });
-        if (!stillExists) {
-          selectedPlayerId = null;
-          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-        }
-      }
-
-      if (!selectedPlayerId && pageData.players && pageData.players.length > 0) {
-        showPlayerPicker(pageData.players);
-      } else {
-        render();
-      }
+      render();
     } catch (err) {
       console.error('[lagside] Load error:', err);
-      showError('Noe gikk galt', 'Sjekk internettforbindelsen og prøv igjen.');
+      showError('Noe gikk galt', 'Sjekk internettforbindelsen og pr\u00f8v igjen.');
     }
   }
 
   // ========================================
-  // Attendance
+  // Toast
   // ========================================
-
-  var _attendBusy = false;
 
   function showToast(msg) {
     var existing = document.getElementById('lsToast');
@@ -118,102 +99,6 @@
     el.textContent = msg;
     document.body.appendChild(el);
     setTimeout(function () { el.remove(); }, 3500);
-  }
-
-  async function submitAttendance(eventId, status) {
-    if (_attendBusy) return;
-    _attendBusy = true;
-    // Disable all attendance buttons immediately
-    root.querySelectorAll('.ls-att-btn[data-eid]').forEach(function (b) {
-      b.classList.add('disabled');
-    });
-    try {
-      var res = await fetch('/api/team-page?action=attend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: token,
-          event_id: eventId,
-          player_id: selectedPlayerId,
-          status: status,
-        }),
-      });
-      // Always reload regardless of success/failure.
-      // On failure (e.g. event completed while page was open), the re-render
-      // shows current state. On success, it shows the updated attendance.
-      if (!res.ok) {
-        try {
-          var errData = await res.json();
-          showToast(errData.error || 'Kunne ikke registrere oppmoete');
-        } catch (_) {
-          showToast('Kunne ikke registrere oppmoete');
-        }
-      }
-      await loadData();
-    } catch (err) {
-      console.error('[lagside] Attendance error:', err);
-      showToast('Ingen internettforbindelse. Proev igjen.');
-      // Network error — re-enable buttons so user can retry
-      _attendBusy = false;
-      root.querySelectorAll('.ls-att-btn.disabled').forEach(function (b) {
-        b.classList.remove('disabled');
-      });
-    } finally {
-      _attendBusy = false;
-    }
-  }
-
-  // ========================================
-  // Player picker
-  // ========================================
-
-  function showPlayerPicker(players, allowClose) {
-    // Guard: remove any existing picker overlay first
-    var existingOverlay = document.getElementById('lsPickerOverlay');
-    if (existingOverlay) existingOverlay.remove();
-
-    var html = '<div class="ls-picker-overlay" id="lsPickerOverlay">' +
-      '<div class="ls-picker-sheet">' +
-      '<div class="ls-picker-title">Hvem er du forelder til?</div>';
-
-    players.forEach(function (p) {
-      var isActive = p.id === selectedPlayerId;
-      html += '<button class="ls-picker-item' + (isActive ? ' active' : '') + '" data-pid="' + esc(p.id) + '">' +
-        '<div class="ls-player-avatar">' + esc((p.name || '?').charAt(0).toUpperCase()) + '</div>' +
-        esc(p.name) +
-        '</button>';
-    });
-
-    if (allowClose) {
-      html += '<button class="ls-picker-item" style="color:var(--ls-text-secondary);margin-top:8px" id="lsPickerClose">' +
-        '<i class="fa-solid fa-xmark" style="width:26px;text-align:center"></i> Lukk</button>';
-    }
-
-    html += '</div></div>';
-
-    // Append to root (don't replace content)
-    var overlay = document.createElement('div');
-    overlay.innerHTML = html;
-    var el = overlay.firstChild;
-    document.body.appendChild(el);
-
-    // Bind clicks
-    el.querySelectorAll('.ls-picker-item[data-pid]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        selectedPlayerId = btn.getAttribute('data-pid');
-        try { localStorage.setItem(STORAGE_KEY, selectedPlayerId); } catch (_) {}
-        el.remove();
-        loadData();
-      });
-    });
-
-    var closeBtn = el.querySelector('#lsPickerClose');
-    if (closeBtn) closeBtn.addEventListener('click', function () { el.remove(); });
-
-    // Close on overlay tap (not sheet)
-    el.addEventListener('click', function (e) {
-      if (e.target === el && allowClose) el.remove();
-    });
   }
 
   // ========================================
@@ -236,13 +121,6 @@
     var d = pageData;
     var html = '';
 
-    // Find selected player name
-    var playerName = '';
-    if (selectedPlayerId && d.players) {
-      var found = d.players.find(function (p) { return p.id === selectedPlayerId; });
-      if (found) playerName = found.name;
-    }
-
     // Header
     html += '<div class="ls-header">' +
       '<h1>' + esc(d.team.name) + '</h1>';
@@ -250,13 +128,6 @@
       html += '<div class="ls-header-sub">' + esc(d.season.name || '');
       if (d.nff) html += ' &middot; ' + esc(d.nff.age_class);
       html += '</div>';
-    }
-    if (playerName) {
-      html += '<button class="ls-player-pill" id="lsPlayerSwitch">' +
-        '<div class="ls-player-avatar">' + esc(playerName.charAt(0).toUpperCase()) + '</div>' +
-        esc(playerName) +
-        ' <i class="fa-solid fa-chevron-down"></i>' +
-        '</button>';
     }
     html += '</div>';
 
@@ -397,44 +268,10 @@
     // Footer
     html += '<div class="ls-footer">' +
       '<a href="https://barnefotballtrener.no">barnefotballtrener.no</a>' +
+      ' \u00b7 <a href="/privacy.html">Personvern</a>' +
       '</div>';
 
     root.innerHTML = html;
-
-    // Bind player switch
-    var switchBtn = document.getElementById('lsPlayerSwitch');
-    if (switchBtn && d.players) {
-      switchBtn.addEventListener('click', function () {
-        showPlayerPicker(d.players, true);
-      });
-    }
-
-    // Bind attendance buttons (hero + expanded calendar items)
-    root.querySelectorAll('.ls-att-btn[data-eid]').forEach(function (btn) {
-      btn.addEventListener('click', function (ev) {
-        ev.stopPropagation();
-        if (btn.classList.contains('disabled')) return;
-        var eid = btn.getAttribute('data-eid');
-        var status = btn.getAttribute('data-status');
-        submitAttendance(eid, status);
-      });
-    });
-
-    // Bind calendar item tap-to-expand (toggle attendance row)
-    root.querySelectorAll('.ls-cal-item[data-cal-eid]').forEach(function (item) {
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', function () {
-        var eid = item.getAttribute('data-cal-eid');
-        var expandEl = document.getElementById('lsCalExpand_' + eid);
-        if (!expandEl) return;
-        // Collapse any other expanded items
-        root.querySelectorAll('.ls-cal-expand').forEach(function (el) {
-          if (el !== expandEl) el.style.display = 'none';
-        });
-        // Toggle this one
-        expandEl.style.display = expandEl.style.display === 'none' ? '' : 'none';
-      });
-    });
   }
 
   // ========================================
@@ -471,29 +308,6 @@
     if (isMatch && e.is_home != null) html += ' (' + (e.is_home ? 'hjemme' : 'borte') + ')';
     if (e.duration_minutes) html += '<br>' + e.duration_minutes + ' min';
     html += '</div>';
-
-    // Attendance buttons
-    if (selectedPlayerId) {
-      var myStatus = e.attendance ? e.attendance.my_status : null;
-      html += '<div class="ls-att-row">';
-      html += '<button class="ls-att-btn' + (myStatus === 'yes' ? ' selected-yes' : '') + '" data-eid="' + esc(e.id) + '" data-status="yes">Kommer</button>';
-      html += '<button class="ls-att-btn' + (myStatus === 'no' ? ' selected-no' : '') + '" data-eid="' + esc(e.id) + '" data-status="no">Kan ikke</button>';
-      html += '<button class="ls-att-btn' + (myStatus === 'maybe' ? ' selected-maybe' : '') + '" data-eid="' + esc(e.id) + '" data-status="maybe">Usikker</button>';
-      html += '</div>';
-    }
-
-    // Attendance count
-    if (e.attendance) {
-      var att = e.attendance;
-      var parts = [];
-      if (att.confirmed > 0) parts.push(att.confirmed + ' bekreftet');
-      if (att.maybe > 0) parts.push(att.maybe + ' usikker');
-      if (att.declined > 0) parts.push(att.declined + ' kan ikke');
-      if (att.not_responded > 0) parts.push(att.not_responded + ' ikke svart');
-      if (parts.length > 0) {
-        html += '<div class="ls-att-count">' + parts.join(' &middot; ') + '</div>';
-      }
-    }
 
     html += '</div>';
 
@@ -560,14 +374,8 @@
     html += '<div class="ls-prev-label">Forrige trening ' + f.num + '. ' + esc(monthNames[f.month]) + '</div>';
     html += '<div class="ls-prev-title">' + esc(e.title || 'Trening') + '</div>';
 
-    var meta = [];
-    if (e.attendance && e.attendance.confirmed > 0) {
-      var total = (pageData.players || []).length;
-      meta.push(e.attendance.confirmed + ' av ' + total + ' til stede');
-    }
-    if (e.duration_minutes) meta.push(e.duration_minutes + ' min');
-    if (meta.length > 0) {
-      html += '<div class="ls-prev-meta">' + meta.join(' &middot; ') + '</div>';
+    if (e.duration_minutes) {
+      html += '<div class="ls-prev-meta">' + e.duration_minutes + ' min</div>';
     }
 
     html += '</div>';
@@ -623,7 +431,7 @@
     var f = formatDate(e.start_time);
     var isMatch = e.type === 'match' || e.type === 'cup_match';
 
-    var html = '<div class="ls-cal-item" data-cal-eid="' + esc(e.id) + '">';
+    var html = '<div class="ls-cal-item">';
 
     // Date
     html += '<div class="ls-cal-date">' +
@@ -648,28 +456,7 @@
     html += '<div class="ls-cal-info-sub">' + sub + '</div>';
     html += '</div>';
 
-    // My attendance status
-    if (e.attendance && e.attendance.my_status) {
-      var st = e.attendance.my_status;
-      var cls = st === 'yes' ? 'ls-cal-att-yes' : (st === 'no' ? 'ls-cal-att-no' : 'ls-cal-att-none');
-      var label = st === 'yes' ? 'Kommer' : (st === 'no' ? 'Kan ikke' : 'Usikker');
-      html += '<div class="ls-cal-att ' + cls + '">' + label + '</div>';
-    } else {
-      html += '<div class="ls-cal-att ls-cal-att-none">-</div>';
-    }
-
     html += '</div>';
-
-    // Expandable attendance row (hidden by default)
-    if (selectedPlayerId) {
-      var myStatus = e.attendance ? e.attendance.my_status : null;
-      html += '<div class="ls-cal-expand" id="lsCalExpand_' + esc(e.id) + '" style="display:none">';
-      html += '<div class="ls-att-row" style="margin:0">';
-      html += '<button class="ls-att-btn' + (myStatus === 'yes' ? ' selected-yes' : '') + '" data-eid="' + esc(e.id) + '" data-status="yes">Kommer</button>';
-      html += '<button class="ls-att-btn' + (myStatus === 'no' ? ' selected-no' : '') + '" data-eid="' + esc(e.id) + '" data-status="no">Kan ikke</button>';
-      html += '<button class="ls-att-btn' + (myStatus === 'maybe' ? ' selected-maybe' : '') + '" data-eid="' + esc(e.id) + '" data-status="maybe">Usikker</button>';
-      html += '</div></div>';
-    }
 
     return html;
   }

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /lag/
+Disallow: /api/
 
 Sitemap: https://barnefotballtrener.no/sitemap.xml
