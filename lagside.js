@@ -263,6 +263,24 @@
     // Content
     html += '<div class="ls-content">';
 
+    // Announcements
+    if (d.announcements && d.announcements.length > 0) {
+      html += '<div class="ls-announcements">';
+      d.announcements.forEach(function(a) {
+        var metaParts = ['Lagt ut ' + formatDate(a.created_at).num + '. ' + monthNames[formatDate(a.created_at).month]];
+        if (a.expires_at) {
+          var ef = formatDate(a.expires_at);
+          metaParts.push('Utl\u00f8per ' + ef.num + '. ' + monthNames[ef.month]);
+        }
+        html += '<div class="ls-announcement">' +
+          '<div class="ls-announcement-label">Fra trener</div>' +
+          '<div class="ls-announcement-text">' + esc(a.text) + '</div>' +
+          '<div class="ls-announcement-meta">' + metaParts.join(' \u00b7 ') + '</div>' +
+        '</div>';
+      });
+      html += '</div>';
+    }
+
     if (!d.season || !d.events || d.events.length === 0) {
       html += '<div class="ls-card"><p style="color:var(--ls-text-secondary);font-size:14px;text-align:center;padding:20px 0">' +
         'Ingen hendelser enda. Treneren har ikke lagt til kamper eller treninger.' +
@@ -271,6 +289,10 @@
       // Split events
       var upcoming = d.events.filter(isUpcoming);
       var completed = d.events.filter(isCompleted).reverse(); // newest first
+
+      // Desktop grid: main + aside
+      html += '<div class="ls-grid">';
+      html += '<div class="ls-main">';
 
       // Hero: next upcoming event
       if (upcoming.length > 0) {
@@ -295,6 +317,10 @@
       if (lastTraining) {
         html += renderPreviousTraining(lastTraining);
       }
+
+      html += '</div>'; // .ls-main
+
+      html += '<div class="ls-aside">';
 
       // Calendar: upcoming events (skip the hero)
       var calEvents = upcoming.slice(1);
@@ -332,21 +358,30 @@
           html += '</div>';
         });
       }
-    }
 
-    // Training schedule (from training_series)
-    if (d.training_info && d.training_info.length > 0) {
-      html += '<div class="ls-section-title">Faste treninger</div>';
-      html += '<div class="ls-card">';
-      d.training_info.forEach(function (t) {
-        html += '<div style="font-size:13px;padding:4px 0">';
-        html += esc(t.day.charAt(0).toUpperCase() + t.day.slice(1));
-        if (t.time) html += ' kl ' + esc(t.time);
-        if (t.duration) html += ' (' + t.duration + ' min)';
-        if (t.location) html += '<br><span style="color:var(--ls-text-secondary);font-size:12px">' + esc(t.location) + '</span>';
+      // Training schedule (from training_series)
+      if (d.training_info && d.training_info.length > 0) {
+        html += '<div class="ls-section-title">Faste treninger</div>';
+        html += '<div class="ls-card">';
+        d.training_info.forEach(function (t) {
+          html += '<div style="font-size:13px;padding:4px 0">';
+          html += esc(t.day.charAt(0).toUpperCase() + t.day.slice(1));
+          if (t.time) html += ' kl ' + esc(t.time);
+          if (t.duration) html += ' (' + t.duration + ' min)';
+          if (t.location) html += '<br><span style="color:var(--ls-text-secondary);font-size:12px">' + esc(t.location) + '</span>';
+          html += '</div>';
+        });
         html += '</div>';
-      });
-      html += '</div>';
+      }
+
+      // Contact info
+      if (d.contact_info) {
+        html += '<div class="ls-contact"><div class="ls-contact-title">Kontakt</div>' +
+          '<div class="ls-contact-text">' + esc(d.contact_info).replace(/\n/g, '<br>') + '</div></div>';
+      }
+
+      html += '</div>'; // .ls-aside
+      html += '</div>'; // .ls-grid
     }
 
     // NFF info

@@ -38,7 +38,7 @@ body {
 }
 
 #lagside-root {
-  max-width: 480px;
+  max-width: 860px;
   margin: 0 auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -496,3 +496,24 @@ body {
   from { opacity: 0; transform: translateX(-50%) translateY(10px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* --- Oppslagstavle --- */
+.ls-announcements { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.ls-announcement { border-left: 3px solid #D4A017; border-radius: 0 8px 8px 0; padding: 10px 14px; background: #FEF9E7; }
+.ls-announcement:nth-child(n+2) { border-left-color: var(--ls-accent, #456C4B); background: #F0F7F1; }
+.ls-announcement-label { font-size: 11px; font-weight: 600; color: #8B6914; margin-bottom: 3px; }
+.ls-announcement:nth-child(n+2) .ls-announcement-label { color: #2D5A33; }
+.ls-announcement-text { font-size: 14px; line-height: 1.45; color: #333; }
+.ls-announcement-meta { font-size: 11px; color: #A08432; margin-top: 4px; }
+.ls-announcement:nth-child(n+2) .ls-announcement-meta { color: #5A8B60; }
+
+/* --- Desktop grid --- */
+.ls-grid { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 700px) {
+  .ls-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 16px; }
+}
+
+/* --- Kontaktboks --- */
+.ls-contact { background: var(--ls-card, #fff); border: 1px solid var(--ls-border, #e5e7eb); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
+.ls-contact-title { font-size: 13px; font-weight: 600; color: var(--ls-text-secondary, #6b7280); margin-bottom: 4px; }
+.ls-contact-text { font-size: 14px; color: var(--ls-text, #1f2937); line-height: 1.45; white-space: pre-line; }

@@ -42,6 +42,10 @@
   function getOwnerUid() { return window.__BF_getOwnerUid ? window.__BF_getOwnerUid() : getUserId(); }
   function isSharedTeam() { return window.__BF_isSharedTeam ? window.__BF_isSharedTeam() : false; }
 
+  // Cache: lagside state
+  var _lagsideSettings = null;
+  var _lagsideToken = null;
+
   // Cache: which events have linked workouts (for calendar badge)
   var _woEventIds = null; // Set<string> or null
   var _woSeasonWorkouts = null; // Array of workout rows for current season (for stats)
@@ -2049,6 +2053,7 @@
       case 'create-season':  renderCreateSeason(root); break;
       case 'edit-season':    renderEditSeason(root);   break;
       case 'dashboard':      renderDashboard(root);    break;
+      case 'lagside-settings': renderLagsideSettingsView(root); break;
       case 'create-event':   renderCreateEvent(root);  break;
       case 'edit-event':     renderEditEvent(root);    break;
       case 'event-detail':   renderEventDetail(root);  break;
@@ -2600,10 +2605,12 @@
       try {
         var sb = getSb();
         if (!sb) return;
-        var res = await sb.from('team_pages').select('token, active').eq('team_id', teamId).maybeSingle();
+        var res = await sb.from('team_pages').select('token, active, settings').eq('team_id', teamId).maybeSingle();
         if (res.error) throw res.error;
 
         if (res.data && res.data.active) {
+          _lagsideToken = res.data.token;
+          _lagsideSettings = res.data.settings || {};
           renderLagsideActive(card, teamId, res.data.token, cardStyle);
         } else {
           renderLagsideCreate(card, teamId, cardStyle);
@@ -2658,14 +2665,26 @@
 
   function renderLagsideActive(card, teamId, pageToken, cardStyle) {
     var url = 'https://barnefotballtrener.no/lag/' + pageToken;
-    card.innerHTML = '<div class="settings-card" style="' + cardStyle + '">' +
-      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">' +
-        '<span style="font-size:15px;line-height:1;">&#128279;</span>' +
-        '<span style="font-size:14px;font-weight:500;">Lagside for foreldre</span>' +
+    var settings = _lagsideSettings || {};
+    var announcements = (settings.announcements || []).filter(function(a) {
+      return !a.expires_at || new Date(a.expires_at) > new Date();
+    });
+    var badgeHtml = announcements.length > 0
+      ? '<span style="font-size:11px;background:#456C4B;color:#fff;padding:1px 7px;border-radius:99px;margin-left:6px;">' + announcements.length + ' beskjed' + (announcements.length > 1 ? 'er' : '') + '</span>'
+      : '';
+
+    card.innerHTML = '<div class="settings-card" style="' + cardStyle + 'cursor:pointer;" id="snLagsideCardInner">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+        '<div style="display:flex;align-items:center;gap:7px;">' +
+          '<span style="font-size:15px;line-height:1;">&#128279;</span>' +
+          '<span style="font-size:14px;font-weight:500;">Lagside for foreldre</span>' +
+          badgeHtml +
+        '</div>' +
+        '<i class="fas fa-chevron-right" style="color:var(--text-400);font-size:12px;"></i>' +
       '</div>' +
-      '<div style="font-size:12px;color:var(--text-400);line-height:1.4;margin-bottom:8px;">Foreldre \u00e5pner lenken for \u00e5 se kalender, melde oppm\u00f8te og f\u00f8lge kamper \u2014 uten \u00e5 laste ned appen.</div>' +
-      '<div style="display:flex;gap:6px;align-items:stretch;">' +
-        '<input type="text" id="snLagsideUrl" value="' + escapeHtml(url) + '" readonly ' +
+      '<div style="font-size:12px;color:var(--text-400);line-height:1.4;margin-top:4px;">Foreldre \u00e5pner lenken for \u00e5 se kalender, melde oppm\u00f8te og f\u00f8lge kamper \u2014 uten \u00e5 laste ned appen.</div>' +
+      '<div style="display:flex;gap:6px;align-items:center;margin-top:8px;" id="snLagsideCopyRow">' +
+        '<input type="text" value="' + escapeHtml(url) + '" readonly ' +
           'style="flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;padding:7px 8px;' +
           'border:1px solid var(--border);border-radius:8px;background:var(--bg,#f3f6f3);min-width:0;' +
           'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-600);">' +
@@ -2673,54 +2692,326 @@
           '<i class="fas fa-copy" style="margin-right:4px;"></i>Kopier' +
         '</button>' +
       '</div>' +
-      '<div style="text-align:right;margin-top:6px;">' +
-        '<button id="snLagsideRegenBtn" style="background:none;border:none;font-size:12px;color:var(--text-400);cursor:pointer;text-decoration:underline;padding:0;">Ny lenke</button>' +
-      '</div>' +
     '</div>';
 
     var copyBtn = document.getElementById('snLagsideCopyBtn');
     if (copyBtn) {
-      copyBtn.addEventListener('click', function() {
+      copyBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(function() {
-            notify('Lenke kopiert!', 'success');
-          });
+          navigator.clipboard.writeText(url).then(function() { notify('Lenke kopiert!', 'success'); });
         } else {
-          var input = document.getElementById('snLagsideUrl');
+          var input = card.querySelector('input[readonly]');
           if (input) { input.select(); document.execCommand('copy'); }
           notify('Lenke kopiert!', 'success');
         }
       });
     }
 
-    var regenBtn = document.getElementById('snLagsideRegenBtn');
-    if (regenBtn) {
-      regenBtn.addEventListener('click', async function() {
+    var inner = document.getElementById('snLagsideCardInner');
+    if (inner) {
+      inner.addEventListener('click', function() {
+        snView = 'lagside-settings';
+        render();
+      });
+    }
+  }
+
+  // =========================================================================
+  //  VIEW: LAGSIDE SETTINGS
+  // =========================================================================
+
+  function renderLagsideSettingsView(root) {
+    if (!currentSeason) { goToList(); return; }
+    root.innerHTML = renderLagsideSettings();
+    bindLagsideSettingsEvents();
+  }
+
+  function renderLagsideSettings() {
+    var settings = _lagsideSettings || {};
+    var announcements = settings.announcements || [];
+    var url = _lagsideToken ? 'https://barnefotballtrener.no/lag/' + _lagsideToken : '';
+
+    var html = '<div style="margin-bottom:16px;">' +
+      '<a href="#" id="snLagsideBack" style="font-size:13px;color:var(--primary);">\u2190 Dashboard</a>' +
+      '</div>' +
+      '<h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Lagside for foreldre</h2>' +
+      '<p style="font-size:13px;color:var(--text-400);margin-bottom:16px;">' +
+        'Administrer hva foreldrene ser. Endringer vises umiddelbart.' +
+      '</p>';
+
+    // --- Link section ---
+    html += '<div class="settings-card" style="margin-bottom:12px;">' +
+      '<div style="font-size:13px;font-weight:500;margin-bottom:8px;">Lenke</div>' +
+      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">' +
+        '<input type="text" value="' + escapeHtml(url) + '" readonly ' +
+          'style="flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;padding:7px 8px;' +
+          'border:1px solid var(--border);border-radius:8px;background:var(--bg,#f3f6f3);min-width:0;' +
+          'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-600);">' +
+        '<button class="btn-secondary" id="snLsCopyBtn" style="font-size:12px;padding:7px 12px;white-space:nowrap;border-radius:8px;">' +
+          '<i class="fas fa-copy" style="margin-right:4px;"></i>Kopier' +
+        '</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:12px;align-items:center;">' +
+        '<a href="#" id="snLsPreview" style="font-size:12px;color:var(--primary);text-decoration:none;">' +
+          '<i class="fas fa-external-link-alt" style="margin-right:3px;"></i>Se som forelder' +
+        '</a>' +
+        '<a href="#" id="snLsRegenLink" style="font-size:12px;color:var(--text-400);text-decoration:underline;">Ny lenke</a>' +
+      '</div>' +
+    '</div>';
+
+    // --- Announcements section ---
+    html += '<div class="settings-card" style="margin-bottom:12px;">' +
+      '<div style="font-size:13px;font-weight:500;margin-bottom:8px;">Oppslagstavle</div>' +
+      '<div style="font-size:12px;color:var(--text-400);margin-bottom:10px;">Legg til beskjeder som vises \u00f8verst p\u00e5 lagsiden. Maks 3.</div>';
+
+    if (announcements.length > 0) {
+      for (var i = 0; i < announcements.length; i++) {
+        var a = announcements[i];
+        var dateStr = a.created_at ? new Date(a.created_at).toLocaleDateString('nb-NO') : '';
+        var expStr = a.expires_at ? ' \u00b7 Utl\u00f8per ' + new Date(a.expires_at).toLocaleDateString('nb-NO') : '';
+        html += '<div style="border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:8px;background:var(--primary-dim);">' +
+          '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+            '<div style="flex:1;font-size:13px;line-height:1.4;">' + escapeHtml(a.text) + '</div>' +
+            '<button class="snLsDeleteAnn" data-idx="' + i + '" style="background:none;border:none;cursor:pointer;color:var(--text-400);padding:2px 4px;font-size:14px;" title="Slett">&times;</button>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-400);margin-top:4px;">' + dateStr + expStr + '</div>' +
+        '</div>';
+      }
+    } else {
+      html += '<div style="font-size:12px;color:var(--text-400);font-style:italic;margin-bottom:8px;">Ingen beskjeder enda.</div>';
+    }
+
+    if (announcements.length < 3) {
+      html += '<div id="snLsNewAnnForm" style="display:none;margin-bottom:8px;">' +
+        '<textarea id="snLsNewAnnText" rows="2" maxlength="500" placeholder="Skriv beskjed til foreldre..." ' +
+          'style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;resize:vertical;margin-bottom:6px;font-family:inherit;"></textarea>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<label style="font-size:12px;color:var(--text-400);display:flex;align-items:center;gap:4px;">' +
+            '<input type="checkbox" id="snLsNewAnnExpires"> Utl\u00f8per' +
+          '</label>' +
+          '<input type="date" id="snLsNewAnnDate" style="font-size:12px;border:1px solid var(--border);border-radius:6px;padding:4px 6px;display:none;">' +
+          '<div style="flex:1;"></div>' +
+          '<button class="btn-secondary" id="snLsNewAnnCancel" style="font-size:12px;padding:6px 12px;">Avbryt</button>' +
+          '<button class="btn-primary" id="snLsNewAnnSave" style="font-size:12px;padding:6px 12px;">Legg til</button>' +
+        '</div>' +
+      '</div>';
+      html += '<button class="btn-secondary" id="snLsAddAnnBtn" style="width:100%;font-size:12px;padding:7px 12px;">' +
+        '<i class="fas fa-plus" style="margin-right:4px;"></i>Ny beskjed' +
+      '</button>';
+    }
+
+    html += '</div>';
+
+    // --- Defaults section ---
+    html += '<div class="settings-card" style="margin-bottom:12px;">' +
+      '<div style="font-size:13px;font-weight:500;margin-bottom:8px;">Standarder for nye hendelser</div>';
+
+    var toggles = [
+      { key: 'default_share_workout', label: 'Del treningsinnhold', desc: 'Vis \u00f8velser og tema for treninger' },
+      { key: 'default_share_fairness', label: 'Del deltakerantall', desc: 'Vis antall spillere som deltok i kamper' },
+      { key: 'default_show_attendance_count', label: 'Vis oppm\u00f8teoversikt', desc: 'Foreldre ser antall p\u00e5meldte per hendelse' },
+    ];
+
+    for (var t = 0; t < toggles.length; t++) {
+      var tog = toggles[t];
+      var checked = settings[tog.key] ? ' checked' : '';
+      html += '<div style="display:flex;align-items:start;gap:10px;padding:6px 0;' + (t < toggles.length - 1 ? 'border-bottom:1px solid var(--border-light,#edf1ed);' : '') + '">' +
+        '<input type="checkbox" class="snLsToggle" data-key="' + tog.key + '" id="snLsTog_' + tog.key + '"' + checked + ' style="margin-top:2px;">' +
+        '<div>' +
+          '<label for="snLsTog_' + tog.key + '" style="font-size:13px;cursor:pointer;">' + tog.label + '</label>' +
+          '<div style="font-size:11px;color:var(--text-400);">' + tog.desc + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    html += '</div>';
+
+    // --- Contact info section ---
+    html += '<div class="settings-card" style="margin-bottom:12px;">' +
+      '<div style="font-size:13px;font-weight:500;margin-bottom:4px;">Kontaktinfo</div>' +
+      '<div style="font-size:12px;color:var(--text-400);margin-bottom:8px;">Vises nederst p\u00e5 lagsiden. F.eks. telefonnummer eller e-post.</div>' +
+      '<textarea id="snLsContactInfo" rows="2" maxlength="500" placeholder="F.eks. Trener Ola: 123 45 678" ' +
+        'style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;resize:vertical;font-family:inherit;">' +
+        escapeHtml(settings.contact_info || '') + '</textarea>' +
+    '</div>';
+
+    return html;
+  }
+
+  function bindLagsideSettingsEvents() {
+    var settings = _lagsideSettings || {};
+    var announcements = settings.announcements || [];
+
+    // Back link
+    var backLink = $('snLagsideBack');
+    if (backLink) {
+      backLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        snView = 'dashboard';
+        render();
+      });
+    }
+
+    // Copy button
+    var copyBtn = $('snLsCopyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        var url = 'https://barnefotballtrener.no/lag/' + _lagsideToken;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function() { notify('Lenke kopiert!', 'success'); });
+        } else {
+          var input = copyBtn.parentElement.querySelector('input[readonly]');
+          if (input) { input.select(); document.execCommand('copy'); }
+          notify('Lenke kopiert!', 'success');
+        }
+      });
+    }
+
+    // Preview link
+    var previewLink = $('snLsPreview');
+    if (previewLink) {
+      previewLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.open('https://barnefotballtrener.no/lag/' + _lagsideToken, '_blank');
+      });
+    }
+
+    // Regenerate link
+    var regenLink = $('snLsRegenLink');
+    if (regenLink) {
+      regenLink.addEventListener('click', async function(e) {
+        e.preventDefault();
         if (!confirm('Den gamle lenken slutter \u00e5 virke. Foreldre m\u00e5 f\u00e5 ny lenke. Fortsett?')) return;
-        regenBtn.disabled = true;
-        regenBtn.textContent = 'Genererer...';
+        regenLink.textContent = 'Genererer...';
         try {
           var sb = getSb();
           if (!sb) throw new Error('Ikke innlogget');
           var session = await sb.auth.getSession();
           var tok = session.data.session ? session.data.session.access_token : null;
           if (!tok) throw new Error('Ingen sesjon');
-
           var response = await fetch('/api/team-page?action=regenerate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
-            body: JSON.stringify({ team_id: teamId }),
+            body: JSON.stringify({ team_id: getTeamId() }),
           });
           var result = await response.json();
           if (!response.ok) throw new Error(result.error || 'Noe gikk galt');
-          renderLagsideActive(card, teamId, result.token, cardStyle);
+          _lagsideToken = result.token;
           notify('Ny lenke generert.', 'success');
-        } catch (e) {
-          regenBtn.disabled = false;
-          regenBtn.textContent = 'Ny lenke';
-          notify(e.message || 'Kunne ikke generere ny lenke.', 'error');
+          snView = 'lagside-settings';
+          render();
+        } catch (err) {
+          regenLink.textContent = 'Ny lenke';
+          notify(err.message || 'Kunne ikke generere ny lenke.', 'error');
         }
       });
+    }
+
+    // Delete announcement buttons
+    document.querySelectorAll('.snLsDeleteAnn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.getAttribute('data-idx'), 10);
+        var anns = ((_lagsideSettings || {}).announcements || []).slice();
+        anns.splice(idx, 1);
+        _lagsideSettings.announcements = anns;
+        saveLagsideSettings(_lagsideSettings);
+        snView = 'lagside-settings';
+        render();
+      });
+    });
+
+    // Add announcement button + form
+    var addBtn = $('snLsAddAnnBtn');
+    var annForm = $('snLsNewAnnForm');
+    if (addBtn && annForm) {
+      addBtn.addEventListener('click', function() {
+        addBtn.style.display = 'none';
+        annForm.style.display = '';
+        var ta = $('snLsNewAnnText');
+        if (ta) ta.focus();
+      });
+    }
+
+    var cancelBtn = $('snLsNewAnnCancel');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function() {
+        if (annForm) annForm.style.display = 'none';
+        if (addBtn) addBtn.style.display = '';
+      });
+    }
+
+    var expiresCheck = $('snLsNewAnnExpires');
+    var expiresDate = $('snLsNewAnnDate');
+    if (expiresCheck && expiresDate) {
+      expiresCheck.addEventListener('change', function() {
+        expiresDate.style.display = expiresCheck.checked ? '' : 'none';
+      });
+    }
+
+    var saveAnnBtn = $('snLsNewAnnSave');
+    if (saveAnnBtn) {
+      saveAnnBtn.addEventListener('click', function() {
+        var text = ($('snLsNewAnnText') ? $('snLsNewAnnText').value : '').trim();
+        if (!text) { notify('Skriv en beskjed.', 'warning'); return; }
+        var anns = ((_lagsideSettings || {}).announcements || []).slice();
+        var newAnn = { text: text, created_at: new Date().toISOString(), expires_at: null };
+        if (expiresCheck && expiresCheck.checked && expiresDate && expiresDate.value) {
+          newAnn.expires_at = expiresDate.value + 'T23:59:59Z';
+        }
+        anns.push(newAnn);
+        if (!_lagsideSettings) _lagsideSettings = {};
+        _lagsideSettings.announcements = anns;
+        saveLagsideSettings(_lagsideSettings);
+        snView = 'lagside-settings';
+        render();
+      });
+    }
+
+    // Toggles
+    document.querySelectorAll('.snLsToggle').forEach(function(chk) {
+      chk.addEventListener('change', function() {
+        var key = chk.getAttribute('data-key');
+        if (!_lagsideSettings) _lagsideSettings = {};
+        _lagsideSettings[key] = chk.checked;
+        saveLagsideSettings(_lagsideSettings);
+      });
+    });
+
+    // Contact info (debounced)
+    var contactTa = $('snLsContactInfo');
+    var _contactTimer = null;
+    if (contactTa) {
+      contactTa.addEventListener('input', function() {
+        clearTimeout(_contactTimer);
+        _contactTimer = setTimeout(function() {
+          if (!_lagsideSettings) _lagsideSettings = {};
+          _lagsideSettings.contact_info = contactTa.value;
+          saveLagsideSettings(_lagsideSettings);
+        }, 800);
+      });
+    }
+  }
+
+  async function saveLagsideSettings(settings) {
+    try {
+      var sb = getSb();
+      if (!sb) return;
+      var session = await sb.auth.getSession();
+      var token = session.data.session ? session.data.session.access_token : null;
+      if (!token) { notify('Ikke innlogget', 'error'); return; }
+
+      var response = await fetch('/api/team-page?action=settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ team_id: getTeamId(), settings: settings }),
+      });
+      if (!response.ok) {
+        var err = await response.json().catch(function() { return {}; });
+        notify(err.error || 'Kunne ikke lagre', 'error');
+      }
+    } catch (e) {
+      notify('Lagring feilet: ' + (e.message || ''), 'error');
     }
   }
 

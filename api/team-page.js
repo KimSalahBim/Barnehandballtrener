@@ -322,7 +322,7 @@ async function handleRead(req, res) {
 
   // Look up page
   var { data: page, error: pageErr } = await supabaseAdmin
-    .from('team_pages').select('team_id, active')
+    .from('team_pages').select('team_id, active, settings')
     .eq('token', token).eq('active', true).maybeSingle();
   if (pageErr || !page) return res.status(404).json({ error: 'Lagsiden finnes ikke eller er deaktivert' });
 
@@ -486,11 +486,72 @@ async function handleRead(req, res) {
     }
   }
 
+  // Settings from team_pages
+  var pageSettings = (page && page.settings) || {};
+  var announcements = (pageSettings.announcements || []).filter(function(a) {
+    return !a.expires_at || new Date(a.expires_at) > new Date();
+  });
+
   return res.status(200).json({
     team: { name: team.name },
     season: { name: season.name, age_class: season.age_class, format: season.format },
     players: players, events: events, training_info: trainingInfo, nff: nff,
+    announcements: announcements,
+    contact_info: pageSettings.contact_info || '',
+    defaults: {
+      share_workout: !!pageSettings.default_share_workout,
+      share_fairness: !!pageSettings.default_share_fairness,
+      show_attendance_count: !!pageSettings.default_show_attendance_count,
+    },
   });
+}
+
+// ========================================
+// ACTION: settings
+// ========================================
+
+async function handleSettings(req, res) {
+  var callerId = await authenticateCaller(req);
+  if (!callerId) return res.status(401).json({ error: 'Ikke innlogget' });
+
+  var body = parseBody(req);
+  var teamId = body.team_id;
+  if (!teamId) return res.status(400).json({ error: 'team_id is required' });
+
+  var { data: membership } = await supabaseAdmin
+    .from('team_members').select('role')
+    .eq('team_id', teamId).eq('user_id', callerId).eq('status', 'active')
+    .maybeSingle();
+
+  if (!membership || membership.role !== 'owner') {
+    return res.status(403).json({ error: 'Bare lageier kan endre innstillinger' });
+  }
+
+  var settings = body.settings || {};
+
+  var announcements = Array.isArray(settings.announcements) ? settings.announcements.slice(0, 3) : [];
+  announcements = announcements.map(function(a) {
+    return {
+      text: String(a.text || '').slice(0, 500),
+      created_at: a.created_at || new Date().toISOString(),
+      expires_at: a.expires_at || null,
+    };
+  });
+
+  var clean = {
+    announcements: announcements,
+    default_share_workout: !!settings.default_share_workout,
+    default_share_fairness: !!settings.default_share_fairness,
+    default_show_attendance_count: !!settings.default_show_attendance_count,
+    contact_info: String(settings.contact_info || '').slice(0, 500),
+  };
+
+  var { error } = await supabaseAdmin.from('team_pages')
+    .update({ settings: clean })
+    .eq('team_id', teamId);
+
+  if (error) return res.status(500).json({ error: error.message });
+  return res.json({ ok: true });
 }
 
 // ========================================
@@ -516,7 +577,8 @@ export default async function handler(req, res) {
       if (action === 'create') return await handleCreate(req, res);
       if (action === 'regenerate') return await handleRegenerate(req, res);
       if (action === 'attend') return await handleAttend(req, res);
-      return res.status(400).json({ error: 'Unknown action. Use ?action=create|regenerate|attend' });
+      if (action === 'settings') return await handleSettings(req, res);
+      return res.status(400).json({ error: 'Unknown action. Use ?action=create|regenerate|attend|settings' });
     }
 
     res.setHeader('Allow', 'GET, POST, OPTIONS');
