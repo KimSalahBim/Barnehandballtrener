@@ -389,7 +389,7 @@
       </div>
 
       <!-- Pricing preview -->
-      <div class="lp-section">
+      <div class="lp-section" id="landingPricing">
         <h2 class="lp-section-title">Enkle, lave priser</h2>
         <p class="lp-section-sub">Start med 7 dager gratis. Ingen bindingstid.</p>
         <div class="lp-price-cards">
@@ -427,19 +427,35 @@
         </div>
       </div>
 
-      <!-- Trust row -->
-      <div class="lp-trust-row" style="margin:16px 24px;">
-        <div class="lp-trust-pill"><i class="fas fa-lock"></i> Stripe-betaling</div>
-        <div class="lp-trust-pill"><i class="fas fa-flag"></i> Norsk</div>
-        <div class="lp-trust-pill"><i class="fas fa-sliders"></i> Admin i app</div>
-      </div>
+      <!-- FAQ -->
+      <div class="lp-section">
+        <div class="public-landing">
+          <section class="landing-section" aria-label="Spørsmål og svar">
+            <h2>Spørsmål og svar</h2>
 
-<noscript>
-        <a href="#landingPricing" class="btn-secondary btn-secondary-link" role="button" aria-label="Se priser">
-          <i class="fas fa-tags" aria-hidden="true"></i>
-          Se priser
-        </a>
-      </noscript>
+            <details class="landing-faq">
+              <summary>Kan jeg avslutte når som helst?</summary>
+              <p>Ja. Du kan avslutte selv i appen. Du beholder tilgang ut perioden du har betalt for.</p>
+            </details>
+
+            <details class="landing-faq">
+              <summary>Fungerer dette på iPhone og Android?</summary>
+              <p>Ja. Appen er laget for mobil nettleser og kan brukes som PWA.</p>
+            </details>
+
+            <details class="landing-faq">
+              <summary>Hvordan får jeg hjelp?</summary>
+              <p>Send e-post til <a href="mailto:support@barnefotballtrener.no">support@barnefotballtrener.no</a>.</p>
+            </details>
+
+            <details class="landing-faq">
+              <summary>Hva med personvern og data om barn?</summary>
+              <p>Barnefotballtrener er laget for voksne trenere. Spillerdata lagres kryptert i skyen og synkroniseres mellom enhetene dine. Vi anbefaler at du kun bruker fornavn for barns personvern. Appen samler ikke inn sporingscookies eller annonsedata.</p>
+              <p>Les mer i <a href="/privacy.html">personvernerklæringen</a>.</p>
+            </details>
+          </section>
+        </div>
+      </div>
 
             <div id="magicLinkSection" class="magic-link-section" aria-label="Testinnlogging">
 <!-- Divider -->
@@ -466,79 +482,6 @@
       </p>
       </div>
 
-      <!-- Public landing content (static HTML for SEO; hidden after login) -->
-      <div id="publicLanding" class="public-landing">
-<section id="landingPricing" class="landing-section" aria-label="Priser">
-          <h2>Priser</h2>
-          <div class="landing-prices" role="list">
-            <div class="landing-price" role="listitem">
-              <div class="price-title">Måned</div>
-              <div class="price-amount">49 kr</div>
-            </div>
-            <div class="landing-price" role="listitem">
-              <div class="price-title">År</div>
-              <div class="price-amount">299 kr</div>
-            </div>
-            <div class="landing-price" role="listitem">
-              <div class="price-title">Livstid</div>
-              <div class="price-amount">799 kr</div>
-            </div>
-          </div>
-          <p class="landing-muted" style="margin-top:12px;">
-          <i class="fas fa-people-group" style="color:#90caf9;"></i>
-          <strong>Klubb?</strong> Vi tilbyr samlelisenser med rabatt.
-          <a href="mailto:support@barnefotballtrener.no?subject=Klubblisens" style="color:#90caf9; text-decoration:underline;">Ta kontakt</a>
-</p>
-          <p class="landing-muted">Betaling håndteres av Stripe. Du kan administrere og avslutte abonnement i appen.</p>
-        </section>
-
-        <section class="landing-section" aria-label="Spørsmål og svar">
-          <h2>Spørsmål og svar</h2>
-
-          <details class="landing-faq">
-            <summary>Kan jeg avslutte når som helst?</summary>
-            <p>Ja. Du kan avslutte selv i appen. Du beholder tilgang ut perioden du har betalt for.</p>
-          </details>
-
-          <details class="landing-faq">
-            <summary>Fungerer dette på iPhone og Android?</summary>
-            <p>Ja. Appen er laget for mobil nettleser og kan brukes som PWA.</p>
-          </details>
-
-          <details class="landing-faq">
-            <summary>Hvordan får jeg hjelp?</summary>
-            <p>Send e-post til <a href="mailto:support@barnefotballtrener.no">support@barnefotballtrener.no</a>.</p>
-          </details>
-
-          <details class="landing-faq">
-            <summary>Hva med personvern og data om barn?</summary>
-            <p>Barnefotballtrener er laget for voksne trenere. Spillerdata lagres kryptert i skyen og synkroniseres mellom enhetene dine. Vi anbefaler at du kun bruker fornavn for barns personvern. Appen samler ikke inn sporingscookies eller annonsedata.</p>
-            <p>Les mer i <a href="/privacy.html">personvernerklæringen</a>.</p>
-          </details>
-        </section>
-
-        <section class="landing-trust" aria-label="Trygghet">
-        <p class="landing-trust-note">Trygt for klubber: betaling via Stripe, og abonnent kan avslutte selv. Ingen annonser eller sporingspiksler.</p>
-
-          <div class="trust-item"><i class="fas fa-credit-card" aria-hidden="true"></i><span>Betaling via Stripe</span></div>
-          <div class="trust-item"><i class="fas fa-sliders" aria-hidden="true"></i><span>Administrer i appen</span></div>
-          <div class="trust-item"><i class="fas fa-flag" aria-hidden="true"></i><span>Norsk</span></div>
-        </section>
-
-        
-        <!-- Nøkkelfunksjoner (tags) -->
-        <div class="landing-chips" aria-label="Nøkkelfunksjoner">
-          <span class="landing-chip">Spilletid-generator</span>
-          <span class="landing-chip">Bytteplan</span>
-          <span class="landing-chip">Treningsgrupper</span>
-          <span class="landing-chip">Jevne lag</span>
-          <span class="landing-chip">Konkurranser</span>
-          <span class="landing-chip">Liga</span>
-          <span class="landing-chip">Treningsøkt-bygger</span>
-                  <span class="landing-chip">Spilletid barnefotball</span>
-          <span class="landing-chip">Lik spilletid fotball</span>
-</div>
-
 <nav class="landing-footer-links landing-footer-seo" aria-label="Funksjoner">
   <a href="/bytteplan">Bytteplan</a>
   <span class="dot" aria-hidden="true">•</span>
@@ -561,7 +504,6 @@
           <span class="dot" aria-hidden="true">•</span>
           <a href="mailto:support@barnefotballtrener.no">Kontakt</a>
         </nav>
-      </div>
 
       <!-- Legal text -->
       <p class="small-text" style="margin-top: 20px; font-size: 0.8em; opacity: 0.7; text-align: center; line-height: 1.4;">
