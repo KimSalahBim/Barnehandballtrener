@@ -12,6 +12,67 @@
    ------------------------------------------- */
 
 /* -------------------------------------------
+   STICKY NAV (desktop — vises når hero er scrollet forbi)
+   ------------------------------------------- */
+.lp-sticky-nav {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid #d8e4da;
+  padding: 10px 20px;
+}
+
+.lp-sticky-nav.visible {
+  display: block;
+}
+
+.lp-sticky-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.lp-sticky-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.lp-sticky-brand img {
+  border-radius: 6px;
+}
+
+.lp-sticky-cta {
+  background: #456C4B;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.lp-sticky-cta:hover {
+  background: #3a5e40;
+}
+
+@media (max-width: 767px) {
+  .lp-sticky-nav {
+    display: none !important;
+  }
+}
+
+/* -------------------------------------------
    HERO
    ------------------------------------------- */
 .lp-hero {
@@ -709,8 +770,9 @@
   letter-spacing: 0.02em;
 }
 
+/* Fallback når poster (demo-poster.jpg) mangler eller laster */
 .lp-demo-screen {
-  background: #0f172a;
+  background: #1a2332;
   border-radius: 18px;
   overflow: hidden;
 }

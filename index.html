@@ -98,6 +98,15 @@
   <!-- LOGIN SCREEN (oppdatert med Google) -->
   <div id="passwordProtection" class="password-protection">
     <div class="password-box landing-page-box">
+      <nav class="lp-sticky-nav" id="lpStickyNav" aria-label="Hurtignavigasjon">
+        <div class="lp-sticky-inner">
+          <a href="/" class="lp-sticky-brand">
+            <img src="apple-touch-icon.png" alt="" width="28" height="28">
+            <span>Barnefotballtrener</span>
+          </a>
+          <a href="#" id="lpStickyCta" class="lp-sticky-cta">Prøv gratis</a>
+        </div>
+      </nav>
       <div class="lp-hero">
         <div class="lp-hero-inner">
           <img class="login-logo" src="apple-touch-icon.png" alt="Barnefotballtrener logo">
@@ -1434,6 +1443,26 @@
 <script src="sesong-workout.js"></script>
 <script src="logout-fix.js"></script>
 <script src="onboarding.js"></script>
+
+<script>
+(function() {
+  var nav = document.getElementById('lpStickyNav');
+  var hero = document.querySelector('.lp-hero');
+  if (!nav || !hero) return;
+  var observer = new IntersectionObserver(function(entries) {
+    nav.classList.toggle('visible', !entries[0].isIntersecting);
+  }, { threshold: 0 });
+  observer.observe(hero);
+  var cta = document.getElementById('lpStickyCta');
+  if (cta) {
+    cta.addEventListener('click', function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('googleSignInBtn');
+      if (btn) btn.click();
+    });
+  }
+})();
+</script>
 
 </body>
 </html>
