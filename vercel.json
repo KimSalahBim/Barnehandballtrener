@@ -25,6 +25,14 @@
       "destination": "/lagside.html"
     },
     {
+      "source": "/treningsokt",
+      "destination": "/treningsokt.html"
+    },
+    {
+      "source": "/konkurranser",
+      "destination": "/konkurranser.html"
+    },
+    {
       "source": "/stats/api/:match*",
       "destination": "https://api-gateway.umami.dev/api/:match*"
     },
@@ -111,6 +119,14 @@
     },
     {
       "source": "/sesong.html",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/treningsokt.html",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/konkurranser.html",
       "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     },
     {
