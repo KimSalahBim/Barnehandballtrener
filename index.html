@@ -103,6 +103,7 @@
           <img class="login-logo" src="apple-touch-icon.png" alt="Barnefotballtrener logo">
           <h1>Barnefotballtrener</h1>
           <p class="landing-tagline">Bytteplan, spilletid og treningsøkt — klar på sekunder fra mobilen.</p>
+          <p class="lp-hero-proof">Brukt av 200+ trenere i Norge</p>
         </div>
       </div>
 
@@ -119,18 +120,13 @@
         <span>Prøv gratis i 7 dager</span>
       </button>
 
-      <!-- Secondary CTA (stays on login page, no new logic) -->
-      <button type="button" class="btn-secondary btn-secondary-link" id="publicSeePricingBtn" aria-label="Se priser" onclick="try{if(window.authService&&typeof window.authService.showPricingPage==='function'){window.authService.showPricingPage();}else{location.hash='landingPricing';}}catch(e){location.hash='landingPricing';}">
-        <i class="fas fa-tags" aria-hidden="true"></i>
-        Se priser
-      </button>
-
       <!-- Trust pills -->
       <div class="lp-trust-row" style="margin-top:14px;">
         <div class="lp-trust-pill"><i class="fas fa-check-circle"></i> Gratis i 7 dager</div>
         <div class="lp-trust-pill"><i class="fas fa-check-circle"></i> Ingen kortinfo</div>
         <div class="lp-trust-pill"><i class="fas fa-check-circle"></i> Mobilvennlig</div>
       </div>
+      <p class="lp-pricing-jump"><a href="#landingPricing">Se priser</a></p>
       
       <!-- Phone mockups -->
       <div class="lp-phones-section">
@@ -288,7 +284,7 @@
       </div>
 
       <!-- Video demo -->
-      <div class="lp-section lp-demo-section">
+      <div class="lp-section lp-demo-section lp-section-alt">
         <h2 class="lp-section-title">Se appen i aksjon</h2>
         <p class="lp-section-sub">Kampdag-planleggeren genererer rettferdig spilletid og bytteplan på sekunder.</p>
         <div class="lp-demo-device">
@@ -359,7 +355,7 @@
       </div>
 
       <!-- How it works -->
-      <div class="lp-section">
+      <div class="lp-section lp-section-alt">
         <h2 class="lp-section-title">Slik kommer du i gang</h2>
         <div class="lp-how">
           <div class="lp-steps">
@@ -413,7 +409,7 @@
       </div>
 
       <!-- Club -->
-      <div class="lp-section">
+      <div class="lp-section lp-section-alt">
         <div class="lp-club-card">
           <div class="lp-club-icon"><i class="fas fa-shield-halved"></i></div>
           <div class="lp-club-content">

@@ -38,10 +38,22 @@
 
 .lp-hero h1 {
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.03em;
   margin: 0 0 8px;
   color: var(--bf-ink, #0f172a);
+}
+
+.lp-hero-proof {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 12px 0 0;
+  letter-spacing: 0.01em;
+  display: inline-block;
+  background: rgba(69, 108, 75, 0.92);
+  padding: 5px 12px;
+  border-radius: 999px;
 }
 
 #passwordProtection .lp-hero .landing-tagline {
@@ -74,6 +86,23 @@
 .lp-trust-pill i {
   color: var(--bf-green, #456C4B);
   font-size: 11px;
+}
+
+.lp-pricing-jump {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 13px;
+}
+
+.lp-pricing-jump a {
+  color: #456C4B;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lp-pricing-jump a:hover {
+  color: #3a5a40;
 }
 
 /* -------------------------------------------
@@ -232,9 +261,13 @@
   border-top: 1px solid rgba(0,0,0,0.05);
 }
 
+.lp-section-alt {
+  background: #f8faf8;
+}
+
 .lp-section-title {
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 6px;
   text-align: center;
@@ -608,6 +641,7 @@
    ------------------------------------------- */
 #passwordProtection .password-box.landing-page-box {
   max-width: 640px !important;
+  margin: 0 auto;
   padding: 0 0 30px;
   text-align: center;
 }
@@ -723,9 +757,25 @@
    ------------------------------------------- */
 @media (min-width: 768px) {
   #passwordProtection .password-box.landing-page-box {
-    max-width: calc(100vw - 80px) !important;
+    max-width: 960px !important;
+    margin: 0 auto;
     padding: 0 0 40px;
     border-radius: 28px;
+  }
+
+  /* Slår auth-styles button#googleSignInBtn.btn-google (inline-flex + width 100%) */
+  #passwordProtection .landing-page-box button#googleSignInBtn.btn-google,
+  .landing-page-box .btn-secondary.btn-secondary-link {
+    display: flex;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #passwordProtection .landing-faq {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .lp-hero {
@@ -808,7 +858,8 @@
 
 @media (min-width: 1200px) {
   #passwordProtection .password-box.landing-page-box {
-    max-width: calc(100vw - 120px) !important;
+    max-width: 1080px !important;
+    margin: 0 auto;
   }
 
   .lp-hero h1 {
