@@ -521,6 +521,10 @@ button#googleSignInBtn.btn-google:active{
   text-decoration: underline;
 }
 
+#passwordProtection .public-landing .landing-faq {
+  border-left: 3px solid #456C4B;
+}
+
 #passwordProtection .landing-trust {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
