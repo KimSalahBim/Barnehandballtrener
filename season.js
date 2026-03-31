@@ -4522,11 +4522,19 @@
     var totalPossible = ps.relevantTrainings + ps.relevantMatches;
     var pct = totalPossible > 0 ? Math.round((ps.totalEvents / totalPossible) * 100) : 0;
 
+    var isImportedPS = sp.player_id && sp.player_id.indexOf('p_') === 0;
+    var psAvatar = isImportedPS ? getPlayerAvatar(sp.player_id) : null;
+
     var html =
       '<div class="settings-card">' +
         '<div class="sn-dash-header">' +
           '<button class="sn-back" id="snBackFromPlayerStats"><i class="fas fa-chevron-left"></i> ' + (dashTab === 'roster' ? 'Stall' : 'Statistikk') + '</button>' +
           '<span class="sn-dash-title">' + escapeHtml(sp.name) + '</span>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:center;margin:12px 0 4px;">' +
+          (psAvatar
+            ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;"><img src="/avatars/' + psAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+            : '<div style="width:72px;height:72px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>') +
         '</div>';
 
     // Badges
