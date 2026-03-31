@@ -42,6 +42,27 @@
   function getOwnerUid() { return window.__BF_getOwnerUid ? window.__BF_getOwnerUid() : getUserId(); }
   function isSharedTeam() { return window.__BF_isSharedTeam ? window.__BF_isSharedTeam() : false; }
 
+  // Avatar lookup: get avatar filename from core.js players
+  function getPlayerAvatar(playerId) {
+    var corePlayers = window.players || [];
+    for (var i = 0; i < corePlayers.length; i++) {
+      if (corePlayers[i].id === playerId) return corePlayers[i].avatar || null;
+    }
+    return null;
+  }
+
+  function renderSeasonAvatar(playerId, name, size) {
+    size = size || 36;
+    var avatar = getPlayerAvatar(playerId);
+    if (avatar) {
+      return '<div style="width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:50%;overflow:hidden;">' +
+        '<img src="/avatars/' + avatar + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">' +
+        '</div>';
+    }
+    var initial = (name || '?').charAt(0).toUpperCase();
+    return '<div style="width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' + initial + '</div>';
+  }
+
   // Cache: lagside state
   var _lagsideSettings = null;
   var _lagsideToken = null;
@@ -3325,6 +3346,7 @@
         }
         html +=
           '<div class="sn-roster-item" data-spid="' + p.id + '" style="cursor:pointer;">' +
+            renderSeasonAvatar(p.player_id, p.name, 36) +
             '<div class="sn-roster-name">' + escapeHtml(p.name) + '</div>' +
             '<div class="sn-roster-badges">' +
               stBadge +
@@ -6366,6 +6388,7 @@
         playerHtml +=
           '<div class="sn-att-item ' + (isPresent ? 'present' : 'absent') + '" data-pid="' + escapeHtml(p.player_id) + '">' +
             '<div class="sn-att-check">\u2713</div>' +
+            renderSeasonAvatar(p.player_id, p.name, 32) +
             '<div class="sn-att-name">' + escapeHtml(p.name) + '</div>' +
             hintHtml +
           '</div>';
