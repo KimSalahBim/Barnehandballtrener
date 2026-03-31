@@ -2050,7 +2050,8 @@
     if (!lineupEl && !planEl) return;
 
     const idToName = {};
-    presentPlayers.forEach(p => idToName[p.id] = p.name);
+    const idToAvatar = {};
+    presentPlayers.forEach(p => { idToName[p.id] = p.name; idToAvatar[p.id] = p.avatar || null; });
 
     const first = best.segments[0];
     const startIds = first.lineup.slice();
@@ -2154,16 +2155,16 @@
           const isK = slot.zone === 'K';
           const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
           const cls = (bubbleCls[slot.zone] || '') + (prefW ? ' kd-pref-warn' : '');
+          const hasAv0 = pid && idToAvatar[pid];
           return `<div class="kd-pos-slot" data-seg="0" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.y}%;">
             <span class="kd-pos-label">${slot.label}</span>
-            <div class="kd-pos-bubble ${cls}" data-seg="0" data-slot="${slot.key}">
-              <span class="kd-p-name">${escapeHtml(name)}</span>
-              <span class="kd-p-hint">${isK ? '\ud83e\udde4' : slot.label}</span>
-            </div></div>`;
+            <div class="kd-pos-bubble ${cls}" data-seg="0" data-slot="${slot.key}"${hasAv0 ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
+              ${hasAv0 ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
+            </div>${hasAv0 ? '<span class="kd-av-name" style="position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;pointer-events:none;">' + escapeHtml(name) + '</span>' : ''}</div>`;
         }).join('');
 
         const benchHtml0 = sm0.bench.map(pid =>
-          `<div class="kd-bench-bubble" data-seg="0" data-pid="${pid}"><span class="kd-p-name">${escapeHtml(idToName[pid] || pid)}</span></div>`
+          `<div class="kd-bench-bubble" data-seg="0" data-pid="${pid}">${idToAvatar[pid] ? '<img src="/avatars/' + idToAvatar[pid] + '" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:3px;">' : ''}<span class="kd-p-name">${escapeHtml(idToName[pid] || pid)}</span></div>`
         ).join('');
 
         lineupEl.innerHTML = `
@@ -2218,16 +2219,16 @@
             const isNew = pid && newIds.has(pid);
             const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
             const cls = (bubbleCls[slot.zone] || '') + (isNew ? ' kd-is-new' : '') + (prefW ? ' kd-pref-warn' : '');
+            const hasAv = pid && idToAvatar[pid];
             return `<div class="kd-pos-slot" data-seg="${idx}" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.y}%;">
               <span class="kd-pos-label">${slot.label}</span>
-              <div class="kd-pos-bubble ${cls}" data-seg="${idx}" data-slot="${slot.key}">
-                <span class="kd-p-name">${escapeHtml(name)}</span>
-                <span class="kd-p-hint">${isK ? '\ud83e\udde4' : slot.label}</span>
-              </div></div>`;
+              <div class="kd-pos-bubble ${cls}" data-seg="${idx}" data-slot="${slot.key}"${hasAv ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
+                ${hasAv ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
+              </div>${hasAv ? '<span class="kd-av-name" style="position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;pointer-events:none;">' + escapeHtml(name) + '</span>' : ''}</div>`;
           }).join('');
 
           const benchHtml = sm.bench.map(pid =>
-            `<div class="kd-bench-bubble" data-seg="${idx}" data-pid="${pid}"><span class="kd-p-name">${escapeHtml(idToName[pid] || pid)}</span></div>`
+            `<div class="kd-bench-bubble" data-seg="${idx}" data-pid="${pid}">${idToAvatar[pid] ? '<img src="/avatars/' + idToAvatar[pid] + '" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:3px;">' : ''}<span class="kd-p-name">${escapeHtml(idToName[pid] || pid)}</span></div>`
           ).join('');
 
           // Swap strip
