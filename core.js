@@ -221,6 +221,7 @@
         const baseRow = (p) => ({
           id: p.id, user_id: uid, team_id: tid,
           name: p.name, skill: p.skill, goalie: p.goalie, active: p.active,
+          avatar: p.avatar || null,
           updated_at: new Date().toISOString()
         });
         const rows = players.map(p => _positionsColumnMissing
@@ -251,7 +252,7 @@
     // Snapshot nåværende kontekst for å unngå at team-bytte sender til feil lag
     var uidSnap = getOwnerUid();
     var tidSnap = state.currentTeamId;
-    var playersSnap = (state.players || []).map(function(p) { return { id: p.id, name: p.name, skill: p.skill, goalie: p.goalie, active: p.active, positions: (p.positions || ['F','M','A']).slice() }; });
+    var playersSnap = (state.players || []).map(function(p) { return { id: p.id, name: p.name, skill: p.skill, goalie: p.goalie, active: p.active, avatar: p.avatar, positions: (p.positions || ['F','M','A']).slice() }; });
     _supabaseSaveTimer = setTimeout(function() {
       supabaseSavePlayers(playersSnap, tidSnap, uidSnap).catch(function(e) {
         console.warn('[core.js] Supabase debounced sync feilet:', e.message);

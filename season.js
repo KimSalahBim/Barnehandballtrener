@@ -3701,7 +3701,8 @@
 
       html +=
         '<div class="sn-assign-row">' +
-          '<div class="sn-assign-name">' +
+          '<div class="sn-assign-name" style="display:flex;align-items:center;gap:8px;min-width:0;">' +
+            renderSeasonAvatar(mp.player_id, mp.name, 32) +
             '<span class="sn-pname">' + escapeHtml(mp.name) +
               (mp.goalie ? ' <span class="sn-assign-meta">\uD83E\uDDE4</span>' : '') +
               ' <span class="sn-assign-meta">' + mp.skill + '</span>' +
@@ -3991,6 +3992,7 @@
         var sc = scorersAndAssisters[sc_i];
         html +=
           '<div class="sn-roster-item sn-player-stat-row" data-spid="' + escapeHtml(sc.player.id) + '">' +
+            renderSeasonAvatar(sc.player.player_id, sc.player.name, 36) +
             '<div style="flex:1;">' +
               '<div style="font-weight:600;">' + escapeHtml(sc.player.name) + '</div>' +
             '</div>' +
@@ -4043,7 +4045,7 @@
       }
 
       html += '<tr class="sn-player-stat-row" data-spid="' + escapeHtml(pl.player.id) + '">' +
-        '<td class="sn-pname">' + escapeHtml(pl.player.name) + statStBadge + '</td>' +
+        '<td class="sn-pname"><div style="display:flex;align-items:center;gap:8px;">' + renderSeasonAvatar(pl.player.player_id, pl.player.name, 28) + '<span>' + escapeHtml(pl.player.name) + statStBadge + '</span></div></td>' +
         '<td>' + pl.trainingsAttended + '</td>' +
         '<td>' + pl.matchesAttended + '</td>' +
         '<td>' + (pl.minutesPlayed || 0) + '</td>' +
@@ -4819,6 +4821,7 @@
         '<label class="sn-import-item"' + (already ? ' style="opacity:0.5;"' : '') + '>' +
           '<input type="checkbox" class="sn-import-cb" value="' + p.id + '"' +
             (already ? ' checked disabled title="Allerede i sesongen"' : ' checked') + '>' +
+          renderSeasonAvatar(p.id, p.name, 32) +
           '<div class="sn-roster-name">' + escapeHtml(p.name) + '</div>' +
           '<div class="sn-roster-badges">' +
             (p.goalie ? '<span class="sn-badge sn-badge-keeper">Kan stå i mål</span>' : '') +
@@ -6567,8 +6570,11 @@
             }
             html +=
               '<div class="sn-assign-row">' +
-                '<div class="sn-assign-name">' + escapeHtml(rp.name) +
+                '<div class="sn-assign-name" style="display:flex;align-items:center;gap:8px;min-width:0;">' +
+                  renderSeasonAvatar(rp.player_id, rp.name, 32) +
+                  '<span>' + escapeHtml(rp.name) +
                   (rp.goalie ? ' <small>\uD83E\uDDE4</small>' : '') +
+                  '</span>' +
                 '</div>' +
                 '<select class="sn-assign-select sn-rot-select' + rSelClass + '" data-rpid="' + escapeHtml(rp.player_id) + '">' + rOpts + '</select>' +
               '</div>';
@@ -6624,7 +6630,7 @@
               if (seasonPlayers[sp2].player_id === mrow.player_id) { mname = seasonPlayers[sp2].name; break; }
             }
           }
-          minutesRows.push({ name: mname || 'Ukjent', minutes: mrow.minutes_played });
+          minutesRows.push({ player_id: mrow.player_id, name: mname || 'Ukjent', minutes: mrow.minutes_played });
         }
       }
       minutesRows.sort(function(a, b) { return b.minutes - a.minutes; });
@@ -6641,7 +6647,7 @@
             '<div class="sn-playtime-list">';
 
         for (var mr = 0; mr < minutesRows.length; mr++) {
-          html += '<div class="sn-playtime-row"><span class="sn-playtime-name">' + escapeHtml(minutesRows[mr].name) + '</span><span class="sn-playtime-min">' + minutesRows[mr].minutes + ' min</span></div>';
+          html += '<div class="sn-playtime-row"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">' + renderSeasonAvatar(minutesRows[mr].player_id, minutesRows[mr].name, 28) + '<span class="sn-playtime-name">' + escapeHtml(minutesRows[mr].name) + '</span></div><span class="sn-playtime-min">' + minutesRows[mr].minutes + ' min</span></div>';
         }
 
         html +=
