@@ -4,7 +4,7 @@
   'use strict';
 
   var AVATAR_PATH = '/avatars/';
-  var AVATAR_COUNT = 288;
+  var AVATAR_COUNT = 496;
   var PICKER_ID = 'avatarPickerModal';
 
   // Render an avatar <img> tag or fallback initial
