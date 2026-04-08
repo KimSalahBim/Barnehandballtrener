@@ -8,8 +8,8 @@
 const CONFIG = {
   // Supabase
   supabase: {
-    url: 'https://jxteosjxgrblasksfeyu.supabase.co', // Hent fra Supabase Dashboard -> Project Settings -> API
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dGVvc2p4Z3JibGFza3NmZXl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxOTE1ODMsImV4cCI6MjA4NDc2NzU4M30.4VhLfxcX0PCkUeK9aYrTrfmTwESH9zOyx4sY61lIZ9w' // Hent fra samme sted
+    url: 'https://fzwxcicpuaqzggpyjvkr.supabase.co', // Hent fra Supabase Dashboard -> Project Settings -> API
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3hjaWNwdWFxemdncHlqdmtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODE5MTAsImV4cCI6MjA5MTI1NzkxMH0.y37vl1wke1A2r8JHXChs8zrpzXOEiya-EZ8MQ7TEVlE' // Hent fra samme sted
   },
 
   // Stripe
@@ -53,9 +53,9 @@ const CONFIG = {
 
   // App innstillinger
   app: {
-    name: 'Barnefotballtrener',
-    domain: 'barnefotballtrener.no',
-    supportEmail: 'support@barnefotballtrener.no',
+    name: 'Barnehandballtrener',
+    domain: 'barnehandballtrener.no',
+    supportEmail: 'support@barnehandballtrener.no',
     sessionDuration: 12 // timer fÃ¸r auto-logout
   }
 };
