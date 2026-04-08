@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 Barnehandballtrener.no. All rights reserved.
 // onboarding.js — First-time user onboarding wizard (v5)
 // ================================================
 // 3-step wizard: (1) Team + age class (2) Bulk add players (3) Demo substitution plan
@@ -9,17 +9,17 @@
   'use strict';
 
   // ══════════════════════════════════════════════════════════════
-  //  NFF age rules (self-contained subset)
+  //  NHF age rules (self-contained subset)
   // ══════════════════════════════════════════════════════════════
-  var NFF_RULES = {
-    6:  { format: 3,  minutes: 40, label: '3er, 2\u00d720 min' },
-    7:  { format: 3,  minutes: 40, label: '3er, 2\u00d720 min' },
-    8:  { format: 5,  minutes: 50, label: '5er, 2\u00d725 min' },
-    9:  { format: 5,  minutes: 50, label: '5er, 2\u00d725 min' },
-    10: { format: 7,  minutes: 60, label: '7er, 2\u00d730 min' },
-    11: { format: 7,  minutes: 60, label: '7er, 2\u00d730 min' },
-    12: { format: 9,  minutes: 70, label: '9er, 2\u00d735 min' },
-    13: { format: 9,  minutes: 70, label: '9er, 2\u00d735 min' }
+  var NHF_RULES = {
+    6:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
+    7:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
+    8:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
+    9:  { format: 5, minutes: 30, label: '5-er, 2\u00d715 min' },
+    10: { format: 5, minutes: 30, label: '5-er, 2\u00d715 min' },
+    11: { format: 6, minutes: 40, label: '6-er, 2\u00d720 min' },
+    12: { format: 6, minutes: 40, label: '6-er, 2\u00d720 min' },
+    13: { format: 7, minutes: 40, label: '7-er, 2\u00d720 min' }
   };
 
   var AGE_OPTIONS = [
@@ -60,7 +60,7 @@
 
   function getRule(cls) {
     var age = parseAge(cls);
-    return (age && NFF_RULES[age]) ? NFF_RULES[age] : null;
+    return (age && NHF_RULES[age]) ? NHF_RULES[age] : null;
   }
 
   function detectAgeClass(name) {
