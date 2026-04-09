@@ -113,9 +113,9 @@
   position: relative;
   width: 100%;
   aspect-ratio: 68 / 80;
-  background: linear-gradient(180deg, #0d4a8a 0%, #0b4280 100%);
+  background: #2aaee0;
   border-radius: 6px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .kd-pitch-lines {
