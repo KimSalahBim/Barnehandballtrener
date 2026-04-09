@@ -113,14 +113,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 68 / 80;
-  background: linear-gradient(
-    180deg,
-    #1b6e1b 0%, #1a6a1a 14%, #1d721d 14.5%,
-    #1a6a1a 28%, #1b6e1b 28.5%, #1a6a1a 42%,
-    #1d721d 42.5%, #1a6a1a 56%, #1b6e1b 56.5%,
-    #1a6a1a 70%, #1d721d 70.5%, #1a6a1a 84%,
-    #1b6e1b 84.5%, #1a6a1a 100%
-  );
+  background: linear-gradient(180deg, #0d4a8a 0%, #0b4280 100%);
   border-radius: 6px;
   overflow: visible;
 }
