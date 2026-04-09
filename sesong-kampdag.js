@@ -96,70 +96,61 @@
   // Formation presets per format
   const FORMATIONS = {
     4: {},
-    5: { '3-1': [1,0,3], '2-2': [2,0,2] },
-    6: { '2-3': [2,0,3], '3-2': [3,0,2] },
-    7: { '3-2-1': [3,1,2], '3-3': [3,0,3], '2-4': [2,0,4] },
+    5: { '2-2': [2,0,2], '1-2-1': [1,1,2] },
+    6: { '3-2': [3,0,2], '2-2-1': [2,1,2] },
+    7: { '3-2-1': [3,1,2], '4-2': [4,0,2] },
   };
 
   // Slot layouts for visual pitch rendering (drag & drop)
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
-    '3-1': [
-      { key:'LW', label:'VK', zone:'A', x:18, y:24 },
-      { key:'CM', label:'MK', zone:'A', x:50, y:28 },
-      { key:'RW', label:'HK', zone:'A', x:82, y:24 },
-      { key:'CB', label:'B',  zone:'F', x:50, y:65 },
-      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
-    ],
     '2-2': [
-      { key:'LW', label:'VK', zone:'A', x:20, y:28 },
-      { key:'RW', label:'HK', zone:'A', x:80, y:28 },
-      { key:'LB', label:'VB', zone:'F', x:32, y:65 },
-      { key:'RB', label:'HB', zone:'F', x:68, y:65 },
+      { key:'VK', label:'VK', zone:'A', x:15, y:30 },
+      { key:'HK', label:'HK', zone:'A', x:85, y:30 },
+      { key:'VB', label:'VB', zone:'F', x:28, y:65 },
+      { key:'HB', label:'HB', zone:'F', x:72, y:65 },
       { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
-    '2-3': [
-      { key:'LW',  label:'VK', zone:'A', x:15, y:22 },
-      { key:'CM',  label:'MK', zone:'A', x:50, y:28 },
-      { key:'RW',  label:'HK', zone:'A', x:85, y:22 },
-      { key:'LB',  label:'VB', zone:'F', x:30, y:65 },
-      { key:'RB',  label:'HB', zone:'F', x:70, y:65 },
-      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+    '1-2-1': [
+      { key:'LJ', label:'LJ', zone:'M', x:50, y:20 },
+      { key:'VK', label:'VK', zone:'A', x:15, y:40 },
+      { key:'HK', label:'HK', zone:'A', x:85, y:40 },
+      { key:'MB', label:'MB', zone:'F', x:50, y:65 },
+      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '3-2': [
-      { key:'LW',  label:'VK', zone:'A', x:20, y:22 },
-      { key:'RW',  label:'HK', zone:'A', x:80, y:22 },
-      { key:'LB',  label:'VB', zone:'F', x:20, y:65 },
-      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB',  label:'HB', zone:'F', x:80, y:65 },
+      { key:'VK',  label:'VK', zone:'A', x:10, y:26 },
+      { key:'HK',  label:'HK', zone:'A', x:90, y:26 },
+      { key:'VB',  label:'VB', zone:'F', x:20, y:62 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:66 },
+      { key:'HB',  label:'HB', zone:'F', x:80, y:62 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+    ],
+    '2-2-1': [
+      { key:'LJ', label:'LJ', zone:'M', x:50, y:20 },
+      { key:'VK', label:'VK', zone:'A', x:12, y:35 },
+      { key:'HK', label:'HK', zone:'A', x:88, y:35 },
+      { key:'VB', label:'VB', zone:'F', x:26, y:62 },
+      { key:'HB', label:'HB', zone:'F', x:74, y:62 },
+      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '3-2-1': [
-      { key:'PV',  label:'LJ', zone:'M', x:50, y:18 },
-      { key:'LW',  label:'VK', zone:'A', x:15, y:38 },
-      { key:'RW',  label:'HK', zone:'A', x:85, y:38 },
-      { key:'LB',  label:'VB', zone:'F', x:22, y:65 },
-      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB',  label:'HB', zone:'F', x:78, y:65 },
+      { key:'LJ',  label:'LJ', zone:'M', x:50, y:20 },
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:22 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:22 },
+      { key:'VB',  label:'VB', zone:'F', x:18, y:43 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
+      { key:'HB',  label:'HB', zone:'F', x:82, y:43 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
-    '3-3': [
-      { key:'LW',  label:'VK', zone:'A', x:15, y:22 },
-      { key:'CM',  label:'MK', zone:'A', x:50, y:25 },
-      { key:'RW',  label:'HK', zone:'A', x:85, y:22 },
-      { key:'LB',  label:'VB', zone:'F', x:22, y:65 },
-      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB',  label:'HB', zone:'F', x:78, y:65 },
+    '4-2': [
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:24 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:24 },
+      { key:'VB',  label:'VB', zone:'F', x:14, y:58 },
+      { key:'MB1', label:'MB', zone:'F', x:36, y:63 },
+      { key:'MB2', label:'MB', zone:'F', x:64, y:63 },
+      { key:'HB',  label:'HB', zone:'F', x:86, y:58 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
-    ],
-    '2-4': [
-      { key:'LW',  label:'VK',  zone:'A', x:12, y:20 },
-      { key:'LCB', label:'VMK', zone:'A', x:36, y:28 },
-      { key:'RCB', label:'HMK', zone:'A', x:64, y:28 },
-      { key:'RW',  label:'HK',  zone:'A', x:88, y:20 },
-      { key:'LB',  label:'VB',  zone:'F', x:30, y:65 },
-      { key:'RB',  label:'HB',  zone:'F', x:70, y:65 },
-      { key:'GK',  label:'K',   zone:'K', x:50, y:88 },
     ],
   };
 
@@ -561,7 +552,7 @@
   // Formation & positions
   // ------------------------------
   function getDefaultFormationKey(format) {
-    const map = { 4: '', 5: '3-1', 6: '2-3', 7: '3-2-1' };
+    const map = { 4: '', 5: '2-2', 6: '3-2', 7: '3-2-1' };
     return map[format] || '3-2-1';
   }
 
@@ -2051,33 +2042,24 @@
         </div>`;
 
       // Build pitch SVG
-      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 680 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <!-- Orange 6m crease zones (full fill from court edge) -->
-        <path d="M 160 0 A 180 180 0 0 1 520 0 Z" fill="#e07a10" opacity="0.85"/>
-        <path d="M 160 800 A 180 180 0 0 0 520 800 Z" fill="#e07a10" opacity="0.85"/>
-        <!-- Court outline -->
-        <rect x="30" y="0" width="620" height="800" fill="none" stroke="white" stroke-width="3"/>
-        <!-- Center line -->
-        <line x1="30" y1="400" x2="650" y2="400" stroke="white" stroke-width="2.5"/>
-        <!-- Center circle -->
-        <circle cx="340" cy="400" r="55" fill="none" stroke="white" stroke-width="2"/>
-        <circle cx="340" cy="400" r="4" fill="white"/>
-        <!-- Top goal opening (3 m) -->
-        <line x1="295" y1="0" x2="385" y2="0" stroke="white" stroke-width="7"/>
-        <!-- Top 6m crease line -->
-        <path d="M 160 0 A 180 180 0 0 1 520 0" fill="none" stroke="white" stroke-width="2.5"/>
-        <!-- Top 9m free-throw line (dashed) -->
-        <path d="M 70 0 A 270 270 0 0 1 610 0" fill="none" stroke="white" stroke-width="2" stroke-dasharray="14 9"/>
-        <!-- Top 7m spot -->
-        <line x1="328" y1="136" x2="352" y2="136" stroke="white" stroke-width="3"/>
-        <!-- Bottom goal opening -->
-        <line x1="295" y1="800" x2="385" y2="800" stroke="white" stroke-width="7"/>
-        <!-- Bottom 6m crease line -->
-        <path d="M 160 800 A 180 180 0 0 0 520 800" fill="none" stroke="white" stroke-width="2.5"/>
-        <!-- Bottom 9m free-throw line (dashed) -->
-        <path d="M 70 800 A 270 270 0 0 0 610 800" fill="none" stroke="white" stroke-width="2" stroke-dasharray="14 9"/>
-        <!-- Bottom 7m spot -->
-        <line x1="328" y1="664" x2="352" y2="664" stroke="white" stroke-width="3"/>
+      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 400 820" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="10" width="400" height="800" fill="#3dbde8"/>
+        <path d="M 80 10 A 120 120 0 0 0 320 10 Z" fill="#e8830e" opacity="0.95"/>
+        <path d="M 80 810 A 120 120 0 0 1 320 810 Z" fill="#e8830e" opacity="0.95"/>
+        <rect x="0" y="10" width="400" height="800" fill="none" stroke="white" stroke-width="3"/>
+        <polyline points="170,10 170,0 230,0 230,10" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
+        <polyline points="170,810 170,820 230,820 230,810" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
+        <line x1="170" y1="10" x2="230" y2="10" stroke="white" stroke-width="5"/>
+        <line x1="170" y1="810" x2="230" y2="810" stroke="white" stroke-width="5"/>
+        <path d="M 80 10 A 120 120 0 0 0 320 10" fill="none" stroke="white" stroke-width="2.5"/>
+        <path d="M 80 810 A 120 120 0 0 1 320 810" fill="none" stroke="white" stroke-width="2.5"/>
+        <path d="M 20 10 A 180 180 0 0 0 380 10" fill="none" stroke="white" stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
+        <path d="M 20 810 A 180 180 0 0 1 380 810" fill="none" stroke="white" stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
+        <line x1="190" y1="150" x2="210" y2="150" stroke="white" stroke-width="3"/>
+        <line x1="190" y1="670" x2="210" y2="670" stroke="white" stroke-width="3"/>
+        <line x1="0" y1="410" x2="400" y2="410" stroke="white" stroke-width="2.5"/>
+        <circle cx="200" cy="410" r="30" fill="none" stroke="white" stroke-width="2"/>
+        <circle cx="200" cy="410" r="4" fill="white"/>
       </svg>`;
 
       const bubbleCls = { F: 'kd-bb-f', M: 'kd-bb-m', A: 'kd-bb-a', K: 'kd-bb-k' };
