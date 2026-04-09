@@ -1,5 +1,5 @@
-// © 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - core.js
+// © 2026 Barnehandballtrener.no. All rights reserved.
+// Barnehandballtrener - core.js
 // ================================================
 // Kjernelogikk for appen (spillere, navigasjon, trening, kamp).
 // Mål: stabil drift uten "white screen" + robust state (window.players = Array).
@@ -1666,7 +1666,6 @@
     }
 
     container.innerHTML = sorted.map(p => {
-      const pos = p.positions || ['F','M','A'];
       return `
         <div class="player-card" data-id="${escapeHtml(p.id)}">
           <div class="pc-avatar-wrap" style="flex-shrink:0;cursor:pointer;" title="Endre avatar">
@@ -1674,13 +1673,9 @@
           </div>
           <div class="player-info">
             <div class="player-name">${escapeHtml(p.name)}</div>
-            <div class="player-tags">${state.settings.useSkill ? `<span class="tag">Nivå ${p.skill}</span>` : ''}${p.goalie ? `<span class="tag">🧤</span>` : `<span class="tag">⚽</span>`}</div>
+            <div class="player-tags">${state.settings.useSkill ? `<span class="tag">Nivå ${p.skill}</span>` : ''}${p.goalie ? `<span class="tag">🧤</span>` : `<span class="tag">🤾</span>`}</div>
           </div>
-          <div class="player-positions" title="Posisjoner (kampdag)">
-            <button type="button" class="pos-btn${pos.includes('F') ? ' pos-f-on' : ''}" data-zone="F">F</button>
-            <button type="button" class="pos-btn${pos.includes('M') ? ' pos-m-on' : ''}" data-zone="M">M</button>
-            <button type="button" class="pos-btn${pos.includes('A') ? ' pos-a-on' : ''}" data-zone="A">A</button>
-          </div>
+          <!-- Posisjoner skjult — alle spillere universelle i barnehåndball -->
           <button class="icon-btn edit" type="button" title="Rediger">✏️</button>
         </div>
       `;
@@ -1708,29 +1703,7 @@
       // Ensure player is always active (active toggle removed from UI)
       if (!p.active) { p.active = true; saveState(); }
 
-      // Position preference buttons (F/M/A)
-      card.querySelectorAll('.pos-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const zone = btn.getAttribute('data-zone');
-          let pos = p.positions || ['F','M','A'];
-          if (pos.includes(zone)) {
-            pos = pos.filter(z => z !== zone);
-          } else {
-            pos = [...new Set([...pos, zone])];
-          }
-          // Can't have zero positions - reset to all
-          if (pos.length === 0) pos = ['F','M','A'];
-          p.positions = pos;
-          // Update ALL button visuals in this card (not just clicked one)
-          card.querySelectorAll('.pos-btn').forEach(b => {
-            const z = b.getAttribute('data-zone');
-            const cls = { F: 'pos-f-on', M: 'pos-m-on', A: 'pos-a-on' }[z];
-            b.classList.toggle(cls, pos.includes(z));
-          });
-          saveState();
-          publishPlayers();
-        });
-      });
+      // Posisjoner ikke i bruk for barnehåndball — alle spillere universelle
 
       const editBtn = card.querySelector('button.edit');
       if (editBtn) {
@@ -1781,8 +1754,8 @@
     if (!el) return;
     el.innerHTML = `
   <div class="app-title">
-    <img src="apple-touch-icon.png" alt="Barnefotballtrener logo" class="app-logo" />
-    <div class="app-name">Barnefotballtrener</div>
+    <img src="appletouchicon.png" alt="Barnehandballtrener logo" class="app-logo" />
+    <div class="app-name">Barnehandballtrener</div>
   </div>
 `;
 
