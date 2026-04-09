@@ -1824,6 +1824,11 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
    try {
     const present = getPresentPlayers();
     const format = parseInt($('kdFormat')?.value, 10) || 7;
+    // 4-er handball: no formations, no fixed keeper
+    if (format === 4) {
+      kdFormationKey = '';
+      kdFormation = null;
+    }
     const T = clamp(parseInt($('kdMinutes')?.value, 10) || 48, 10, 200);
     const P = format;
 
