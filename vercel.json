@@ -1,36 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/bytteplan",
-      "destination": "/bytteplan.html"
-    },
-    {
-      "source": "/spilletid",
-      "destination": "/spilletid.html"
-    },
-    {
-      "source": "/kampdag",
-      "destination": "/kampdag-seo.html"
-    },
-    {
-      "source": "/treningsgrupper",
-      "destination": "/treningsgrupper.html"
-    },
-    {
-      "source": "/sesong",
-      "destination": "/sesong.html"
-    },
-    {
       "source": "/lag/:token",
       "destination": "/lagside.html"
-    },
-    {
-      "source": "/treningsokt",
-      "destination": "/treningsokt.html"
-    },
-    {
-      "source": "/konkurranser",
-      "destination": "/konkurranser.html"
     },
     {
       "source": "/stats/api/:match*",
@@ -99,34 +71,6 @@
     },
     {
       "source": "/seo-common.css",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/bytteplan.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/spilletid.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/kampdag-seo.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/treningsgrupper.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/sesong.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/treningsokt.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/konkurranser.html",
       "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     },
     {
