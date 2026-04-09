@@ -977,7 +977,7 @@
               if (minEl) {
                 minEl.value = String(rule.minutes);
                 minEl.dispatchEvent(new Event('input', { bubbles: true }));
-                // ↑ overrides with correct NFF age-specific minutes + updates keeper allocation
+                // ↑ overrides with correct NHF age-specific minutes + updates keeper allocation
               }
             }
           }
