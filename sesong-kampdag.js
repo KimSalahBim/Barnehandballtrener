@@ -96,9 +96,9 @@
   // Formation presets per format
   const FORMATIONS = {
     4: {},
-    5: { '3-1': [1,3,0], '2-2': [2,2,0] },
-    6: { '2-3': [2,3,0], '3-2': [3,2,0] },
-    7: { '3-2-1': [3,2,1], '3-3': [3,3,0], '2-4': [2,4,0] },
+    5: { '3-1': [1,0,3], '2-2': [2,0,2] },
+    6: { '2-3': [2,0,3], '3-2': [3,0,2] },
+    7: { '3-2-1': [3,2,1], '3-3': [3,0,3], '2-4': [2,0,4] },
   };
 
   // Slot layouts for visual pitch rendering (drag & drop)
@@ -580,7 +580,7 @@
       const active = key === kdFormationKey ? 'kd-formation-active' : '';
       return `<div class="kd-formation-opt ${active}" data-fkey="${key}">
         <div class="kd-f-name">${key}</div>
-        <div class="kd-f-desc">${[arr[0] > 0 ? arr[0]+' forsvar' : '', arr[1] > 0 ? arr[1]+' midtbane' : '', arr[2] > 0 ? arr[2]+' angrep' : ''].filter(Boolean).join(' \u00b7 ')}</div>
+        <div class="kd-f-desc">${[arr[0] > 0 ? arr[0]+' back' : '', arr[1] > 0 ? arr[1]+' kant' : '', arr[2] > 0 ? arr[2]+' linjespiller' : ''].filter(Boolean).join(' \u00b7 ')}</div>
       </div>`;
     }).join('');
 
@@ -634,9 +634,9 @@
 
     const needs = { F: kdFormation[0], M: kdFormation[1], A: kdFormation[2] };
     const zones = [
-      { key: 'F', name: 'Forsvar', need: needs.F, have: counts.F, color: '#16a34a' },
-      { key: 'M', name: 'Midtbane', need: needs.M, have: counts.M, color: '#456C4B' },
-      { key: 'A', name: 'Angrep', need: needs.A, have: counts.A, color: '#dc2626' },
+      { key: 'F', name: 'Back', need: needs.F, have: counts.F, color: '#16a34a' },
+      { key: 'M', name: 'Kant', need: needs.M, have: counts.M, color: '#456C4B' },
+      { key: 'A', name: 'Linjespiller', need: needs.A, have: counts.A, color: '#dc2626' },
     ].filter(z => z.need > 0);
 
     const warn = zones.some(z => z.have < z.need);
@@ -2054,23 +2054,38 @@
           ${tlRows}
           <div class="kd-tl-axis">${ticks.map(t => `<span>${t}</span>`).join('')}</div>
           <div class="kd-tl-legend">
-            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#4ade80;"></div> Forsvar</div>
-            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#60a5fa;"></div> Midtbane</div>
-            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#f87171;"></div> Angrep</div>
+            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#4ade80;"></div> Back</div>
+            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#60a5fa;"></div> Kant</div>
+            <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#f87171;"></div> Linjespiller</div>
             ${best.keeperMinutes && Object.values(best.keeperMinutes).some(v => v > 0) ? `<div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#c084fc;"></div> Keeper</div>` : ''}
           </div>
         </div>`;
 
       // Build pitch SVG
       const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 680 800" preserveAspectRatio="xMidYMid slice" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
-        <rect x="20" y="10" width="640" height="780" rx="6" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2.5"/>
-        <line x1="20" y1="400" x2="660" y2="400" stroke="rgba(255,255,255,0.15)" stroke-width="2.5"/>
-        <circle cx="340" cy="400" r="72" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="2"/>
-        <circle cx="340" cy="400" r="4" fill="rgba(255,255,255,0.15)"/>
-        <rect x="170" y="10" width="340" height="110" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
-        <rect x="240" y="10" width="200" height="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
-        <rect x="170" y="680" width="340" height="110" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
-        <rect x="240" y="746" width="200" height="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+        <!-- Court outline -->
+        <rect x="40" y="10" width="600" height="780" rx="4" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2.5"/>
+        <!-- Center line -->
+        <line x1="40" y1="400" x2="640" y2="400" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+        <circle cx="340" cy="400" r="5" fill="rgba(255,255,255,0.28)"/>
+        <!-- Top goal (3 m wide, highlighted) -->
+        <line x1="295" y1="10" x2="385" y2="10" stroke="rgba(255,255,255,0.75)" stroke-width="4.5"/>
+        <!-- Top 6m crease: perfect semicircle r=180, fills keeper zone -->
+        <path d="M 160 10 A 180 180 0 0 1 520 10 Z" fill="rgba(255,255,255,0.04)"/>
+        <path d="M 160 10 A 180 180 0 0 1 520 10" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2.5"/>
+        <!-- Top 9m free-throw line: dashed, r=270 -->
+        <path d="M 70 10 A 270 270 0 0 1 610 10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.8" stroke-dasharray="13 9"/>
+        <!-- Top 7m spot -->
+        <line x1="327" y1="146" x2="353" y2="146" stroke="rgba(255,255,255,0.45)" stroke-width="2.5"/>
+        <!-- Bottom goal -->
+        <line x1="295" y1="790" x2="385" y2="790" stroke="rgba(255,255,255,0.75)" stroke-width="4.5"/>
+        <!-- Bottom 6m crease -->
+        <path d="M 160 790 A 180 180 0 0 0 520 790 Z" fill="rgba(255,255,255,0.04)"/>
+        <path d="M 160 790 A 180 180 0 0 0 520 790" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2.5"/>
+        <!-- Bottom 9m free-throw line: dashed -->
+        <path d="M 70 790 A 270 270 0 0 0 610 790" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.8" stroke-dasharray="13 9"/>
+        <!-- Bottom 7m spot -->
+        <line x1="327" y1="654" x2="353" y2="654" stroke="rgba(255,255,255,0.45)" stroke-width="2.5"/>
       </svg>`;
 
       const bubbleCls = { F: 'kd-bb-f', M: 'kd-bb-m', A: 'kd-bb-a', K: 'kd-bb-k' };
@@ -2331,7 +2346,7 @@
         const keeperSlot = slots.find(s => s.zone === 'K');
         const keeperId = keeperSlot ? sm0.slots[keeperSlot.key] : null;
         if (keeperId) lines.push(` Keeper: ${idToName[keeperId] || keeperId}`);
-        for (const [zone, label] of Object.entries({ F: 'Forsvar', M: 'Midtbane', A: 'Angrep' })) {
+        for (const [zone, label] of Object.entries({ F: 'Back', M: 'Kant', A: 'Linjespiller' })) {
           const ids = slots.filter(s => s.zone === zone).map(s => sm0.slots[s.key]).filter(Boolean);
           if (ids.length) lines.push(` ${label}: ${ids.map(id => idToName[id] || id).join(', ')}`);
         }
@@ -2546,7 +2561,7 @@
           <div class="tl-header">${T} MIN \u00b7 ${format}-ER \u00b7 ${formationKey} \u00b7 ${present.length} SPILLERE${hasAnyOverride ? ' \u00b7 JUSTERT' : ''}</div>
           ${rows}
           <div class="tl-axis">${ticks.map(t => `<span>${t}</span>`).join('')}</div>
-          <div class="tl-legend"><span><i style="background:#4ade80"></i> Forsvar</span><span><i style="background:#60a5fa"></i> Midtbane</span><span><i style="background:#f87171"></i> Angrep</span><span><i style="background:#c084fc"></i> Keeper</span></div>
+          <div class="tl-legend"><span><i style="background:#4ade80"></i> Back</span><span><i style="background:#60a5fa"></i> Kant</span><span><i style="background:#f87171"></i> Linjespiller</span><span><i style="background:#c084fc"></i> Keeper</span></div>
         </div>`;
     } else {
       timelineHtml = `
