@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 Barnehandballtrener.no. All rights reserved.
 // season.js — Sesong-modul Fase 1
 // Opprett sesong → legg til kamper/treninger → åpne i Kampdag.
 // IIFE-mønster identisk med kampdag.js. Init via players:updated.
@@ -292,11 +292,11 @@
     if (isMatch && ev.opponent) descParts.push('Motstander: ' + ev.opponent);
     if (isMatch) descParts.push(ev.is_home ? 'Hjemmekamp' : 'Bortekamp');
     if (ev.notes) descParts.push(ev.notes);
-    descParts.push('barnefotballtrener.no');
+    descParts.push('barnehandballtrener.no');
 
     var lines = [
       'BEGIN:VEVENT',
-      'UID:bft-' + ev.id + '@barnefotballtrener.no',
+      'UID:bft-' + ev.id + '@barnehandballtrener.no',
       'DTSTAMP:' + icsDateUtc(new Date().toISOString()),
       'DTSTART:' + icsDateUtc(ev.start_time),
       'DTEND:' + icsDateUtc(endDate.toISOString()),
@@ -312,7 +312,7 @@
     var lines = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Barnefotballtrener//NO',
+      'PRODID:-//Barnehandballtrener//NO',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
       'X-WR-CALNAME:' + icsEscape(calName || 'Sesong')
@@ -2251,7 +2251,7 @@
         $('snSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
-          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF anbefaler: ' + rule.label +
+          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF anbefaler: ' + rule.label +
             (rule.barnehåndball ? ' <span style="color:var(--text-400);">\u00B7 Barneh\u00e5ndball-regler gjelder</span>' : '');
         }
       } else if (hint) {
@@ -2389,7 +2389,7 @@
               '</optgroup>' +
             '</select>' +
             '<div class="sn-hint" id="snEditAgeHint" style="' + (s.age_class ? '' : 'display:none;') + '">' +
-              (function() { var r = getNhfRule(s.age_class); return r ? '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF: ' + r.label + (r.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '') : ''; })() +
+              (function() { var r = getNhfRule(s.age_class); return r ? '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + r.label + (r.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '') : ''; })() +
             '</div>' +
           '</div>' +
           '<div class="form-group">' +
@@ -2468,7 +2468,7 @@
         $('snEditSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
-          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF: ' + rule.label +
+          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + rule.label +
             (rule.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '');
         }
       } else if (hint) {
@@ -2683,7 +2683,7 @@
   }
 
   function renderLagsideActive(card, teamId, pageToken, cardStyle) {
-    var url = 'https://barnefotballtrener.no/lag/' + pageToken;
+    var url = 'https://barnehandballtrener.no/lag/' + pageToken;
     var settings = _lagsideSettings || {};
     var announcements = (settings.announcements || []).filter(function(a) {
       return !a.expires_at || new Date(a.expires_at) > new Date();
@@ -2750,7 +2750,7 @@
   function renderLagsideSettings() {
     var settings = _lagsideSettings || {};
     var announcements = settings.announcements || [];
-    var url = _lagsideToken ? 'https://barnefotballtrener.no/lag/' + _lagsideToken : '';
+    var url = _lagsideToken ? 'https://barnehandballtrener.no/lag/' + _lagsideToken : '';
 
     var html = '<div style="margin-bottom:16px;">' +
       '<a href="#" id="snLagsideBack" style="font-size:13px;color:var(--primary);">\u2190 Dashboard</a>' +
@@ -2875,7 +2875,7 @@
     var copyBtn = $('snLsCopyBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', function() {
-        var url = 'https://barnefotballtrener.no/lag/' + _lagsideToken;
+        var url = 'https://barnehandballtrener.no/lag/' + _lagsideToken;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(url).then(function() { notify('Lenke kopiert!', 'success'); });
         } else {
@@ -2891,7 +2891,7 @@
     if (previewLink) {
       previewLink.addEventListener('click', function(e) {
         e.preventDefault();
-        window.open('https://barnefotballtrener.no/lag/' + _lagsideToken, '_blank');
+        window.open('https://barnehandballtrener.no/lag/' + _lagsideToken, '_blank');
       });
     }
 
@@ -3123,7 +3123,7 @@
         '</div>' +
         '<div style="margin-top:8px; display:flex; gap:8px;">' +
           '<button class="btn-secondary" id="snAddSeries" style="flex:1; font-size:13px;"><i class="fas fa-redo" style="margin-right:5px;"></i>Treningsserie</button>' +
-          '<button class="btn-secondary" id="snImportFotball" style="flex:1; font-size:13px;"><i class="fas fa-file-import" style="margin-right:5px;"></i>Importer kamper</button>' +
+          '<button class="btn-secondary" id="snImportFotball" style="display:none;"></button>' +
         '</div>' +
       '</div>';
 
@@ -3195,11 +3195,7 @@
       render();
     });
 
-    var importBtn = $('snImportFotball');
-    if (importBtn) importBtn.addEventListener('click', function() {
-      snView = 'fotball-import';
-      render();
-    });
+    // fotball-import disabled — button is hidden
 
     var delBtn = $('snDeleteSeason');
     if (delBtn) delBtn.addEventListener('click', async function() {
@@ -3849,16 +3845,16 @@
   function renderNffDisclaimer() {
     return '<div class="sn-nff-overlay" id="snNffOverlay">' +
       '<div class="sn-nff-modal">' +
-        '<h3>\u26BD Statistikk \u2013 viktig informasjon</h3>' +
-        '<p>Norges Fotballforbund (NFF) har klare retningslinjer for barnefotball (6\u201312 \u00e5r). Statistikken i denne appen er laget som et <b>internt trenerverkt\u00f8y</b> for \u00e5 sikre rettferdig spilletid og god oppf\u00f8lging.</p>' +
+        '<h3>\uD83E\uDD3E Statistikk \u2013 viktig informasjon</h3>' +
+        '<p>NHF er tydelig: alle som er tatt med til kamp skal spille tilnærmet like mye. Statistikken i denne appen er laget som et <b>internt trenerverkt\u00f8y</b> for \u00e5 sikre rettferdig spilletid og god oppf\u00f8lging.</p>' +
         '<p>Ved \u00e5 bruke statistikkfunksjonen bekrefter du at:</p>' +
         '<ul>' +
           '<li>Statistikken brukes kun til intern planlegging</li>' +
           '<li>Data skal <b>ikke</b> deles offentlig eller med spillere/foresatte som rangering</li>' +
           '<li>Statistikken skal <b>ikke</b> brukes til \u00e5 rangere enkeltspillere opp mot hverandre</li>' +
-          '<li>Form\u00e5let er \u00e5 sikre lik spilletid og god spillerutvikling for alle</li>' +
+          '<li>Form\u00e5let er \u00e5 sikre lik spilletid og god h\u00e5ndballutvikling for alle</li>' +
         '</ul>' +
-        '<div class="sn-nff-source">Kilde: NFF Handlingsplan barnefotball \u2013 Retningslinjer for aktivitet 6\u201312 \u00e5r</div>' +
+        '<div class="sn-nff-source">Kilde: NHF Barneh\u00e5ndballens retningslinjer \u2013 Aktivitet 6\u201312 \u00e5r</div>' +
         '<button class="sn-nff-accept" id="snNffAccept">\u2713 Jeg har lest og forst\u00e5tt</button>' +
       '</div>' +
     '</div>';
@@ -3981,7 +3977,7 @@
         html +=
           '<div class="sn-nff-warning" style="margin:0 0 8px;">' +
             '<i class="fas fa-shield-alt"></i>' +
-            'NFF: Kun til intern bruk. Skal ikke deles eller brukes til rangering (6\u201312 \u00e5r).' +
+            'NHF: Kun til intern bruk. Skal ikke deles eller brukes til rangering (6\u201312 \u00e5r).' +
           '</div>';
       }
 
@@ -4325,7 +4321,7 @@
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.text('Generert ' + new Date().toLocaleDateString('nb-NO', { day: 'numeric', month: 'long', year: 'numeric' }), pw - mr, 10, { align: 'right' });
-    doc.text('Barnefotballtrener.no', pw - mr, 15, { align: 'right' });
+    doc.text('Barnehandballtrener.no', pw - mr, 15, { align: 'right' });
 
     y = 46;
 
@@ -4467,7 +4463,7 @@
         // Footer on every page
         doc.setFontSize(7);
         doc.setTextColor(150, 150, 150);
-        doc.text('Barnefotballtrener.no \u2014 Sesongrapport', ml, ph - 8);
+        doc.text('Barnehandballtrener.no \u2014 Sesongrapport', ml, ph - 8);
         doc.text('Side ' + doc.internal.getNumberOfPages(), pw - mr, ph - 8, { align: 'right' });
       }
     });
@@ -4485,7 +4481,7 @@
       doc.setFontSize(7);
       doc.setTextColor(120, 80, 0);
       doc.setFont('helvetica', 'bold');
-      doc.text('NFF Barnefotball', ml + 3, y + 5);
+      doc.text('NHF Barneh\u00e5ndball', ml + 3, y + 5);
       doc.setFont('helvetica', 'normal');
       doc.text('Statistikk og m\u00e5lscorere er kun til intern bruk for treneren.', ml + 3, y + 9);
       doc.text('Skal ikke deles offentlig eller brukes til rangering av enkeltspillere (alder 6\u201312).', ml + 3, y + 13);
@@ -6728,7 +6724,7 @@
           html +=
             '<div class="sn-nff-warning">' +
               '<i class="fas fa-shield-alt"></i>' +
-              '<strong>NFF barnefotball:</strong> M\u00e5lscorere er kun til intern bruk for treneren. ' +
+              '<strong>NHF barneh\u00e5ndball:</strong> M\u00e5lscorere er kun til intern bruk for treneren. ' +
               'Skal ikke deles offentlig eller brukes til rangering av enkeltspillere (alder 6\u201312).' +
             '</div>';
         }
