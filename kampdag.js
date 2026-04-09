@@ -2149,30 +2149,33 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         </div>`;
 
       // Build pitch SVG
-      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 680 800" preserveAspectRatio="xMidYMid slice" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
+      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 680 800" preserveAspectRatio="xMidYMid meet" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
+        <!-- Orange 6m goal areas -->
+        <path d="M 160 10 A 180 180 0 0 1 520 10 Z" fill="#e8821a" opacity="0.9"/>
+        <path d="M 160 790 A 180 180 0 0 0 520 790 Z" fill="#e8821a" opacity="0.9"/>
         <!-- Court outline -->
-        <rect x="40" y="10" width="600" height="780" rx="4" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2.5"/>
+        <rect x="30" y="10" width="620" height="780" fill="none" stroke="white" stroke-width="3"/>
         <!-- Center line -->
-        <line x1="40" y1="400" x2="640" y2="400" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-        <circle cx="340" cy="400" r="5" fill="rgba(255,255,255,0.28)"/>
-        <!-- Top goal (3 m wide, highlighted) -->
-        <line x1="295" y1="10" x2="385" y2="10" stroke="rgba(255,255,255,0.75)" stroke-width="4.5"/>
-        <!-- Top 6m crease: perfect semicircle r=180, fills keeper zone -->
-        <path d="M 160 10 A 180 180 0 0 1 520 10 Z" fill="rgba(255,255,255,0.04)"/>
-        <path d="M 160 10 A 180 180 0 0 1 520 10" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2.5"/>
-        <!-- Top 9m free-throw line: dashed, r=270 -->
-        <path d="M 70 10 A 270 270 0 0 1 610 10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.8" stroke-dasharray="13 9"/>
+        <line x1="30" y1="400" x2="650" y2="400" stroke="white" stroke-width="2.5"/>
+        <!-- Center circle -->
+        <circle cx="340" cy="400" r="55" fill="none" stroke="white" stroke-width="2"/>
+        <circle cx="340" cy="400" r="4" fill="white"/>
+        <!-- Top goal (thick white segment = goal opening 3m wide) -->
+        <line x1="295" y1="10" x2="385" y2="10" stroke="white" stroke-width="6"/>
+        <!-- Top 6m crease line -->
+        <path d="M 160 10 A 180 180 0 0 1 520 10" fill="none" stroke="white" stroke-width="2.5"/>
+        <!-- Top 9m free-throw dashed -->
+        <path d="M 70 10 A 270 270 0 0 1 610 10" fill="none" stroke="white" stroke-width="2" stroke-dasharray="14 9"/>
         <!-- Top 7m spot -->
-        <line x1="327" y1="146" x2="353" y2="146" stroke="rgba(255,255,255,0.45)" stroke-width="2.5"/>
+        <line x1="328" y1="146" x2="352" y2="146" stroke="white" stroke-width="3"/>
         <!-- Bottom goal -->
-        <line x1="295" y1="790" x2="385" y2="790" stroke="rgba(255,255,255,0.75)" stroke-width="4.5"/>
-        <!-- Bottom 6m crease -->
-        <path d="M 160 790 A 180 180 0 0 0 520 790 Z" fill="rgba(255,255,255,0.04)"/>
-        <path d="M 160 790 A 180 180 0 0 0 520 790" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2.5"/>
-        <!-- Bottom 9m free-throw line: dashed -->
-        <path d="M 70 790 A 270 270 0 0 0 610 790" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.8" stroke-dasharray="13 9"/>
+        <line x1="295" y1="790" x2="385" y2="790" stroke="white" stroke-width="6"/>
+        <!-- Bottom 6m crease line -->
+        <path d="M 160 790 A 180 180 0 0 0 520 790" fill="none" stroke="white" stroke-width="2.5"/>
+        <!-- Bottom 9m free-throw dashed -->
+        <path d="M 70 790 A 270 270 0 0 0 610 790" fill="none" stroke="white" stroke-width="2" stroke-dasharray="14 9"/>
         <!-- Bottom 7m spot -->
-        <line x1="327" y1="654" x2="353" y2="654" stroke="rgba(255,255,255,0.45)" stroke-width="2.5"/>
+        <line x1="328" y1="654" x2="352" y2="654" stroke="white" stroke-width="3"/>
       </svg>`;
 
       const bubbleCls = { F: 'kd-bb-f', M: 'kd-bb-m', A: 'kd-bb-a', K: 'kd-bb-k' };
@@ -2603,7 +2606,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const benchNames0 = sm0.bench.map(pid => escapeHtml(idToName[pid] || pid)).join(' \u00b7 ') || '\u2014';
       startSection = `
         <div class="section-title">Startoppstilling \u00b7 ${formationKey}${hasAnyOverride ? ' \u00b7 Justert' : ''}</div>
-        <div style="position:relative;width:100%;max-width:420px;margin:0 auto;height:${startH}px;background:linear-gradient(180deg,#1a5c1a,#145214);border-radius:12px;overflow:hidden;border:2px solid #2a7a2a;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots0}</div>
+        <div style="position:relative;width:100%;max-width:420px;margin:0 auto;height:${startH}px;background:#2aaee0;border-radius:12px;overflow:hidden;border:2px solid #2a7a2a;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots0}</div>
         <div class="bench">Benk: ${benchNames0}</div>`;
     }
     if (!startSection) {
@@ -2679,7 +2682,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
           const outline = isNew ? 'box-shadow:0 0 0 2px #fbbf24;' : '';
           return `<div style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:2;"><div style="width:${bytteB}px;height:${bytteB}px;border-radius:50%;background:${bbg[s.zone]};border:1.5px solid ${bbd[s.zone]};display:flex;align-items:center;justify-content:center;${outline}"><span style="font-size:${bytteBfont}px;font-weight:500;color:${bc[s.zone]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${bytteBmax}px;">${nm}</span></div></div>`;
         }).join('');
-        body = `<div class="cpitch" style="position:relative;width:100%;height:${bytteH}px;background:linear-gradient(180deg,#1a5c1a,#145214);overflow:hidden;border-radius:6px;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots}</div>`;
+        body = `<div class="cpitch" style="position:relative;width:100%;height:${bytteH}px;background:#2aaee0;overflow:hidden;border-radius:6px;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots}</div>`;
         const benchNames = sm.bench.map(pid => escapeHtml(idToName[pid]||pid)).join(', ') || '\u2014';
         body += `<div style="font-size:8px;color:#64748b;padding:2px 10px 5px;">Benk: ${benchNames}</div>`;
       }
@@ -2714,7 +2717,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .section-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#60a5fa;margin:8px 0 4px;padding-bottom:3px;border-bottom:2px solid rgba(255,255,255,0.08)}
 .main-card{background:#1a2333;border-radius:14px;padding:8px;margin-top:6px;border:1px solid rgba(255,255,255,0.06)}
 /* Pitch */
-.pitch{background:linear-gradient(180deg,#1a5c1a,#145214);border:2px solid #2a7a2a;border-radius:12px;padding:12px 8px;position:relative;overflow:hidden}
+.pitch{background:#2aaee0;border:2px solid #1a92c4;border-radius:12px;padding:12px 8px;position:relative;overflow:hidden}
 .pitch::before{content:'';position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.12)}
 .pitch-row{display:flex;justify-content:center;gap:6px;padding:6px 0;position:relative;z-index:1}
 .pp{border-radius:7px;padding:3px 8px;font-size:11px;font-weight:500}
