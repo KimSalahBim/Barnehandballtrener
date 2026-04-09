@@ -1,4 +1,4 @@
-// Â© 2026 barnehandballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 /* cup-scheduler.js â€” Ren funksjonell schedulermotor for cup/turnering.
    Delt mellom minicup (Liga-fanen) og full cupmodul (/cup).
    Ingen DOM, ingen side-effekter. Kun pure functions.

@@ -1,4 +1,4 @@
-// Â© 2026 barnehandballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // api/export-data.js
 // GDPR Art. 20 - Right to Data Portability
 // Allows users to export all their personal data in machine-readable format (JSON)

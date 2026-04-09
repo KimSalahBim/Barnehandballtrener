@@ -3421,7 +3421,7 @@ function serializeWorkoutFromState() {
 
     const logoUrl = (() => {
       // Prefer the exact same logo the user sees on the front page (login) for consistent branding.
-      // Fallbacks: app header logo -> apple-touch-icon -> icon-192.
+      // Fallbacks: app header logo -> appletouchicon.png -> icon192.png.
       try {
         const front = document.querySelector('.login-logo');
         if (front && front.getAttribute('src')) return new URL(front.getAttribute('src'), window.location.href).href;
