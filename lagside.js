@@ -127,7 +127,7 @@
 
     var lines = [
       'BEGIN:VCALENDAR', 'VERSION:2.0',
-      'PRODID:-//Barnefotballtrener//Lagside//NO',
+      'PRODID:-//Barnehandballtrener//Lagside//NO',
       'CALSCALE:GREGORIAN',
       'X-WR-CALNAME:' + icsEscape(teamName),
       'BEGIN:VTIMEZONE', 'TZID:Europe/Oslo',

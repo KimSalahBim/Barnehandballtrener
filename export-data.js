@@ -311,7 +311,7 @@ export default async function handler(req, res) {
     }
 
     // 5) Return as downloadable JSON
-    const filename = `barnefotballtrener-data-${userId.substring(0, 8)}-${Date.now()}.json`;
+    const filename = `barnehandballtrener-data-${userId.substring(0, 8)}-${Date.now()}.json`;
     
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

@@ -1,5 +1,5 @@
 // Â© 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - auth.js (robust, no optional chaining) v2
+// Barnehandballtrener - auth.js (robust, no optional chaining) v2
 // =============================================================
 
 (function () {

@@ -1,5 +1,5 @@
 // © 2026 barnehandballtrener.no. All rights reserved.
-/* Barnefotballtrener – Konkurranser (Mesternes mester)
+/* Barnehandballtrener – Konkurranser (Mesternes mester)
    - Vanilla JS
    - No regressions: isolert logikk + namespacede klasser (.comp-*)
    - Lagring per bruker: samme prefix-logikk som core.js

@@ -3879,7 +3879,7 @@
 
     var stats = computeStats(subTeamFilter);
     var p = stats.players;
-    var barnefotball = isBarnehåndball();
+    var barnehåndball = isBarnehåndball();
 
     var html =
       tabsHtml +
@@ -3973,7 +3973,7 @@
     if (scorersAndAssisters.length > 0) {
       html += '<div class="sn-section">M\u00e5l og m\u00e5lgivende</div>';
 
-      if (barnefotball) {
+      if (barnehåndball) {
         html +=
           '<div class="sn-nff-warning" style="margin:0 0 8px;">' +
             '<i class="fas fa-shield-alt"></i>' +
@@ -4278,7 +4278,7 @@
 
     var stats = computeStats(subTeamFilter);
     var p = stats.players;
-    var barnefotball = isBarnehåndball();
+    var barnehåndball = isBarnehåndball();
     var teamName = '';
     try { var tn = document.querySelector('.team-switcher-name'); if (tn) teamName = tn.textContent.trim(); } catch (_) {}
 
@@ -4471,7 +4471,7 @@
     y = doc.lastAutoTable.finalY + 8;
 
     // ---- NFF DISCLAIMER ----
-    if (barnefotball) {
+    if (barnehåndball) {
       // Check if we need a new page
       if (y > ph - 40) { doc.addPage(); y = mt; }
       doc.setFillColor(255, 248, 225);
@@ -6667,7 +6667,7 @@
     if (isMatch) {
       var isCompleted = (ev.status === 'completed');
       var hasResult = (ev.result_home !== null && ev.result_home !== undefined);
-      var barnefotball = isBarnehåndball();
+      var barnehåndball = isBarnehåndball();
 
       if (isCompleted && hasResult) {
         html +=
@@ -6720,7 +6720,7 @@
             '</div>' +
           '</div>';
 
-        if (barnefotball) {
+        if (barnehåndball) {
           html +=
             '<div class="sn-nff-warning">' +
               '<i class="fas fa-shield-alt"></i>' +

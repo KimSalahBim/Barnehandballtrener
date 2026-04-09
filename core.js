@@ -2552,7 +2552,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'barnefotballtrener-spillere.json';
+        a.download = 'barnehandballtrener-spillere.json';
         document.body.appendChild(a);
         a.click();
         a.remove();

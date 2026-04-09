@@ -86,7 +86,7 @@ Verifisert via: `SELECT tablename FROM pg_publication_tables WHERE pubname = 'su
 
 1. **Filter per event, ikke per team.** Per-event channel filtrerer på event_id.
 2. **Optimistisk UI.** Egen endring vises umiddelbart, Realtime legger til den andres.
-3. **Ingen konfliktløsning.** Siste skriver vinner. Akseptabelt for barnefotball.
+3. **Ingen konfliktløsning.** Siste skriver vinner. Akseptabelt for barnehåndball.
 4. **Subscription per view.** Starter kun når man er inne i en hendelse. Minimerer ressursbruk.
 5. **Debounce på oppmøte.** handleAttendanceChange bruker _rtAttendanceTimer for å unngå rapid-fire reloads.
 

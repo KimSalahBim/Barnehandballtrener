@@ -1,5 +1,5 @@
 // © 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - Pricing + Magic Link Logic (ROBUST)
+// Barnehandballtrener - Pricing + Magic Link Logic (ROBUST)
 // =======================================================
 // Denne fila håndterer:
 // 1) Planvalg (.btn-select)
@@ -601,8 +601,8 @@ function buildMailto(formEl, kind) {
   const message = (fd.get('message') || '').toString().trim();
 
   const subject = kind === 'club'
-    ? '[Barnefotballtrener] Klubb-lisens forespørsel'
-    : '[Barnefotballtrener] Team-lisens forespørsel';
+    ? '[Barnehandballtrener] Klubb-lisens forespørsel'
+    : '[Barnehandballtrener] Team-lisens forespørsel';
 
   const bodyLines = [
     subject,
@@ -615,7 +615,7 @@ function buildMailto(formEl, kind) {
     message ? `Melding:\n${message}` : 'Melding: (ingen)',
     '',
     '---',
-    'Sendt fra Barnefotballtrener (kontaktmodal)'
+    'Sendt fra Barnehandballtrener (kontaktmodal)'
   ].filter(Boolean);
 
   const body = bodyLines.join('\n');
@@ -762,9 +762,9 @@ function ensurePricingSupportAndContact() {
     box.style.border = '1px solid rgba(255,255,255,0.12)';
     box.style.background = 'rgba(0,0,0,0.18)';
 
-    const subject = encodeURIComponent('Hjelp – Barnefotballtrener');
+    const subject = encodeURIComponent('Hjelp – Barnehandballtrener');
     const body = encodeURIComponent(
-      'Hei!\n\nJeg trenger hjelp med Barnefotballtrener.\n\n' +
+      'Hei!\n\nJeg trenger hjelp med Barnehandballtrener.\n\n' +
       'E-post (Google): \n' +
       'Hva jeg prøvde å gjøre: \n' +
       'Enhet/nettleser: \n' +

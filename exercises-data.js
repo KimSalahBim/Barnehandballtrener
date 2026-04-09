@@ -554,7 +554,7 @@ window.EXERCISES_DATA = [
       learningGoals: ['Spre dere! Ikke alle rundt ballen', 'Snakk sammen: rop på ballen, gi beskjed', 'Etter ballvinning: se framover først'],
       intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 16 }, equipmentTags: ['maal', 'vester', 'ball', 'kjegler'],
-      description: 'Kjerneøvelsen i barnefotball. Minimum 50% av økten bør være smålagsspill. 3v3, 4v4 eller 5v5 på tilpasset bane gir mest mulig ballkontakt i kamplike situasjoner.',
+      description: 'Kjerneøvelsen i barnehåndball. Minimum 50% av økten bør være smålagsspill. 3v3, 4v4 eller 5v5 på tilpasset bane gir mest mulig ballkontakt i kamplike situasjoner.',
       setup: 'Tilpass banestørrelse (3v3: 20x25m, 5v5: 30x40m). To mål, vester for lagdeling.',
       steps: [
         'Del inn i to lag med vester.',

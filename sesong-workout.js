@@ -1184,7 +1184,7 @@
         if (navigator.canShare({ files: [file] })) {
           navigator.share({
             title: fileObj.title,
-            text: 'Treningsøkt fra Barnefotballtrener',
+            text: 'Treningsøkt fra Barnehandballtrener',
             files: [file]
           }).then(function() {
             if (window.showNotification) window.showNotification('Øktfil delt', 'success');

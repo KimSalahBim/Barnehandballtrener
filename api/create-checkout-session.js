@@ -107,14 +107,16 @@ function isAllowedHost(normalizedHost) {
 
   const bare = normalizedHost.split(':')[0];
 
-  // Canonical + www
+  if (bare === 'barnefotballtrener.no' || bare === 'www.barnefotballtrener.no') return true;
   if (bare === 'barnehandballtrener.no' || bare === 'www.barnehandballtrener.no') return true;
 
-  // Vercel stable domain
+  // Vercel stable domains
   if (bare === 'barnefotballtrener.vercel.app') return true;
+  if (bare === 'barnehandballtrener.vercel.app') return true;
 
-  // Vercel preview domains (per branch / per deployment)
+  // Vercel preview domains
   if (bare.endsWith('.vercel.app') && bare.startsWith('barnefotballtrener-')) return true;
+  if (bare.endsWith('.vercel.app') && bare.startsWith('barnehandballtrener-')) return true;
 
   return false;
 }

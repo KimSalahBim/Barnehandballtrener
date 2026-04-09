@@ -1,4 +1,4 @@
-// avatar.js — Avatar system for Barnefotballtrener
+// avatar.js — Avatar system for Barnehandballtrener
 // Standalone IIFE. Exposes window.Avatar.
 (function() {
   'use strict';

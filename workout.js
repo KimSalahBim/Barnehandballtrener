@@ -1,5 +1,5 @@
 // © 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - workout.js
+// Barnehandballtrener - workout.js
 // ================================================
 // Bygg din treningsøkt: øvelse-for-øvelse, (valgfritt) oppmøte/spillere, gruppeinndeling og eksport.
 // Designmål: integreres som en ny tab uten å påvirke Stripe/auth/kampdag/konkurranser.
@@ -2678,7 +2678,7 @@ async function shareWorkoutFile() {
       if (navigator.canShare({ files: [file] })) {
         await navigator.share({
           title: fileObj.title || 'Treningsøkt',
-          text: 'Treningsøkt (øktfil) fra Barnefotballtrener',
+          text: 'Treningsøkt (øktfil) fra Barnehandballtrener',
           files: [file]
         });
         if (typeof window.showNotification === 'function') window.showNotification('Øktfil delt', 'success');
@@ -3438,7 +3438,7 @@ function serializeWorkoutFromState() {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>${escapeHtml(title)} – Barnefotballtrener</title>
+  <title>${escapeHtml(title)} – Barnehandballtrener</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -3526,7 +3526,7 @@ function serializeWorkoutFromState() {
 <body>
   <div class="wrap">
     <div class="header">
-      <div class="logo"><img src="${escapeHtml(logoUrl)}" alt="Barnefotballtrener"></div>
+      <div class="logo"><img src="${escapeHtml(logoUrl)}" alt="Barnehandballtrener"></div>
       <div>
         <div class="h-title">${escapeHtml(title)}</div>
         <div class="h-sub">${date ? `Dato: ${escapeHtml(date)} \u00b7 ` : ''}Total tid: ${total} min${state.ageGroup ? ` \u00b7 ${escapeHtml(state.ageGroup)} \u00e5r` : ''}</div>
@@ -3543,7 +3543,7 @@ function serializeWorkoutFromState() {
         })()}
       </div>
       <div class="meta">
-        <div class="m1">Barnefotballtrener</div>
+        <div class="m1">Barnehandballtrener</div>
         <div class="m2">Deling / PDF</div>
       </div>
     </div>
@@ -3735,7 +3735,7 @@ function serializeWorkoutFromState() {
         '<ol>' +
           '<li>Trykk <b>Send \u00f8ktfil</b> under</li>' +
           '<li>Velg SMS, e-post, AirDrop eller annen delingsm\u00e5te</li>' +
-          '<li>Medtreneren \u00e5pner filen i Barnefotballtrener og trykker <b>Importer</b></li>' +
+          '<li>Medtreneren \u00e5pner filen i Barnehandballtrener og trykker <b>Importer</b></li>' +
         '</ol>' +
         '<div style="font-size:12px;opacity:0.75;margin-top:6px;">\u00d8ktfilen inneholder kun \u00f8velser og tider, ikke spillere. Medtreneren velger egne spillere etter import.</div>' +
         '<div class="wo-help-actions">' +

@@ -1,5 +1,5 @@
 // © 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - Auth UI Handler
+// Barnehandballtrener - Auth UI Handler
 // ================================================
 // Håndterer UI for innlogging, logout og subscription status
 // Robust for mobil (Safari) ved å bruke event-delegering for logout.

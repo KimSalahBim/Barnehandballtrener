@@ -615,7 +615,7 @@ if (cancelBtn && !cancelBtn.__bound) {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `barnefotballtrener-data-${Date.now()}.json`;
+          a.download = `barnehandballtrener-data-${Date.now()}.json`;
           document.body.appendChild(a);
           a.click();
           a.remove();

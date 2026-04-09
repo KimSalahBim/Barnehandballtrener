@@ -18,6 +18,8 @@ const MAX_EDITORS_PER_TEAM = 4;
 export default async function handler(req, res) {
   // CORS — restrict to production and preview domains
   const allowedOrigins = [
+    'https://barnefotballtrener.no',
+    'https://www.barnefotballtrener.no',
     'https://barnehandballtrener.no',
     'https://www.barnehandballtrener.no',
   ];

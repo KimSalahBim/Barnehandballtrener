@@ -49,9 +49,12 @@ function getBaseUrl(req) {
 
   var isLocal = bare === 'localhost' || bare === '127.0.0.1';
   var isAllowed = isLocal ||
+    bare === 'barnefotballtrener.no' || bare === 'www.barnefotballtrener.no' ||
     bare === 'barnehandballtrener.no' || bare === 'www.barnehandballtrener.no' ||
     bare === 'barnefotballtrener.vercel.app' ||
-    (bare.endsWith('.vercel.app') && bare.startsWith('barnefotballtrener-'));
+    bare === 'barnehandballtrener.vercel.app' ||
+    (bare.endsWith('.vercel.app') && bare.startsWith('barnefotballtrener-')) ||
+    (bare.endsWith('.vercel.app') && bare.startsWith('barnehandballtrener-'));
 
   if (!isAllowed) {
     var appUrl = (process.env.APP_URL || '').replace(/\/+$/, '');

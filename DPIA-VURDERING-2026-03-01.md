@@ -2,7 +2,7 @@
 
 **Dato:** 1. mars 2026
 **Behandlingsansvarlig:** Holmvik Utvikling ENK, org.nr. [fyll inn]
-**Kontakt:** barnefotballtrener@gmail.com
+**Kontakt:** barnehandballtrener@gmail.com
 **Versjon:** 1.0
 
 ---
@@ -24,7 +24,7 @@ eller opplysninger om barn.
 ## 2. Tjenestens art
 
 barnehandballtrener.no er et digitalt treningsverktøy for frivillige trenere
-i norsk barnefotball (6-12 år). Tjenesten genererer bytteplaner for kamper,
+i norsk barnehåndball (6-12 år). Tjenesten genererer bytteplaner for kamper,
 håndterer treningsgrupper, og fører sesongstatistikk (oppmøte, spilletid).
 
 ---
@@ -51,7 +51,7 @@ reidentifiseringsrisikoen lav.
 - Ca. 200 aktive brukere (trenere)
 - Anslagsvis 2000-3000 spillerfornavn totalt
 - Ingen systematisk innsamling fra offentlige kilder
-- Geografisk begrenset til norsk barnefotball
+- Geografisk begrenset til norsk barnehåndball
 
 Datatilsynets veiledning definerer ikke eksakt grense for "stor skala", men
 behandlingen er klart under terskelen som gjelder for eksempel

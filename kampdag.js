@@ -2575,8 +2575,8 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         if (front && front.getAttribute('src')) return new URL(front.getAttribute('src'), window.location.href).href;
         const appLogo = document.querySelector('.app-logo');
         if (appLogo && appLogo.getAttribute('src')) return new URL(appLogo.getAttribute('src'), window.location.href).href;
-        return new URL('apple-touch-icon.png', window.location.href).href;
-      } catch { return 'apple-touch-icon.png'; }
+        return new URL('appletouchicon.png', window.location.href).href;
+      } catch { return 'appletouchicon.png'; }
     })();
 
     const today = new Date().toLocaleDateString('nb-NO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
