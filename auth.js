@@ -1,4 +1,4 @@
-// Â© 2026 barnehandballtrener.no. All rights reserved.
+// © 2026 Barnehandballtrener.no. All rights reserved.
 // Barnehandballtrener - auth.js (robust, no optional chaining) v2
 // =============================================================
 
