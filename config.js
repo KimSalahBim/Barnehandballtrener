@@ -1,5 +1,5 @@
-// Â© 2026 barnehandballtrener.no. All rights reserved.
-// Barnefotballtrener - Konfigurasjon
+// © 2026 Barnehandballtrener.no. All rights reserved.
+// Barnehandballtrener - Konfigurasjon
 // ================================================
 // Stripe: LIVE nÃ¸kler (test-nÃ¸kler brukes via Vercel Preview)
 // Supabase: Offentlig anon key (trygt i frontend)
