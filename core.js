@@ -1666,6 +1666,8 @@
     }
 
     container.innerHTML = sorted.map(p => {
+      const showPositions = ((state.season && state.season.format >= 6) || false);
+      const pos = (p.positions || ['F','M','A']).filter(z => ['F','M','A'].includes(z));
       return `
         <div class="player-card" data-id="${escapeHtml(p.id)}">
           <div class="pc-avatar-wrap" style="flex-shrink:0;cursor:pointer;" title="Endre avatar">
@@ -1675,7 +1677,11 @@
             <div class="player-name">${escapeHtml(p.name)}</div>
             <div class="player-tags">${state.settings.useSkill ? `<span class="tag">Nivå ${p.skill}</span>` : ''}${p.goalie ? `<span class="tag">🧤</span>` : `<span class="tag">🤾</span>`}</div>
           </div>
-          <!-- Posisjoner skjult — alle spillere universelle i barnehåndball -->
+          ${showPositions ? `<div class="player-positions" title="Posisjonspreferanse">
+    <button type="button" class="pos-btn${pos.includes('F') ? ' pos-f-on' : ''}" data-zone="F">B</button>
+    <button type="button" class="pos-btn${pos.includes('A') ? ' pos-a-on' : ''}" data-zone="A">V</button>
+    <button type="button" class="pos-btn${pos.includes('M') ? ' pos-m-on' : ''}" data-zone="M">L</button>
+  </div>` : ''}
           <button class="icon-btn edit" type="button" title="Rediger">✏️</button>
         </div>
       `;
@@ -1703,7 +1709,26 @@
       // Ensure player is always active (active toggle removed from UI)
       if (!p.active) { p.active = true; saveState(); }
 
-      // Posisjoner ikke i bruk for barnehåndball — alle spillere universelle
+      // B/V/L position buttons — visible for 6-er and 7-er only
+      card.querySelectorAll('.pos-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const zone = btn.getAttribute('data-zone');
+          let pos = p.positions || ['F','M','A'];
+          if (pos.includes(zone)) {
+            pos = pos.filter(z => z !== zone);
+          } else {
+            pos = [...new Set([...pos, zone])];
+          }
+          if (pos.length === 0) pos = ['F','M','A'];
+          p.positions = pos;
+          card.querySelectorAll('.pos-btn').forEach(b => {
+            const z = b.getAttribute('data-zone');
+            const cls = { F: 'pos-f-on', M: 'pos-m-on', A: 'pos-a-on' }[z];
+            b.classList.toggle(cls, pos.includes(z));
+          });
+          saveState();
+        });
+      });
 
       const editBtn = card.querySelector('button.edit');
       if (editBtn) {
