@@ -1,5 +1,5 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
-// Barnefotballtrener - kampdag.js
+// © 2026 Barnehandballtrener.no. All rights reserved.
+// Barnehandballtrener - kampdag.js
 // Kampdag: oppm\u00f8te -> start/benk -> bytteplan med roligere bytter og bedre spilletidsfordeling.
 // Bruker global variabel "window.players" (Array) som settes av core.js.
 
@@ -92,149 +92,71 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
   // Formation presets per format
   const FORMATIONS = {
-    3: { '1-1-1': [1,1,1] },
-    5: { '2-1-1': [2,1,1], '1-2-1': [1,2,1], '2-2': [2,2,0] },
-    7: { '2-3-1': [2,3,1], '3-2-1': [3,2,1], '2-2-2': [2,2,2], '1-3-2': [1,3,2] },
-    9: { '3-3-2': [3,3,2], '3-4-1': [3,4,1], '2-4-2': [2,4,2] },
-    11: { '4-3-3': [4,3,3], '4-4-2': [4,4,2], '3-5-2': [3,5,2] },
+    4: {},
+    5: { '3-1': [1,3,0], '2-2': [2,2,0] },
+    6: { '2-3': [2,3,0], '3-2': [3,2,0] },
+    7: { '3-2-1': [3,2,1], '3-3': [3,3,0], '2-4': [2,4,0] },
   };
 
   // Slot layouts for visual pitch rendering (drag & drop)
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
-    '1-1-1': [
-      { key:'A1', label:'S', zone:'A', x:50, y:18 },
-      { key:'M1', label:'M', zone:'M', x:50, y:50 },
-      { key:'F1', label:'F', zone:'F', x:50, y:80 },
-    ],
-    '2-1-1': [
-      { key:'ST', label:'S', zone:'A', x:50, y:14 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:40 },
-      { key:'LB', label:'VB', zone:'F', x:28, y:66 },
-      { key:'RB', label:'HB', zone:'F', x:72, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '1-2-1': [
-      { key:'ST', label:'S', zone:'A', x:50, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:30, y:40 },
-      { key:'RM', label:'HM', zone:'M', x:70, y:40 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+    '3-1': [
+      { key:'LW', label:'VK', zone:'A', x:18, y:24 },
+      { key:'CM', label:'MK', zone:'A', x:50, y:28 },
+      { key:'RW', label:'HK', zone:'A', x:82, y:24 },
+      { key:'CB', label:'B',  zone:'F', x:50, y:65 },
+      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '2-2': [
-      { key:'LM', label:'VM', zone:'M', x:30, y:28 },
-      { key:'RM', label:'HM', zone:'M', x:70, y:28 },
-      { key:'LB', label:'VB', zone:'F', x:30, y:60 },
-      { key:'RB', label:'HB', zone:'F', x:70, y:60 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+      { key:'LW', label:'VK', zone:'A', x:20, y:28 },
+      { key:'RW', label:'HK', zone:'A', x:80, y:28 },
+      { key:'LB', label:'VB', zone:'F', x:32, y:65 },
+      { key:'RB', label:'HB', zone:'F', x:68, y:65 },
+      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
-    '2-3-1': [
-      { key:'ST', label:'S', zone:'A', x:50, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:18, y:38 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:42 },
-      { key:'RM', label:'HM', zone:'M', x:82, y:38 },
-      { key:'LB', label:'VB', zone:'F', x:30, y:66 },
-      { key:'RB', label:'HB', zone:'F', x:70, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+    '2-3': [
+      { key:'LW',  label:'VK', zone:'A', x:15, y:22 },
+      { key:'CM',  label:'MK', zone:'A', x:50, y:28 },
+      { key:'RW',  label:'HK', zone:'A', x:85, y:22 },
+      { key:'LB',  label:'VB', zone:'F', x:30, y:65 },
+      { key:'RB',  label:'HB', zone:'F', x:70, y:65 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+    ],
+    '3-2': [
+      { key:'LW',  label:'VK', zone:'A', x:20, y:22 },
+      { key:'RW',  label:'HK', zone:'A', x:80, y:22 },
+      { key:'LB',  label:'VB', zone:'F', x:20, y:65 },
+      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
+      { key:'RB',  label:'HB', zone:'F', x:80, y:65 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '3-2-1': [
-      { key:'ST', label:'S', zone:'A', x:50, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:32, y:38 },
-      { key:'RM', label:'HM', zone:'M', x:68, y:38 },
-      { key:'LB', label:'VB', zone:'F', x:20, y:64 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB', label:'HB', zone:'F', x:80, y:64 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+      { key:'PV',  label:'LJ', zone:'A', x:50, y:18 },
+      { key:'LW',  label:'VK', zone:'M', x:15, y:38 },
+      { key:'RW',  label:'HK', zone:'M', x:85, y:38 },
+      { key:'LB',  label:'VB', zone:'F', x:22, y:65 },
+      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
+      { key:'RB',  label:'HB', zone:'F', x:78, y:65 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
-    '2-2-2': [
-      { key:'LA', label:'VA', zone:'A', x:32, y:16 },
-      { key:'RA', label:'HA', zone:'A', x:68, y:16 },
-      { key:'LM', label:'VM', zone:'M', x:32, y:42 },
-      { key:'RM', label:'HM', zone:'M', x:68, y:42 },
-      { key:'LB', label:'VB', zone:'F', x:32, y:66 },
-      { key:'RB', label:'HB', zone:'F', x:68, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+    '3-3': [
+      { key:'LW',  label:'VK', zone:'A', x:15, y:22 },
+      { key:'CM',  label:'MK', zone:'A', x:50, y:25 },
+      { key:'RW',  label:'HK', zone:'A', x:85, y:22 },
+      { key:'LB',  label:'VB', zone:'F', x:22, y:65 },
+      { key:'CB',  label:'MB', zone:'F', x:50, y:68 },
+      { key:'RB',  label:'HB', zone:'F', x:78, y:65 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
-    '1-3-2': [
-      { key:'LA', label:'VA', zone:'A', x:32, y:16 },
-      { key:'RA', label:'HA', zone:'A', x:68, y:16 },
-      { key:'LM', label:'VM', zone:'M', x:20, y:42 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:44 },
-      { key:'RM', label:'HM', zone:'M', x:80, y:42 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:68 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '3-3-2': [
-      { key:'LS', label:'VS', zone:'A', x:32, y:14 },
-      { key:'RS', label:'HS', zone:'A', x:68, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:20, y:38 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:40 },
-      { key:'RM', label:'HM', zone:'M', x:80, y:38 },
-      { key:'LB', label:'VB', zone:'F', x:20, y:64 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB', label:'HB', zone:'F', x:80, y:64 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '3-4-1': [
-      { key:'ST', label:'S', zone:'A', x:50, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:14, y:36 },
-      { key:'LCM', label:'VSM', zone:'M', x:38, y:40 },
-      { key:'RCM', label:'HSM', zone:'M', x:62, y:40 },
-      { key:'RM', label:'HM', zone:'M', x:86, y:36 },
-      { key:'LB', label:'VB', zone:'F', x:20, y:64 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:68 },
-      { key:'RB', label:'HB', zone:'F', x:80, y:64 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '2-4-2': [
-      { key:'LS', label:'VS', zone:'A', x:32, y:14 },
-      { key:'RS', label:'HS', zone:'A', x:68, y:14 },
-      { key:'LM', label:'VM', zone:'M', x:14, y:38 },
-      { key:'LCM', label:'VSM', zone:'M', x:38, y:42 },
-      { key:'RCM', label:'HSM', zone:'M', x:62, y:42 },
-      { key:'RM', label:'HM', zone:'M', x:86, y:38 },
-      { key:'LB', label:'VB', zone:'F', x:32, y:66 },
-      { key:'RB', label:'HB', zone:'F', x:68, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '4-3-3': [
-      { key:'LW', label:'VK', zone:'A', x:16, y:14 },
-      { key:'ST', label:'S', zone:'A', x:50, y:10 },
-      { key:'RW', label:'HK', zone:'A', x:84, y:14 },
-      { key:'LCM', label:'VSM', zone:'M', x:28, y:40 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:42 },
-      { key:'RCM', label:'HSM', zone:'M', x:72, y:40 },
-      { key:'LB', label:'VB', zone:'F', x:14, y:64 },
-      { key:'LCB', label:'VMB', zone:'F', x:38, y:68 },
-      { key:'RCB', label:'HMB', zone:'F', x:62, y:68 },
-      { key:'RB', label:'HB', zone:'F', x:86, y:64 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '4-4-2': [
-      { key:'LS', label:'VS', zone:'A', x:36, y:12 },
-      { key:'RS', label:'HS', zone:'A', x:64, y:12 },
-      { key:'LM', label:'VM', zone:'M', x:14, y:38 },
-      { key:'LCM', label:'VSM', zone:'M', x:38, y:42 },
-      { key:'RCM', label:'HSM', zone:'M', x:62, y:42 },
-      { key:'RM', label:'HM', zone:'M', x:86, y:38 },
-      { key:'LB', label:'VB', zone:'F', x:14, y:64 },
-      { key:'LCB', label:'VMB', zone:'F', x:38, y:68 },
-      { key:'RCB', label:'HMB', zone:'F', x:62, y:68 },
-      { key:'RB', label:'HB', zone:'F', x:86, y:64 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
-    ],
-    '3-5-2': [
-      { key:'LS', label:'VS', zone:'A', x:36, y:12 },
-      { key:'RS', label:'HS', zone:'A', x:64, y:12 },
-      { key:'LWB', label:'VBM', zone:'M', x:12, y:36 },
-      { key:'LCM', label:'VSM', zone:'M', x:32, y:42 },
-      { key:'CM', label:'SM', zone:'M', x:50, y:38 },
-      { key:'RCM', label:'HSM', zone:'M', x:68, y:42 },
-      { key:'RWB', label:'HBM', zone:'M', x:88, y:36 },
-      { key:'LCB', label:'VMB', zone:'F', x:26, y:66 },
-      { key:'CB', label:'MB', zone:'F', x:50, y:70 },
-      { key:'RCB', label:'HMB', zone:'F', x:74, y:66 },
-      { key:'GK', label:'K', zone:'K', x:50, y:88 },
+    '2-4': [
+      { key:'LW',  label:'VK',  zone:'A', x:12, y:20 },
+      { key:'LCB', label:'VMK', zone:'A', x:36, y:28 },
+      { key:'RCB', label:'HMK', zone:'A', x:64, y:28 },
+      { key:'RW',  label:'HK',  zone:'A', x:88, y:20 },
+      { key:'LB',  label:'VB',  zone:'F', x:30, y:65 },
+      { key:'RB',  label:'HB',  zone:'F', x:70, y:65 },
+      { key:'GK',  label:'K',   zone:'K', x:50, y:88 },
     ],
   };
 
@@ -328,20 +250,20 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       if (ageClass) {
         const ageNum = parseInt(String(ageClass).replace(/[^0-9]/g, ''), 10);
         const nffMap = {
-          6:  { format: '3',  minutes: 40 },
-          7:  { format: '3',  minutes: 40 },
-          8:  { format: '5',  minutes: 50 },
-          9:  { format: '5',  minutes: 50 },
-          10: { format: '7',  minutes: 60 },
-          11: { format: '7',  minutes: 60 },
-          12: { format: '9',  minutes: 70 },
-          13: { format: '9',  minutes: 70 }
+          6:  { format: '4', minutes: 20 },
+          7:  { format: '4', minutes: 20 },
+          8:  { format: '4', minutes: 20 },
+          9:  { format: '5', minutes: 30 },
+          10: { format: '5', minutes: 30 },
+          11: { format: '6', minutes: 40 },
+          12: { format: '6', minutes: 40 },
+          13: { format: '7', minutes: 40 }
         };
         const nff = nffMap[ageNum];
         if (nff) {
           const formatEl = $('kdFormat');
           const minutesEl = $('kdMinutes');
-          if (formatEl && formatEl.value === '7' && minutesEl && minutesEl.value === '60') {
+          if (formatEl && formatEl.value === '7' && minutesEl && minutesEl.value === '40') {
             // Only override if user hasn't changed defaults
             formatEl.value = nff.format;
             minutesEl.value = nff.minutes;
@@ -375,10 +297,10 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const copyBtn = $('kdCopy');
 
     if (formatEl) formatEl.addEventListener('change', () => {
-      // Auto-set match duration based on format (Norwegian youth football defaults)
+      // Auto-set match duration based on format (Norwegian youth handball defaults)
       if (minutesEl) {
         const fmt = parseInt(formatEl.value, 10) || 7;
-        const defaultMinutes = { 3: 20, 5: 40, 7: 60, 9: 70, 11: 80 };
+        const defaultMinutes = { 4: 20, 5: 30, 6: 40, 7: 40 };
         if (defaultMinutes[fmt]) {
           minutesEl.value = defaultMinutes[fmt];
           // Programmatic value change doesn't fire 'input' event,
@@ -497,7 +419,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     }
     const initFmt = parseInt(formatEl?.value, 10) || 7;
     const formPanel = $('kdFormationPanel');
-    if (initFmt === 3) {
+    if (initFmt === 3 || initFmt === 4) {
       if (formCard) formCard.style.display = 'none';
     } else {
       if (formCard) formCard.style.display = '';
@@ -510,7 +432,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const fmt = parseInt(formatEl.value, 10) || 7;
       const fp = $('kdFormationPanel');
       const fc = $('kdFormationToggle')?.closest('.settings-card');
-      if (fmt === 3) {
+      if (fmt === 3 || fmt === 4) {
         if (fc) fc.style.display = 'none';
       } else {
         if (fc) fc.style.display = '';
@@ -605,7 +527,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const keeperCard = manualEl?.closest('.settings-card');
     const panel = $('kdKeeperPanel');
 
-    if (format === 3) {
+    if (format === 3 || format === 4) {
       if (keeperCard) keeperCard.style.display = 'none';
       if (panel) panel.style.display = 'none';
       return;
@@ -677,8 +599,10 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const format = parseInt($('kdFormat')?.value, 10) || 7;
     const T = clamp(parseInt($('kdMinutes')?.value, 10) || 48, 10, 200);
 
-    if (format === 3) {
-      summary.textContent = '3-er: ingen keeper.';
+    if (format === 3 || format === 4) {
+      summary.textContent = format === 4
+        ? '4-er h\u00e5ndball: l\u00f8pende keeperrotasjon. Alle b\u00f8r pr\u00f8ve keeperposisjonen.'
+        : '3-er: ingen keeper.';
       return;
     }
 
@@ -731,8 +655,8 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // Formation & positions
   // ------------------------------
   function getDefaultFormationKey(format) {
-    const map = { 3: '1-1-1', 5: '2-1-1', 7: '2-3-1', 9: '3-3-2', 11: '4-3-3' };
-    return map[format] || '2-3-1';
+    const map = { 4: '', 5: '3-1', 6: '2-3', 7: '3-2-1' };
+    return map[format] || '3-2-1';
   }
 
   function renderFormationGrid() {
@@ -1202,7 +1126,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   function buildKeeperTimeline(T) {
     const format = parseInt($('kdFormat')?.value, 10) || 7;
 
-    if (format === 3) return [];
+    if (format === 3 || format === 4) return [];
 
     const kc = clamp(parseInt($('kdKeeperCount')?.value, 10) || 1, 1, 4);
 
@@ -2757,7 +2681,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kampdag \u2014 Barnefotballtrener</title>
+<title>Kampdag \u2014 Barnehandballtrener</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;background:#0f172a;color:#e2e8f0;line-height:1.45}
@@ -2847,7 +2771,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
   <div class="header">
     <div class="logo"><img src="${escapeHtml(logoUrl)}" alt=""></div>
     <div>
-      <div class="h-title">Kampdag \u2014 ${format}-er fotball${useFormation && formationKey ? ` \u00b7 ${formationKey}` : ''}</div>
+      <div class="h-title">Kampdag \u2014 ${format}-er h\u00e5ndball${useFormation && formationKey ? ` \u00b7 ${formationKey}` : ''}</div>
       <div class="h-sub">${escapeHtml(today)} \u00b7 ${T} min \u00b7 ${present.length} spillere${hasAnyOverride ? " \u00b7 Justert oppstilling" : ""}</div>
     </div>
   </div>
@@ -2859,7 +2783,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     <div class="plan-grid">${planCards}</div>
   </div>
 
-  <div class="footer">Laget med Barnefotballtrener.no</div>
+  <div class="footer">Laget med Barnehandballtrener.no</div>
   <div class="actions" style="display:flex;gap:10px;margin-top:12px;">
     <button style="border:0;border-radius:10px;padding:10px 16px;font-weight:500;background:#456C4B;color:#fff;cursor:pointer;font-size:13px;" onclick="window.print()">Lagre som PDF</button>
   </div>
