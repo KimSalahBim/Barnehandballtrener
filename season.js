@@ -117,10 +117,10 @@
   function defaultMatchMinutes(format) {
     // If current season has age_class, use NFF per-age duration
     if (currentSeason && currentSeason.age_class) {
-      var rule = getNffRule(currentSeason.age_class);
+      var rule = getNhfRule(currentSeason.age_class);
       if (rule) return rule.minutes;
     }
-    return { 3: 20, 5: 40, 7: 60, 9: 70, 11: 80 }[format] || 60;
+    return { 4: 20, 5: 30, 6: 40, 7: 40 }[format] || 40;
   }
 
   function escapeHtml(str) {
@@ -199,18 +199,18 @@
   // Sub-team helpers
   var SUB_TEAM_COLORS = ['#456C4B', '#ea580c', '#059669', '#7c3aed', '#ec4899'];
 
-  // NFF aldersklasse → format, varighet, barnefotball-status
-  var NFF_AGE_RULES = {
-  6:  { format: 3,  minutes: 40, barnefotball: true,  label: '3er, 2×20 min' },
-  7:  { format: 3,  minutes: 40, barnefotball: true,  label: '3er, 2×20 min' },
-  8:  { format: 5,  minutes: 50, barnefotball: true,  label: '5er, 2×25 min' },
-  9:  { format: 5,  minutes: 50, barnefotball: true,  label: '5er, 2×25 min' },
-  10: { format: 7,  minutes: 60, barnefotball: true,  label: '7er, 2×30 min' },
-  11: { format: 7,  minutes: 60, barnefotball: true,  label: '7er, 2×30 min' },
-  12: { format: 9,  minutes: 70, barnefotball: true,  label: '9er, 2×35 min' },
-  13: { format: 9,  minutes: 70, barnefotball: true,  label: '9er, 2×35 min' },
-  14: { format: 11, minutes: 70, barnefotball: false, label: '11er, 2×35 min' }
-};
+  // NHF aldersklasse → format, varighet, barnehåndball-status
+  var NHF_AGE_RULES = {
+    6:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
+    7:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
+    8:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
+    9:  { format: 5, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '5-er, 2\u00d715 min' },
+    10: { format: 5, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '5-er, 2\u00d715 min' },
+    11: { format: 6, minutes: 40, barnehåndball: true,  keeperRotation: false, bytteRestriksjon: true,  label: '6-er, 2\u00d720 min' },
+    12: { format: 6, minutes: 40, barnehåndball: true,  keeperRotation: false, bytteRestriksjon: true,  label: '6-er, 2\u00d720 min' },
+    13: { format: 7, minutes: 40, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d720 min' },
+    14: { format: 7, minutes: 40, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d720 min' }
+  };
 
   // Parse age from age_class string: 'G10' → 10, 'J7' → 7
   function parseAgeFromClass(ageClass) {
@@ -219,11 +219,11 @@
     return (n >= 6 && n <= 19) ? n : null;
   }
 
-  // Get NFF rule for age class string
-  function getNffRule(ageClass) {
+  // Get NHF rule for age class string
+  function getNhfRule(ageClass) {
     var age = parseAgeFromClass(ageClass);
     if (!age) return null;
-    return NFF_AGE_RULES[age] || (age >= 14 ? { format: 11, minutes: age >= 15 ? 80 : 70, barnefotball: false, label: '11er' } : null);
+    return NHF_AGE_RULES[age] || (age >= 15 ? { format: 7, minutes: 50, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true, label: '7-er, 2\u00d725 min' } : null);
   }
 
   function getSubTeamNames(season) {
@@ -1782,14 +1782,14 @@
     }
   }
 
-  function isBarnefotball() {
+  function isBarnehåndball() {
     // Age class is the most accurate source
     if (currentSeason && currentSeason.age_class) {
-      var rule = getNffRule(currentSeason.age_class);
-      if (rule) return rule.barnefotball;
+      var rule = getNhfRule(currentSeason.age_class);
+      if (rule) return rule.barnehåndball;
     }
     var fmt = (editingEvent && editingEvent.format) || (currentSeason && currentSeason.format) || 7;
-    return fmt <= 9; // 3v3, 5v5, 7v7, 9v9 = barnefotball (under 13)
+    return fmt <= 6; // 4-er, 5-er, 6-er = barnehåndball (under 13)
   }
 
   async function loadSeasonStats(seasonId) {
@@ -2180,11 +2180,10 @@
           '<div class="form-group">' +
             '<label for="snSeasonFormat">Kampformat</label>' +
             '<select id="snSeasonFormat">' +
-              '<option value="3">3er</option>' +
-              '<option value="5">5er</option>' +
-              '<option value="7" selected>7er</option>' +
-              '<option value="9">9er</option>' +
-              '<option value="11">11er</option>' +
+              '<option value="4">4-er</option>' +
+              '<option value="5">5-er</option>' +
+              '<option value="6">6-er</option>' +
+              '<option value="7" selected>7-er</option>' +
             '</select>' +
           '</div>' +
           '<div class="sn-form-row">' +
@@ -2246,14 +2245,14 @@
 
     // Age class → auto-suggest format + show NFF hint
     $('snAgeClass').addEventListener('change', function() {
-      var rule = getNffRule(this.value);
+      var rule = getNhfRule(this.value);
       var hint = $('snAgeHint');
       if (rule) {
         $('snSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
           hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF anbefaler: ' + rule.label +
-            (rule.barnefotball ? ' <span style="color:var(--text-400);">\u00B7 Barnefotball-regler gjelder</span>' : '');
+            (rule.barnehåndball ? ' <span style="color:var(--text-400);">\u00B7 Barneh\u00e5ndball-regler gjelder</span>' : '');
         }
       } else if (hint) {
         hint.style.display = 'none';
@@ -2390,17 +2389,16 @@
               '</optgroup>' +
             '</select>' +
             '<div class="sn-hint" id="snEditAgeHint" style="' + (s.age_class ? '' : 'display:none;') + '">' +
-              (function() { var r = getNffRule(s.age_class); return r ? '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF: ' + r.label + (r.barnefotball ? ' \u00B7 Barnefotball-regler' : '') : ''; })() +
+              (function() { var r = getNhfRule(s.age_class); return r ? '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF: ' + r.label + (r.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '') : ''; })() +
             '</div>' +
           '</div>' +
           '<div class="form-group">' +
             '<label for="snEditSeasonFormat">Kampformat</label>' +
             '<select id="snEditSeasonFormat">' +
-              '<option value="3"' + (s.format === 3 ? ' selected' : '') + '>3er</option>' +
-              '<option value="5"' + (s.format === 5 ? ' selected' : '') + '>5er</option>' +
-              '<option value="7"' + (s.format === 7 ? ' selected' : '') + '>7er</option>' +
-              '<option value="9"' + (s.format === 9 ? ' selected' : '') + '>9er</option>' +
-              '<option value="11"' + (s.format === 11 ? ' selected' : '') + '>11er</option>' +
+              '<option value="4"' + (s.format === 4 ? ' selected' : '') + '>4-er</option>' +
+              '<option value="5"' + (s.format === 5 ? ' selected' : '') + '>5-er</option>' +
+              '<option value="6"' + (s.format === 6 ? ' selected' : '') + '>6-er</option>' +
+              '<option value="7"' + (s.format === 7 ? ' selected' : '') + '>7-er</option>' +
             '</select>' +
           '</div>' +
           '<div class="sn-form-row">' +
@@ -2464,14 +2462,14 @@
 
     // Age class → auto-suggest format
     $('snEditAgeClass').addEventListener('change', function() {
-      var rule = getNffRule(this.value);
+      var rule = getNhfRule(this.value);
       var hint = $('snEditAgeHint');
       if (rule) {
         $('snEditSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
           hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NFF: ' + rule.label +
-            (rule.barnefotball ? ' \u00B7 Barnefotball-regler' : '');
+            (rule.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '');
         }
       } else if (hint) {
         hint.style.display = 'none';
@@ -3885,7 +3883,7 @@
 
     var stats = computeStats(subTeamFilter);
     var p = stats.players;
-    var barnefotball = isBarnefotball();
+    var barnefotball = isBarnehåndball();
 
     var html =
       tabsHtml +
@@ -4284,7 +4282,7 @@
 
     var stats = computeStats(subTeamFilter);
     var p = stats.players;
-    var barnefotball = isBarnefotball();
+    var barnefotball = isBarnehåndball();
     var teamName = '';
     try { var tn = document.querySelector('.team-switcher-name'); if (tn) teamName = tn.textContent.trim(); } catch (_) {}
 
@@ -6673,7 +6671,7 @@
     if (isMatch) {
       var isCompleted = (ev.status === 'completed');
       var hasResult = (ev.result_home !== null && ev.result_home !== undefined);
-      var barnefotball = isBarnefotball();
+      var barnefotball = isBarnehåndball();
 
       if (isCompleted && hasResult) {
         html +=
