@@ -6,7 +6,7 @@ Sist oppdatert: 15. mars 2026 (etter GDPR-opprydding + V2.2)
 
 ## OVERSIKT
 
-En URL per lag (barnefotballtrener.no/lag/TOKEN), token-beskyttet, ingen innlogging.
+En URL per lag (barnehandballtrener.no/lag/TOKEN), token-beskyttet, ingen innlogging.
 Foreldre bokmerker lenken og ser: neste hendelse, kalender, kampresultat,
 treningsinnhold (opt-in), trenerens beskjeder (oppslagstavle), iCal-eksport,
 avlysningsbadger, og kampdag-logistikkort med kart-lenke.

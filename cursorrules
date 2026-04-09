@@ -1,9 +1,9 @@
-# Barnefotballtrener.no — Cursor Rules
+# barnehandballtrener.no — Cursor Rules
 
 ## Prosjekt
 PWA for barnefotballtrenere (6-12 år). Norsk app, 200+ aktive brukere med betalende abonnenter.
 Eier: Kim, Holmvik Utvikling ENK, Steinkjer.
-URL: barnefotballtrener.no. Repo: GitHub (public).
+URL: barnehandballtrener.no. Repo: GitHub (public).
 
 ## Aktiv branch: new-workout
 Stor refaktor av treningsøkt-modulen. Leveranse 1 + 1.5 ferdig (NFF-redesign + Supabase-lagring).

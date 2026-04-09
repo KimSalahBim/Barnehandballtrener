@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // Barnefotballtrener - core.js
 // ================================================
 // Kjernelogikk for appen (spillere, navigasjon, trening, kamp).
@@ -1219,7 +1219,7 @@
     modal.innerHTML =
       '<div class="team-modal-box">' +
         '<h3>Inviter trener</h3>' +
-        '<p style="font-size:13px;color:var(--text-400);margin:0 0 14px">Treneren må ha en konto på barnefotballtrener.no. Skriv inn e-postadressen de brukte ved registrering.</p>' +
+        '<p style="font-size:13px;color:var(--text-400);margin:0 0 14px">Treneren må ha en konto på barnehandballtrener.no. Skriv inn e-postadressen de brukte ved registrering.</p>' +
         '<label for="inviteEmailInput">E-post</label>' +
         '<input type="email" id="inviteEmailInput" placeholder="trener@eksempel.no" autocomplete="email">' +
         '<div id="inviteError" style="color:var(--error);font-size:13px;margin-top:6px;display:none"></div>' +

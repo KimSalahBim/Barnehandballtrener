@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // debug.js — Sherlock Debug Overlay (staging-only)
 // Visible ONLY on *.vercel.app or localhost. No effect on production .no domain.
 // Captures console logs and shows a small in-app panel for mobile/Safari troubleshooting.

@@ -1,7 +1,7 @@
 # Databehandleravtaler (DPA-logg)
 
 **Behandlingsansvarlig:** Holmvik Utvikling ENK
-**Tjeneste:** Barnefotballtrener.no
+**Tjeneste:** barnehandballtrener.no
 **Sist oppdatert:** 1. mars 2026
 
 ---

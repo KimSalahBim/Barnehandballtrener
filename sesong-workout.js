@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // sesong-workout.js — Innebygd treningsøkt-editor for Sesong-modulen.
 // Full feature-paritet med workout.js via window._woShared.
 // Eksporterer window.sesongWorkout = { init, destroy, isActive }
@@ -1404,7 +1404,7 @@
           '<button class="btn btn-p" onclick="window.print()">Lagre som PDF</button>' +
           '<button class="btn btn-s" onclick="window.close()">Lukk</button>' +
         '</div>' +
-        '<div class="footer">Laget med Barnefotballtrener.no</div>' +
+        '<div class="footer">Laget med barnehandballtrener.no</div>' +
       '</div></body></html>';
 
     var w = window.open('', '_blank');

@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // club.js (v3)
 //
 // Endringer fra v2:
@@ -138,7 +138,7 @@
         <button
           id="clubContactTriggerBtn"
           type="button"
-          onclick="window.location.href='mailto:support@barnefotballtrener.no?subject=Klubblisens';"
+          onclick="window.location.href='mailto:support@barnehandballtrener.no?subject=Klubblisens';"
           style="
             display:inline-block; padding:12px 28px; background:#0d47a1; color:white;
             border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer;

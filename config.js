@@ -1,4 +1,4 @@
-// Â© 2026 Barnefotballtrener.no. All rights reserved.
+// Â© 2026 barnehandballtrener.no. All rights reserved.
 // Barnefotballtrener - Konfigurasjon
 // ================================================
 // Stripe: LIVE nÃ¸kler (test-nÃ¸kler brukes via Vercel Preview)

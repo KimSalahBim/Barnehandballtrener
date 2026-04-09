@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // api/subscription-status.js
 // Returnerer tilgangsstatus for innlogget bruker.
 // Tilgang hvis:

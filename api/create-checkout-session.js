@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
@@ -108,7 +108,7 @@ function isAllowedHost(normalizedHost) {
   const bare = normalizedHost.split(':')[0];
 
   // Canonical + www
-  if (bare === 'barnefotballtrener.no' || bare === 'www.barnefotballtrener.no') return true;
+  if (bare === 'barnehandballtrener.no' || bare === 'www.barnehandballtrener.no') return true;
 
   // Vercel stable domain
   if (bare === 'barnefotballtrener.vercel.app') return true;

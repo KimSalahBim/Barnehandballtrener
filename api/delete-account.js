@@ -1,4 +1,4 @@
-// Â© 2026 Barnefotballtrener.no. All rights reserved.
+// Â© 2026 barnehandballtrener.no. All rights reserved.
 // api/delete-account.js
 // GDPR Art. 17 - Right to Erasure ("Right to be Forgotten")
 // Allows users to permanently delete their account and all associated data
@@ -483,7 +483,7 @@ export default async function handler(req, res) {
     const debug = isDebugHost(req.headers.host);
     return res.status(500).json({
       error: 'Server error',
-      message: 'Account deletion failed. Please contact support at support@barnefotballtrener.no',
+      message: 'Account deletion failed. Please contact support at support@barnehandballtrener.no',
       ...(debug ? { error_id: errorId } : {}),
     });
   }

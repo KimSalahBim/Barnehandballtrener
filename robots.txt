@@ -3,4 +3,4 @@ Allow: /
 Disallow: /lag/
 Disallow: /api/
 
-Sitemap: https://barnefotballtrener.no/sitemap.xml
+Sitemap: https://barnehandballtrener.no/sitemap.xml

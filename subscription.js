@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // subscription.js
 // Håndterer abonnement-modal + åpner Stripe Customer Portal (manage / cancel)
 // Krever at window.supabase (Supabase client) er initialisert (fra auth.js)
@@ -564,7 +564,7 @@ if (cancelBtn && !cancelBtn.__bound) {
         e.stopPropagation();
         if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
 
-        const email = window.CONFIG?.app?.supportEmail || "support@barnefotballtrener.no";
+        const email = window.CONFIG?.app?.supportEmail || "support@barnehandballtrener.no";
         try {
           if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
             await navigator.clipboard.writeText(email);
@@ -625,7 +625,7 @@ if (cancelBtn && !cancelBtn.__bound) {
 
         } catch (err) {
           console.error(`${LOG_PREFIX} âŒ Export failed:`, err);
-          alert(`Kunne ikke eksportere data: ${err.message}\n\nKontakt support@barnefotballtrener.no hvis problemet vedvarer.`);
+          alert(`Kunne ikke eksportere data: ${err.message}\n\nKontakt support@barnehandballtrener.no hvis problemet vedvarer.`);
         }
       }, { capture: true });
     }
@@ -710,7 +710,7 @@ if (cancelBtn && !cancelBtn.__bound) {
           console.error(`${LOG_PREFIX} âŒ Delete failed:`, err);
           alert(
             `Kunne ikke slette konto: ${err.message}\n\n` +
-            "Kontakt support@barnefotballtrener.no for manuell sletting."
+            "Kontakt support@barnehandballtrener.no for manuell sletting."
           );
         }
       }, { capture: true });

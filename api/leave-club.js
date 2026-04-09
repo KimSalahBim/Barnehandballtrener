@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // /api/leave-club.js (v3)
 
 import { createClient } from '@supabase/supabase-js';
@@ -7,8 +7,8 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const ALLOWED_ORIGINS = new Set([
-  'https://barnefotballtrener.no',
-  'https://www.barnefotballtrener.no',
+  'https://barnehandballtrener.no',
+  'https://www.barnehandballtrener.no',
 ]);
 if (process.env.VERCEL_ENV !== 'production') {
   ALLOWED_ORIGINS.add('http://localhost:3000');
@@ -17,7 +17,7 @@ if (process.env.VERCEL_ENV !== 'production') {
 
 function setCors(req, res) {
   const origin = req.headers.origin || '';
-  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://barnefotballtrener.no';
+  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://barnehandballtrener.no';
   res.setHeader('Access-Control-Allow-Origin', allowed);
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

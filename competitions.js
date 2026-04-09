@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 /* Barnefotballtrener – Konkurranser (Mesternes mester)
    - Vanilla JS
    - No regressions: isolert logikk + namespacede klasser (.comp-*)

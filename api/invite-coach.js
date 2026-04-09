@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // api/invite-coach.js
 // Server-side invitasjon: slår opp e-post → user_id via service_role
 //
@@ -18,8 +18,8 @@ const MAX_EDITORS_PER_TEAM = 4;
 export default async function handler(req, res) {
   // CORS — restrict to production and preview domains
   const allowedOrigins = [
-    'https://barnefotballtrener.no',
-    'https://www.barnefotballtrener.no',
+    'https://barnehandballtrener.no',
+    'https://www.barnehandballtrener.no',
   ];
   const origin = req.headers.origin || '';
   const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
       }
 
       return res.status(404).json({
-        error: 'Ingen bruker med denne e-postadressen. Treneren må opprette konto på barnefotballtrener.no først.',
+        error: 'Ingen bruker med denne e-postadressen. Treneren må opprette konto på barnehandballtrener.no først.',
       });
     } else {
       invitedUserId = foundUsers[0].id;

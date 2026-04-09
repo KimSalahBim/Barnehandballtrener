@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // Barnefotballtrener - Pricing + Magic Link Logic (ROBUST)
 // =======================================================
 // Denne fila håndterer:
@@ -562,9 +562,9 @@ let __bf_contactModalsBound = false;
 function getSupportEmail() {
   try {
     const e = window.CONFIG?.app?.supportEmail;
-    return (typeof e === 'string' && e.includes('@')) ? e : 'support@barnefotballtrener.no';
+    return (typeof e === 'string' && e.includes('@')) ? e : 'support@barnehandballtrener.no';
   } catch (_) {
-    return 'support@barnefotballtrener.no';
+    return 'support@barnehandballtrener.no';
   }
 }
 

@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // api/team-page.js
 // Single endpoint for all parent-facing team page operations.
 // Routes by HTTP method + ?action= parameter:
@@ -49,13 +49,13 @@ function getBaseUrl(req) {
 
   var isLocal = bare === 'localhost' || bare === '127.0.0.1';
   var isAllowed = isLocal ||
-    bare === 'barnefotballtrener.no' || bare === 'www.barnefotballtrener.no' ||
+    bare === 'barnehandballtrener.no' || bare === 'www.barnehandballtrener.no' ||
     bare === 'barnefotballtrener.vercel.app' ||
     (bare.endsWith('.vercel.app') && bare.startsWith('barnefotballtrener-'));
 
   if (!isAllowed) {
     var appUrl = (process.env.APP_URL || '').replace(/\/+$/, '');
-    return appUrl || 'https://barnefotballtrener.no';
+    return appUrl || 'https://barnehandballtrener.no';
   }
 
   var proto = isLocal ? 'http' : 'https';
@@ -483,7 +483,7 @@ async function handleRead(req, res) {
     if (age) {
       var dur = age <= 7 ? 60 : (age <= 9 ? 75 : 90);
       var lbl = age <= 7 ? '6-7 år' : (age <= 9 ? '8-9 år' : (age <= 12 ? '10-12 år' : '13-16 år'));
-      nff = { age_class: lbl, duration: dur, description: 'NFF anbefaler variert trening med vekt på ballmestring og spilleglede for ' + lbl + '.' };
+      nff = { age_class: lbl, duration: dur, description: 'NHF anbefaler variert trening med vekt på ballmestring, kast og bevegelse for ' + lbl + '.' };
     }
   }
 

@@ -1,4 +1,4 @@
-# DPIA-vurdering: Barnefotballtrener.no
+# DPIA-vurdering: barnehandballtrener.no
 
 **Dato:** 1. mars 2026
 **Behandlingsansvarlig:** Holmvik Utvikling ENK, org.nr. [fyll inn]
@@ -11,7 +11,7 @@
 
 Denne vurderingen dokumenterer hvorfor det ikke er nødvendig med full
 personvernkonsekvensvurdering (DPIA) etter GDPR art. 35 for tjenesten
-Barnefotballtrener.no.
+barnehandballtrener.no.
 
 Datatilsynets veiledning (januar 2019) angir at DPIA er påkrevd når
 behandlingen sannsynligvis vil medføre **høy risiko** for de registrertes
@@ -23,7 +23,7 @@ eller opplysninger om barn.
 
 ## 2. Tjenestens art
 
-Barnefotballtrener.no er et digitalt treningsverktøy for frivillige trenere
+barnehandballtrener.no er et digitalt treningsverktøy for frivillige trenere
 i norsk barnefotball (6-12 år). Tjenesten genererer bytteplaner for kamper,
 håndterer treningsgrupper, og fører sesongstatistikk (oppmøte, spilletid).
 

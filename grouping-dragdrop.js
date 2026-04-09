@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // grouping-dragdrop.js — shared drag-and-drop for group editing
 // Used by: core.js (Gruppeinndeling) + workout.js (Bygg din treningsøkt)
 //

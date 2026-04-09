@@ -1,4 +1,4 @@
-# Feature evaluation and build order — Barnefotballtrener.no
+# Feature evaluation and build order — barnehandballtrener.no
 
 **Dato:** 13. mars 2026  
 **Basis:** Lesing av index.html, core.js, season.js, workout.js, sesong-workout.js, sesong-kampdag.js, competitions.js, onboarding.js, api/invite-coach.js, exercises-data.js, nff-data.js, REALTIME-SYNC-ARKITEKTUR.md.

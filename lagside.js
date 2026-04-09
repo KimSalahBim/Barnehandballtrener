@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // lagside.js — Parent-facing team page (standalone, no app dependencies)
 // Information board only: calendar, announcements, results, training content.
 // No player names, no attendance, no picker, no localStorage.
@@ -154,7 +154,7 @@
       lines.push('DTEND;TZID=Europe/Oslo:' + icsLocalDate(endDate.toISOString()));
       lines.push('SUMMARY:' + icsEscape(title));
       if (e.location) lines.push('LOCATION:' + icsEscape(e.location));
-      lines.push('UID:' + e.id + '@barnefotballtrener.no');
+      lines.push('UID:' + e.id + '@barnehandballtrener.no');
       lines.push('END:VEVENT');
     });
 
@@ -339,7 +339,7 @@
 
     // Footer
     html += '<div class="ls-footer">' +
-      '<a href="https://barnefotballtrener.no">barnefotballtrener.no</a>' +
+      '<a href="https://barnehandballtrener.no">barnehandballtrener.no</a>' +
       ' \u00b7 <a href="/privacy.html">Personvern</a>' +
       '</div>';
 
@@ -425,7 +425,7 @@
 
       if (e.format) {
         html += '<div class="ls-logistics-row"><i class="fa-solid fa-people-group"></i>' +
-          '<div class="ls-logistics-primary">' + e.format + '-er fotball</div></div>';
+          '<div class="ls-logistics-primary">' + e.format + '-er håndball</div></div>';
       }
 
       if (e.parent_message) {

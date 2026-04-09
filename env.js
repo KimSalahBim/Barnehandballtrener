@@ -1,4 +1,4 @@
-// © 2026 Barnefotballtrener.no. All rights reserved.
+// © 2026 barnehandballtrener.no. All rights reserved.
 // env.js (PUBLIC) – brukes av GitHub Pages (ingen Vercel-ENV der)
 window.ENV = window.ENV || {};
 window.ENV.SUPABASE_URL = "https://jxteosjxgrblasksfeyu.supabase.co";
