@@ -69,7 +69,7 @@ async function bindCustomerToUserIfNeeded(customer, userId) {
   if (current === userId) return customer;
   if (current && current !== userId) return null;
 
-  const key = makeIdempotencyKey('bftr_cust_bind', [userId, customer.id]);
+  const key = makeIdempotencyKey('bhtr_cust_bind', [userId, customer.id]);
   const updated = await stripe.customers.update(
     customer.id,
     { metadata: { ...(customer.metadata || {}), supabase_user_id: userId } },
@@ -113,7 +113,7 @@ async function findOrCreateCustomer(email, userId) {
   }
 
   // 4) Create new (idempotent)
-  const createKey = makeIdempotencyKey('bftr_cust_create', [userId, normalizedEmail]);
+  const createKey = makeIdempotencyKey('bhtr_cust_create', [userId, normalizedEmail]);
   return await stripe.customers.create(
     { email: normalizedEmail, metadata: { supabase_user_id: userId } },
     { idempotencyKey: createKey }

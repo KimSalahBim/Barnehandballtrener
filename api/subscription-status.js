@@ -39,7 +39,7 @@ function idKey(prefix, parts) {
   return `${prefix}_${safe}`.slice(0, 200);
 }
 
-function isDebugHost(hostHeader) {
+function includeErrorId(hostHeader) {
   const h = String(hostHeader || '').toLowerCase().split(':')[0];
   if (h === 'barnehandballtrener.no' || h === 'www.barnehandballtrener.no') return true;
   if (h === 'barnehandballtrener.vercel.app') return true;
@@ -93,7 +93,7 @@ async function findOrCreateCustomer(email, userId) {
       email: normalizedEmail,
       metadata: { supabase_user_id: userId || '' },
     },
-    { idempotencyKey: idKey('bf_cus_create', [userId, normalizedEmail]) }
+    { idempotencyKey: idKey('bh_cus_create', [userId, normalizedEmail]) }
   );
 }
 
@@ -431,7 +431,7 @@ export default async function handler(req, res) {
         await stripe.customers.update(
           customer.id,
           { metadata: { ...meta, supabase_user_id: user.id } },
-          { idempotencyKey: idKey('bf_cus_update', [customer.id, user.id]) }
+          { idempotencyKey: idKey('bh_cus_update', [customer.id, user.id]) }
         );
       } catch (e) {
         // Non-fatal: access checks below still use the customer.id we selected.
@@ -588,7 +588,7 @@ export default async function handler(req, res) {
     if (err?.type) console.error('[subscription-status] Stripe error type:', err.type, err.message);
     console.error('[subscription-status] error_id=%s', errorId, err);
 
-    const debug = isDebugHost(req.headers.host);
+    const debug = includeErrorId(req.headers.host);
     return res.status(500).json(
       debug
         ? { error: 'Server error', error_id: errorId }
