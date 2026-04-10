@@ -105,51 +105,51 @@
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
     '2-2': [
-      { key:'VK', label:'VK', zone:'A', x:15, y:30 },
-      { key:'HK', label:'HK', zone:'A', x:85, y:30 },
-      { key:'VB', label:'VB', zone:'F', x:28, y:65 },
-      { key:'HB', label:'HB', zone:'F', x:72, y:65 },
+      { key:'VK', label:'VK', zone:'A', x:12, y:22 },
+      { key:'HK', label:'HK', zone:'A', x:88, y:22 },
+      { key:'VB', label:'VB', zone:'F', x:26, y:38 },
+      { key:'HB', label:'HB', zone:'F', x:74, y:38 },
       { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '1-2-1': [
-      { key:'LJ', label:'LJ', zone:'M', x:50, y:20 },
-      { key:'VK', label:'VK', zone:'A', x:15, y:40 },
-      { key:'HK', label:'HK', zone:'A', x:85, y:40 },
-      { key:'MB', label:'MB', zone:'F', x:50, y:65 },
+      { key:'LJ', label:'LJ', zone:'M', x:50, y:19 },
+      { key:'VK', label:'VK', zone:'A', x:12, y:26 },
+      { key:'HK', label:'HK', zone:'A', x:88, y:26 },
+      { key:'MB', label:'MB', zone:'F', x:50, y:38 },
       { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '3-2': [
-      { key:'VK',  label:'VK', zone:'A', x:10, y:26 },
-      { key:'HK',  label:'HK', zone:'A', x:90, y:26 },
-      { key:'VB',  label:'VB', zone:'F', x:20, y:62 },
-      { key:'MB',  label:'MB', zone:'F', x:50, y:66 },
-      { key:'HB',  label:'HB', zone:'F', x:80, y:62 },
-      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+      { key:'VK', label:'VK', zone:'A', x:8,  y:20 },
+      { key:'HK', label:'HK', zone:'A', x:92, y:20 },
+      { key:'VB', label:'VB', zone:'F', x:20, y:35 },
+      { key:'MB', label:'MB', zone:'F', x:50, y:37 },
+      { key:'HB', label:'HB', zone:'F', x:80, y:35 },
+      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '2-2-1': [
-      { key:'LJ', label:'LJ', zone:'M', x:50, y:20 },
-      { key:'VK', label:'VK', zone:'A', x:12, y:35 },
-      { key:'HK', label:'HK', zone:'A', x:88, y:35 },
-      { key:'VB', label:'VB', zone:'F', x:26, y:62 },
-      { key:'HB', label:'HB', zone:'F', x:74, y:62 },
+      { key:'LJ', label:'LJ', zone:'M', x:50, y:19 },
+      { key:'VK', label:'VK', zone:'A', x:10, y:22 },
+      { key:'HK', label:'HK', zone:'A', x:90, y:22 },
+      { key:'VB', label:'VB', zone:'F', x:24, y:35 },
+      { key:'HB', label:'HB', zone:'F', x:76, y:35 },
       { key:'GK', label:'K',  zone:'K', x:50, y:88 },
     ],
     '3-2-1': [
-      { key:'LJ',  label:'LJ', zone:'M', x:50, y:20 },
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:22 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:22 },
-      { key:'VB',  label:'VB', zone:'F', x:18, y:43 },
-      { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
-      { key:'HB',  label:'HB', zone:'F', x:82, y:43 },
+      { key:'LJ',  label:'LJ', zone:'M', x:50, y:19 },
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:21 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:21 },
+      { key:'VB',  label:'VB', zone:'F', x:18, y:35 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:37 },
+      { key:'HB',  label:'HB', zone:'F', x:82, y:35 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '4-2': [
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:24 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:24 },
-      { key:'VB',  label:'VB', zone:'F', x:14, y:58 },
-      { key:'MB1', label:'MB', zone:'F', x:36, y:63 },
-      { key:'MB2', label:'MB', zone:'F', x:64, y:63 },
-      { key:'HB',  label:'HB', zone:'F', x:86, y:58 },
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:21 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:21 },
+      { key:'VB',  label:'VB', zone:'F', x:14, y:34 },
+      { key:'MB1', label:'MB', zone:'F', x:36, y:37 },
+      { key:'MB2', label:'MB', zone:'F', x:64, y:37 },
+      { key:'HB',  label:'HB', zone:'F', x:86, y:34 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
   };
@@ -2044,8 +2044,8 @@
       // Build pitch SVG
       const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 400 820" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
         <rect x="0" y="10" width="400" height="800" fill="#3dbde8"/>
-        <path d="M 80 10 A 120 120 0 0 0 320 10 Z" fill="#e8830e" opacity="0.95"/>
-        <path d="M 80 810 A 120 120 0 0 1 320 810 Z" fill="#e8830e" opacity="0.95"/>
+        <path d="M 80 10 A 120 120 0 0 0 320 10 Z" fill="#e8830e" opacity="0.75"/>
+        <path d="M 80 810 A 120 120 0 0 1 320 810 Z" fill="#e8830e" opacity="0.75"/>
         <rect x="0" y="10" width="400" height="800" fill="none" stroke="white" stroke-width="3"/>
         <polyline points="170,10 170,0 230,0 230,10" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
         <polyline points="170,810 170,820 230,820 230,810" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
