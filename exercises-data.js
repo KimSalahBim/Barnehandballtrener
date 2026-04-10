@@ -36,12 +36,15 @@ window.EXERCISES_DATA = [
         'Haletag: alle har et bånd i buksen — ta andres bånd uten å miste ditt eget'
       ],
       diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},{type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
-        {type:'player',x:60,y:50,team:'b',label:'F'},{type:'player',x:160,y:100,team:'b',label:'F'},
-        {type:'player',x:90,y:110,team:'a',label:''},{type:'player',x:140,y:40,team:'a',label:''},
-        {type:'player',x:50,y:90,team:'a',label:''},{type:'player',x:170,y:65,team:'a',label:''},
-        {type:'player',x:110,y:75,team:'a',label:''},
-        {type:'arrow',from:[60,50],to:[90,80],style:'run'},{type:'arrow',from:[160,100],to:[140,70],style:'run'}
+        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
+        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
+        {type:'player',x:110,y:80,team:'b',label:'1'},
+        {type:'player',x:93,y:80,team:'b',label:'2'},
+        {type:'player',x:60,y:50,team:'a',label:''},
+        {type:'player',x:155,y:110,team:'a',label:''},
+        {type:'player',x:170,y:45,team:'a',label:''},
+        {type:'arrow',from:[110,80],to:[80,58],style:'run'},
+        {type:'arrow',from:[60,50],to:[38,70],style:'run'}
       ]}
     },
     {
@@ -70,13 +73,15 @@ window.EXERCISES_DATA = [
         'Legg til kjegler som slalåmløype'
       ],
       diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},{type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
+        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
+        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
         {type:'player',x:60,y:50,team:'a',label:''},{type:'ball',x:68,y:56},
-        {type:'player',x:150,y:45,team:'a',label:''},{type:'ball',x:158,y:51},
+        {type:'player',x:160,y:45,team:'a',label:''},{type:'ball',x:168,y:51},
         {type:'player',x:100,y:100,team:'a',label:''},{type:'ball',x:108,y:106},
         {type:'player',x:45,y:115,team:'a',label:''},{type:'ball',x:53,y:121},
         {type:'player',x:170,y:110,team:'a',label:''},{type:'ball',x:178,y:116},
-        {type:'arrow',from:[60,50],to:[80,70],style:'run'},{type:'arrow',from:[150,45],to:[130,65],style:'run'}
+        {type:'arrow',from:[60,50],to:[80,70],style:'run'},
+        {type:'arrow',from:[160,45],to:[140,65],style:'run'}
       ]}
     },
     {
@@ -105,13 +110,17 @@ window.EXERCISES_DATA = [
         '4v1 for yngre/lavere nivå, 5v2 for eldre/høyere nivå',
         'Kun 1 touch for mer intensitet'
       ],
-      diagram: { width:220, height:170, field:'none', elements:[
-        {type:'cone',x:50,y:25},{type:'cone',x:170,y:25},{type:'cone',x:170,y:145},{type:'cone',x:50,y:145},
-        {type:'player',x:110,y:20,team:'a',label:'A'},{type:'player',x:175,y:85,team:'a',label:'B'},
-        {type:'player',x:110,y:150,team:'a',label:'C'},{type:'player',x:45,y:85,team:'a',label:'D'},
-        {type:'player',x:110,y:85,team:'b',label:'X'},
-        {type:'ball',x:120,y:16},
-        {type:'arrow',from:[110,20],to:[175,85],style:'pass'},{type:'arrow',from:[118,85],to:[165,85],style:'run'}
+      diagram: { width:200, height:200, field:'small', elements:[
+        {type:'player',x:100,y:22,team:'a',label:''},
+        {type:'player',x:172,y:68,team:'a',label:''},
+        {type:'player',x:172,y:132,team:'a',label:''},
+        {type:'player',x:100,y:178,team:'a',label:''},
+        {type:'player',x:28,y:132,team:'a',label:''},
+        {type:'player',x:28,y:68,team:'a',label:''},
+        {type:'player',x:88,y:100,team:'b',label:'F'},
+        {type:'ball',x:100,y:45},
+        {type:'arrow',from:[100,28],to:[168,65],style:'pass'},
+        {type:'arrow',from:[88,100],to:[100,50],style:'run'}
       ]}
     },
 
@@ -144,12 +153,14 @@ window.EXERCISES_DATA = [
         'Siste kjegle = skudd på mål for motivasjon',
         'Stafett mellom to lag for konkurranse'
       ],
-      diagram: { width:220, height:120, field:'none', elements:[
-        {type:'cone',x:30,y:60},{type:'cone',x:65,y:35},{type:'cone',x:100,y:60},
-        {type:'cone',x:135,y:35},{type:'cone',x:170,y:60},{type:'cone',x:200,y:35},
-        {type:'player',x:15,y:60,team:'a',label:''},{type:'ball',x:23,y:66},
-        {type:'arrow',from:[23,66],to:[60,40],style:'run'},{type:'arrow',from:[60,40],to:[95,65],style:'run'},
-        {type:'arrow',from:[95,65],to:[130,40],style:'run'},{type:'arrow',from:[130,40],to:[165,65],style:'run'}
+      diagram: { width:220, height:150, field:'small', elements:[
+        {type:'cone',x:45,y:20},{type:'cone',x:45,y:55},
+        {type:'cone',x:45,y:90},{type:'cone',x:45,y:125},
+        {type:'player',x:80,y:25,team:'a',label:''},{type:'ball',x:88,y:21},
+        {type:'arrow',from:[80,25],to:[55,50],style:'run'},
+        {type:'arrow',from:[55,55],to:[75,80],style:'run'},
+        {type:'arrow',from:[75,90],to:[55,115],style:'run'},
+        {type:'arrow',from:[55,125],to:[80,145],style:'run'}
       ]}
     },
     {
@@ -178,11 +189,13 @@ window.EXERCISES_DATA = [
         'Mottak med høyre, pass med venstre (og omvendt)',
         'Legg til "vegg": en tredje spiller i midten som spiller videre'
       ],
-      diagram: { width:220, height:100, field:'none', elements:[
-        {type:'player',x:40,y:50,team:'a',label:'A'},{type:'player',x:180,y:50,team:'a',label:'B'},
-        {type:'ball',x:100,y:45},
-        {type:'arrow',from:[50,50],to:[170,50],style:'pass'},
-        {type:'cone',x:40,y:28},{type:'cone',x:180,y:28}
+      diagram: { width:220, height:110, field:'none', elements:[
+        {type:'player',x:40,y:55,team:'a',label:''},{type:'ball',x:48,y:51},
+        {type:'player',x:180,y:55,team:'b',label:''},
+        {type:'arrow',from:[52,53],to:[170,55],style:'pass'},
+        {type:'player',x:40,y:88,team:'a',label:''},
+        {type:'player',x:180,y:88,team:'b',label:''},{type:'ball',x:188,y:84},
+        {type:'arrow',from:[176,86],to:[52,88],style:'pass'}
       ]}
     },
     {
@@ -211,13 +224,14 @@ window.EXERCISES_DATA = [
         'To baller i omløp samtidig for mer intensitet',
         'Legg til en forsvarer i midten (halvt rondo-prinsipp)'
       ],
-      diagram: { width:220, height:170, field:'none', elements:[
-        {type:'cone',x:110,y:20},{type:'cone',x:190,y:140},{type:'cone',x:30,y:140},
-        {type:'player',x:110,y:28,team:'a',label:'A'},{type:'player',x:186,y:132,team:'a',label:'B'},
-        {type:'player',x:34,y:132,team:'a',label:'C'},
-        {type:'ball',x:120,y:24},
-        {type:'arrow',from:[110,28],to:[186,132],style:'pass'},
-        {type:'arrow',from:[115,38],to:[180,125],style:'run'}
+      diagram: { width:220, height:160, field:'none', elements:[
+        {type:'player',x:50,y:80,team:'a',label:'1'},{type:'ball',x:58,y:76},
+        {type:'player',x:110,y:35,team:'a',label:'2'},
+        {type:'player',x:170,y:80,team:'a',label:'3'},
+        {type:'player',x:110,y:125,team:'a',label:'4'},
+        {type:'arrow',from:[58,78],to:[100,42],style:'pass'},
+        {type:'arrow',from:[50,80],to:[100,118],style:'run'},
+        {type:'arrow',from:[110,42],to:[165,78],style:'pass'}
       ]}
     },
     {
@@ -317,12 +331,17 @@ window.EXERCISES_DATA = [
         'Legg til en passiv forsvarer som presser lett',
         'Vend og slå pasning til neste i køen'
       ],
-      diagram: { width:220, height:110, field:'none', elements:[
-        {type:'player',x:30,y:45,team:'a',label:''},{type:'ball',x:40,y:50},
-        {type:'cone',x:150,y:45},
-        {type:'arrow',from:[40,45],to:[140,45],style:'run'},
-        {type:'arrow',from:[150,55],to:[50,60],style:'run'},
-        {type:'player',x:30,y:85,team:'a',label:''},{type:'cone',x:150,y:85}
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:110,y:55},
+        {type:'player',x:55,y:55,team:'a',label:''},{type:'ball',x:63,y:51},
+        {type:'arrow',from:[55,55],to:[100,55],style:'run'},
+        {type:'arrow',from:[115,55],to:[165,35],style:'run'},
+        {type:'player',x:175,y:30,team:'a',label:''},
+        {type:'cone',x:110,y:110},
+        {type:'player',x:55,y:110,team:'a',label:''},
+        {type:'arrow',from:[55,110],to:[100,110],style:'run'},
+        {type:'arrow',from:[115,110],to:[165,130],style:'run'},
+        {type:'player',x:175,y:135,team:'a',label:''}
       ]}
     },
     {
@@ -351,12 +370,13 @@ window.EXERCISES_DATA = [
         'Legg til en passiv forsvarer bak mottakeren',
         'Mottak-vending-skudd: avslutt på mål etter vending'
       ],
-      diagram: { width:220, height:120, field:'none', elements:[
-        {type:'player',x:35,y:60,team:'a',label:'A'},{type:'player',x:140,y:60,team:'a',label:'B'},
-        {type:'cone',x:195,y:60},
-        {type:'ball',x:85,y:55},
-        {type:'arrow',from:[45,60],to:[130,60],style:'pass'},
-        {type:'arrow',from:[145,50],to:[190,40],style:'run'}
+      diagram: { width:220, height:100, field:'none', elements:[
+        {type:'player',x:30,y:50,team:'a',label:'L'},{type:'ball',x:38,y:46},
+        {type:'player',x:110,y:50,team:'neutral',label:'M'},
+        {type:'player',x:190,y:50,team:'b',label:'R'},
+        {type:'arrow',from:[42,50],to:[98,50],style:'pass'},
+        {type:'arrow',from:[120,50],to:[178,50],style:'pass'},
+        {type:'arrow',from:[110,62],to:[30,62],style:'run'}
       ]}
     },
 
@@ -390,11 +410,14 @@ window.EXERCISES_DATA = [
         'Konkurranse: hvem scorer flest av 5 forsøk?',
         'Legg til en forsvarer som presser bakfra'
       ],
-      diagram: { width:220, height:150, field:'none', elements:[
-        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
-        {type:'player',x:110,y:110,team:'a',label:''},{type:'ball',x:118,y:105},
-        {type:'arrow',from:[118,105],to:[110,25],style:'shot'},
-        {type:'player',x:70,y:110,team:'a',label:''},{type:'player',x:150,y:110,team:'a',label:''}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:55,y:100,team:'a',label:'VK'},
+        {type:'player',x:120,y:85,team:'a',label:'MB'},
+        {type:'player',x:185,y:100,team:'a',label:'HK'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[55,100],to:[100,185],style:'shot'},
+        {type:'arrow',from:[120,85],to:[120,183],style:'shot'},
+        {type:'arrow',from:[185,100],to:[140,185],style:'shot'}
       ]}
     },
     {
@@ -422,14 +445,14 @@ window.EXERCISES_DATA = [
         'Legg til en vending eller passningsvegg før avslutning',
         'Keeper i mål for ekstra utfordring'
       ],
-      diagram: { width:220, height:160, field:'none', elements:[
-        {type:'goal',x:70,y:3,w:80,h:14},
-        {type:'cone',x:55,y:55},{type:'cone',x:75,y:80},{type:'cone',x:55,y:105},
-        {type:'player',x:65,y:140,team:'a',label:''},{type:'ball',x:73,y:136},
-        {type:'cone',x:145,y:55},{type:'cone',x:165,y:80},{type:'cone',x:145,y:105},
-        {type:'player',x:155,y:140,team:'b',label:''},{type:'ball',x:163,y:136},
-        {type:'arrow',from:[65,135],to:[65,25],style:'run'},
-        {type:'arrow',from:[155,135],to:[155,25],style:'run'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'cone',x:55,y:95},{type:'cone',x:88,y:78},
+        {type:'cone',x:120,y:73},{type:'cone',x:152,y:78},{type:'cone',x:185,y:95},
+        {type:'player',x:55,y:108,team:'a',label:''},{type:'ball',x:63,y:104},
+        {type:'player',x:185,y:108,team:'b',label:''},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[55,108],to:[100,185],style:'shot'},
+        {type:'arrow',from:[185,108],to:[140,185],style:'shot'}
       ]}
     },
 
@@ -462,12 +485,13 @@ window.EXERCISES_DATA = [
         'Angriper har 2 mål å velge mellom (må lese forsvareren)',
         '3-sekunders tidskrav for raskere avgjørelser'
       ],
-      diagram: { width:220, height:150, field:'none', elements:[
-        {type:'goal',x:90,y:5,w:40,h:10},{type:'goal',x:90,y:135,w:40,h:10},
-        {type:'player',x:95,y:60,team:'a',label:'A'},{type:'player',x:125,y:85,team:'b',label:'F'},
-        {type:'ball',x:103,y:66},
-        {type:'arrow',from:[95,60],to:[110,25],style:'run'},
-        {type:'cone',x:40,y:5},{type:'cone',x:40,y:145},{type:'cone',x:180,y:5},{type:'cone',x:180,y:145}
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:110,y:25},{type:'cone',x:110,y:135},
+        {type:'zone_line',x1:110,y1:25,x2:110,y2:135},
+        {type:'player',x:55,y:80,team:'a',label:'A'},{type:'ball',x:63,y:76},
+        {type:'player',x:155,y:80,team:'b',label:'F'},
+        {type:'arrow',from:[63,78],to:[130,80],style:'run'},
+        {type:'arrow',from:[155,80],to:[125,80],style:'run'}
       ]}
     },
     {
@@ -496,14 +520,57 @@ window.EXERCISES_DATA = [
         '3v2 for mer kompleksitet',
         'To mål: angriperne velger hvilket mål de angriper'
       ],
-      diagram: { width:220, height:160, field:'none', elements:[
-        {type:'goal',x:80,y:3,w:60,h:14},
-        {type:'player',x:80,y:70,team:'b',label:'F'},
-        {type:'player',x:80,y:130,team:'a',label:'A'},{type:'player',x:150,y:130,team:'a',label:'B'},
-        {type:'ball',x:88,y:124},
-        {type:'arrow',from:[80,130],to:[80,80],style:'run'},
-        {type:'arrow',from:[88,124],to:[148,90],style:'pass'},
-        {type:'arrow',from:[150,130],to:[150,80],style:'run'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:80,y:68,team:'a',label:'1'},{type:'ball',x:88,y:64},
+        {type:'player',x:165,y:68,team:'a',label:'2'},
+        {type:'player',x:120,y:118,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[80,68],to:[118,115],style:'run'},
+        {type:'arrow',from:[80,68],to:[162,73],style:'pass'},
+        {type:'arrow',from:[162,73],to:[135,183],style:'shot'}
+      ]}
+    },
+    {
+      key: 'kontring',
+      label: 'Kontring to og to',
+      defaultMin: 12,
+      category: 'avslutning',
+      ages: ['8-9','10-12','13-16'],
+      players: '6-16',
+      equipment: 'Håndball, to mål',
+      nffCategory: 'scoringstrening',
+      themes: ['kontring_retur', 'samarbeidsspill'],
+      nffPhases: ['angrep_fremover'],
+      learningGoals: ['Reagere raskt og løpe fremover i kontra', 'Utnytte overtall i 2:1', '2:1 — se hvem som er fri og avgjør raskt'],
+      intensity: 'high',
+      hasOpposition: true,
+      playerCount: { min: 6, max: 16 },
+      equipmentTags: ['ball', 'maal'],
+      description: 'Kontring to og to og 2:1+1. Direkte fra NHFs Håndballskole økt 1. Kan kjøres mot begge mål for å unngå kø.',
+      setup: 'Start på 6m-linjen. To og to om en ball. Kan kjøres mot begge mål samtidig.',
+      steps: [
+        'To spillere løper fremover i kontring — uten forsvarer.',
+        'Kombiner: pasning og avslutning.',
+        'Øk: én forsvarsspiller på midtlinjen som henger etter.',
+        '2:1+1: én forsvarsspiller møter angriperne, én til løper etter fra start.'
+      ],
+      coaching: [
+        'Løp i fart fremover — ikke avvent',
+        'Hvem er fri? Spilleren UTEN ball bestemmer: er det trygt å kaste?',
+        'Avslutt raskt — ikke bygg opp i kontring'
+      ],
+      variations: [
+        'Start fra begge sider av banen — to kontringer i gang samtidig',
+        '3:2: tre angripere mot to forsvarere'
+      ],
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:80,y:60,team:'a',label:'1'},{type:'ball',x:88,y:56},
+        {type:'player',x:165,y:60,team:'a',label:'2'},
+        {type:'player',x:120,y:115,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[80,60],to:[165,65],style:'pass'},
+        {type:'arrow',from:[80,60],to:[100,108],style:'run'},
+        {type:'arrow',from:[165,65],to:[138,183],style:'shot'}
       ]}
     },
     {
@@ -532,14 +599,16 @@ window.EXERCISES_DATA = [
         'Forsvarerne konter på kjeglemål ved ballvinning',
         'Legg til keeper for mer realisme'
       ],
-      diagram: { width:220, height:160, field:'none', elements:[
-        {type:'goal',x:70,y:3,w:80,h:14},
-        {type:'player',x:85,y:65,team:'b',label:'F'},{type:'player',x:135,y:65,team:'b',label:'F'},
-        {type:'player',x:60,y:130,team:'a',label:'A'},{type:'player',x:110,y:140,team:'a',label:'B'},
-        {type:'player',x:160,y:130,team:'a',label:'C'},{type:'ball',x:118,y:134},
-        {type:'arrow',from:[118,134],to:[65,95],style:'pass'},
-        {type:'arrow',from:[60,130],to:[60,80],style:'run'},
-        {type:'arrow',from:[160,130],to:[160,80],style:'run'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:58,y:75,team:'a',label:'VB'},{type:'ball',x:66,y:71},
+        {type:'player',x:120,y:65,team:'a',label:'MB'},
+        {type:'player',x:182,y:75,team:'a',label:'HB'},
+        {type:'player',x:120,y:138,team:'a',label:'L'},
+        {type:'player',x:88,y:120,team:'b',label:'F'},
+        {type:'player',x:152,y:120,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[58,75],to:[118,133],style:'pass'},
+        {type:'arrow',from:[120,138],to:[115,183],style:'shot'}
       ]}
     },
 
@@ -572,12 +641,19 @@ window.EXERCISES_DATA = [
         'Jokere: 1-2 spillere alltid med angripende lag',
         'Flere mål for mer rom og gøy'
       ],
-      diagram: { width:240, height:160, field:'half', elements:[
-        {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
-        {type:'player',x:50,y:45,team:'a',label:''},{type:'player',x:50,y:115,team:'a',label:''},
-        {type:'player',x:95,y:80,team:'a',label:''},
-        {type:'player',x:145,y:45,team:'b',label:''},{type:'player',x:145,y:115,team:'b',label:''},
-        {type:'player',x:190,y:80,team:'b',label:''},{type:'ball',x:100,y:74}
+      diagram: { width:240, height:160, field:'small', elements:[
+        {type:'cone',x:15,y:15},{type:'cone',x:225,y:15},
+        {type:'cone',x:15,y:145},{type:'cone',x:225,y:145},
+        {type:'goal',x:8,y:62,w:12,h:36,vertical:true},
+        {type:'goal',x:220,y:62,w:12,h:36,vertical:true},
+        {type:'player',x:65,y:55,team:'a',label:''},
+        {type:'player',x:65,y:105,team:'a',label:''},
+        {type:'player',x:170,y:55,team:'b',label:''},
+        {type:'player',x:170,y:105,team:'b',label:''},
+        {type:'player',x:38,y:80,team:'a',label:'K'},
+        {type:'player',x:202,y:80,team:'b',label:'K'},
+        {type:'ball',x:120,y:80},
+        {type:'arrow',from:[65,55],to:[118,78],style:'run'}
       ]}
     },
     {
@@ -606,13 +682,18 @@ window.EXERCISES_DATA = [
         'Uten jokere for lik kamp',
         'Score ved å spille ballen fra side til side'
       ],
-      diagram: { width:220, height:170, field:'small', elements:[
-        {type:'cone',x:20,y:15},{type:'cone',x:200,y:15},{type:'cone',x:20,y:155},{type:'cone',x:200,y:155},
-        {type:'player',x:55,y:40,team:'a',label:''},{type:'player',x:165,y:40,team:'a',label:''},
-        {type:'player',x:55,y:130,team:'a',label:''},{type:'player',x:165,y:130,team:'a',label:''},
-        {type:'player',x:110,y:85,team:'neutral',label:'J'},
-        {type:'player',x:90,y:70,team:'b',label:''},{type:'player',x:130,y:100,team:'b',label:''},
-        {type:'ball',x:63,y:36},{type:'arrow',from:[55,40],to:[105,80],style:'pass'}
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
+        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
+        {type:'player',x:110,y:22,team:'a',label:''},
+        {type:'player',x:188,y:70,team:'a',label:''},
+        {type:'player',x:188,y:110,team:'a',label:''},
+        {type:'player',x:110,y:148,team:'a',label:''},
+        {type:'player',x:32,y:80,team:'a',label:''},{type:'ball',x:40,y:76},
+        {type:'player',x:98,y:80,team:'b',label:'F'},
+        {type:'player',x:128,y:80,team:'b',label:'F'},
+        {type:'arrow',from:[32,80],to:[108,28],style:'pass'},
+        {type:'arrow',from:[98,80],to:[108,38],style:'run'}
       ]}
     },
     {
@@ -641,16 +722,15 @@ window.EXERCISES_DATA = [
         'Alle må touche ballen før scoring teller',
         'Spill uten keeper for mer scoring'
       ],
-      diagram: { width:240, height:160, field:'half', elements:[
-        {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
-        {type:'player',x:35,y:35,team:'a',label:''},{type:'player',x:90,y:110,team:'a',label:''},
-        {type:'player',x:60,y:75,team:'a',label:''},
-        {type:'player',x:160,y:50,team:'b',label:''},{type:'player',x:190,y:105,team:'b',label:''},
-        {type:'player',x:125,y:85,team:'b',label:''},
-        {type:'ball',x:88,y:70},
-        {type:'arrow',from:[60,75],to:[85,70],style:'run'},
-        {type:'arrow',from:[125,85],to:[92,72],style:'run'},
-        {type:'arrow',from:[160,50],to:[140,62],style:'run'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:65,y:80,team:'a',label:''},
+        {type:'player',x:120,y:65,team:'a',label:''},{type:'ball',x:128,y:61},
+        {type:'player',x:175,y:80,team:'a',label:''},
+        {type:'player',x:88,y:125,team:'b',label:''},
+        {type:'player',x:152,y:125,team:'b',label:''},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[120,65],to:[68,80],style:'pass'},
+        {type:'arrow',from:[65,80],to:[95,183],style:'shot'}
       ]}
     },
     {
@@ -718,10 +798,15 @@ window.EXERCISES_DATA = [
         'Keeperlek: keeper vs keeper med kast over en snor',
         '1v1 mot keeper: spillere angriper, keeper leser situasjonen'
       ],
-      diagram: { width:220, height:140, field:'none', elements:[
-        {type:'goal',x:60,y:3,w:100,h:18},{type:'keeper',x:110,y:20},
-        {type:'player',x:70,y:110,team:'a',label:''},{type:'player',x:150,y:110,team:'a',label:''},
-        {type:'ball',x:78,y:105},{type:'arrow',from:[78,105],to:[110,25],style:'shot'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:65,y:88,team:'a',label:'1'},
+        {type:'player',x:175,y:88,team:'a',label:'2'},
+        {type:'player',x:48,y:110,team:'a',label:'3'},
+        {type:'player',x:192,y:110,team:'a',label:'4'},
+        {type:'keeper',x:120,y:172},
+        {type:'arrow',from:[65,88],to:[105,183],style:'shot'},
+        {type:'arrow',from:[175,88],to:[135,183],style:'shot'},
+        {type:'arrow',from:[48,110],to:[100,183],style:'shot'}
       ]}
     },
 
@@ -756,13 +841,16 @@ window.EXERCISES_DATA = [
         'Tatt = bli fanger selv (siste spiller igjen vinner)',
         'Fangere uten ball — sparker andres ball ut av området'
       ],
-      diagram: { width:200, height:200, field:'small', elements:[
-        {type:'cone',x:10,y:10},{type:'cone',x:190,y:10},{type:'cone',x:10,y:190},{type:'cone',x:190,y:190},
-        {type:'player',x:60,y:80,team:'a',label:''},{type:'ball',x:68,y:76},
-        {type:'player',x:140,y:60,team:'a',label:''},{type:'ball',x:148,y:56},
-        {type:'player',x:90,y:150,team:'a',label:''},{type:'ball',x:98,y:146},
-        {type:'player',x:50,y:40,team:'b',label:'F'},{type:'ball',x:58,y:36},
-        {type:'arrow',from:[55,45],to:[80,70],style:'run'}
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
+        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
+        {type:'player',x:60,y:50,team:'b',label:'S'},
+        {type:'player',x:155,y:100,team:'b',label:'S'},
+        {type:'player',x:90,y:110,team:'a',label:''},{type:'ball',x:98,y:106},
+        {type:'player',x:140,y:40,team:'a',label:''},
+        {type:'player',x:50,y:90,team:'a',label:''},
+        {type:'arrow',from:[90,110],to:[52,90],style:'pass'},
+        {type:'arrow',from:[155,100],to:[130,70],style:'run'}
       ]}
     },
 
@@ -794,12 +882,17 @@ window.EXERCISES_DATA = [
         '2v1: legg til en medangriper for å øve samarbeid i forsvar',
         'Gi forsvareren poeng for å tvinge skudd utenfor 16-meter'
       ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
-        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
-        {type:'player',x:40,y:80,team:'b',label:'F'},
-        {type:'arrow',from:[110,120],to:[110,40],style:'run'},
-        {type:'arrow',from:[45,80],to:[95,65],style:'run'}
+      diagram: { width:240, height:160, field:'small', elements:[
+        {type:'cone',x:15,y:15},{type:'cone',x:225,y:15},
+        {type:'cone',x:15,y:145},{type:'cone',x:225,y:145},
+        {type:'player',x:65,y:50,team:'a',label:''},{type:'ball',x:73,y:46},
+        {type:'player',x:65,y:110,team:'a',label:''},
+        {type:'player',x:110,y:80,team:'a',label:''},
+        {type:'player',x:150,y:50,team:'b',label:'F'},
+        {type:'player',x:150,y:110,team:'b',label:'F'},
+        {type:'player',x:175,y:80,team:'b',label:'F'},
+        {type:'arrow',from:[65,50],to:[65,100],style:'pass'},
+        {type:'arrow',from:[150,50],to:[120,78],style:'run'}
       ]}
     },
 
@@ -830,13 +923,14 @@ window.EXERCISES_DATA = [
         'Jokere: 1-2 spillere alltid med angripende lag (overtall)',
         'Tidsbetingelse: scoringen teller bare i første 3 min av hver periode'
       ],
-      diagram: { width:240, height:160, field:'half', elements:[
-        {type:'goal',x:5,y:55,w:12,h:50,vertical:true},{type:'goal',x:223,y:55,w:12,h:50,vertical:true},
-        {type:'player',x:55,y:40,team:'a',label:''},{type:'player',x:55,y:120,team:'a',label:''},
-        {type:'player',x:95,y:80,team:'a',label:''},{type:'player',x:80,y:55,team:'a',label:''},
-        {type:'player',x:145,y:40,team:'b',label:''},{type:'player',x:145,y:120,team:'b',label:''},
-        {type:'player',x:185,y:80,team:'b',label:''},{type:'player',x:160,y:55,team:'b',label:''},
-        {type:'ball',x:100,y:74}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:70,y:82,team:'a',label:'B'},{type:'ball',x:78,y:78},
+        {type:'player',x:120,y:138,team:'a',label:'L'},
+        {type:'player',x:85,y:122,team:'b',label:'F'},
+        {type:'player',x:155,y:122,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[70,82],to:[118,133],style:'pass'},
+        {type:'arrow',from:[120,138],to:[115,183],style:'shot'}
       ]}
     },
 
@@ -868,15 +962,17 @@ window.EXERCISES_DATA = [
         'Uten 3. lag: etter scoring starter motstanderlaget med ball fra keeper',
         'Krav om maks 10 sek fra ballvinning til avslutning'
       ],
-      diagram: { width:240, height:180, field:'half', elements:[
-        {type:'goal',x:5,y:65,w:12,h:50,vertical:true},{type:'goal',x:223,y:65,w:12,h:50,vertical:true},
-        {type:'player',x:60,y:50,team:'a',label:''},{type:'player',x:60,y:130,team:'a',label:''},
-        {type:'player',x:100,y:90,team:'a',label:''},{type:'ball',x:108,y:86},
-        {type:'player',x:160,y:50,team:'b',label:''},{type:'player',x:160,y:130,team:'b',label:''},
-        {type:'player',x:190,y:90,team:'b',label:''},
-        {type:'player',x:232,y:65,team:'neutral',label:'C'},{type:'player',x:232,y:90,team:'neutral',label:'C'},
-        {type:'player',x:232,y:115,team:'neutral',label:'C'},
-        {type:'arrow',from:[108,86],to:[200,70],style:'pass'}
+      diagram: { width:240, height:160, field:'small', elements:[
+        {type:'cone',x:15,y:15},{type:'cone',x:225,y:15},
+        {type:'cone',x:15,y:145},{type:'cone',x:225,y:145},
+        {type:'zone_line',x1:120,y1:15,x2:120,y2:145},
+        {type:'player',x:75,y:60,team:'b',label:''},
+        {type:'player',x:100,y:90,team:'b',label:''},{type:'ball',x:108,y:86},
+        {type:'player',x:160,y:55,team:'a',label:''},
+        {type:'player',x:165,y:100,team:'a',label:''},
+        {type:'arrow',from:[100,90],to:[158,58],style:'pass'},
+        {type:'arrow',from:[75,60],to:[55,100],style:'run'},
+        {type:'arrow',from:[160,55],to:[200,55],style:'run'}
       ]}
     },
 
@@ -908,14 +1004,15 @@ window.EXERCISES_DATA = [
         'Dobbelt veggspill: to pasninger før avslutning',
         'Legg til aktiv forsvarer som prøver å stoppe kombinasjonen'
       ],
-      diagram: { width:220, height:150, field:'small', elements:[
-        {type:'goal',x:70,y:5,w:80,h:16},{type:'keeper',x:110,y:18},
-        {type:'player',x:110,y:120,team:'a',label:'A'},{type:'ball',x:118,y:116},
-        {type:'player',x:40,y:70,team:'a',label:'V'},
-        {type:'player',x:110,y:65,team:'b',label:'F'},
-        {type:'arrow',from:[115,115],to:[50,75],style:'pass'},
-        {type:'arrow',from:[115,115],to:[115,50],style:'run'},
-        {type:'arrow',from:[50,65],to:[110,40],style:'pass'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:85,y:90,team:'a',label:'B'},{type:'ball',x:93,y:86},
+        {type:'player',x:50,y:90,team:'a',label:'K'},
+        {type:'player',x:100,y:115,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[85,90],to:[54,90],style:'pass'},
+        {type:'arrow',from:[85,90],to:[118,138],style:'run'},
+        {type:'arrow',from:[54,90],to:[113,133],style:'pass'},
+        {type:'arrow',from:[118,138],to:[113,183],style:'shot'}
       ]}
     },
 
@@ -947,14 +1044,15 @@ window.EXERCISES_DATA = [
         'Legg til en forsvarer som prøver å blokkere tverrballen',
         'Varier: tilbakelegg fra dødlinja, tverrball fra 16m, gjennombrudd sentralt'
       ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'goal',x:60,y:5,w:100,h:18},{type:'keeper',x:110,y:20},
-        {type:'player',x:190,y:110,team:'a',label:'A'},{type:'ball',x:198,y:106},
-        {type:'player',x:110,y:100,team:'a',label:'B'},
-        {type:'arrow',from:[190,105],to:[185,40],style:'run'},
-        {type:'arrow',from:[185,40],to:[120,50],style:'pass'},
-        {type:'arrow',from:[115,95],to:[120,55],style:'run'},
-        {type:'arrow',from:[120,55],to:[100,20],style:'shot'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:80,y:88,team:'a',label:'B'},{type:'ball',x:88,y:84},
+        {type:'player',x:50,y:75,team:'a',label:'K'},
+        {type:'player',x:120,y:138,team:'a',label:'L'},
+        {type:'player',x:95,y:118,team:'b',label:'F'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[80,88],to:[52,80],style:'pass'},
+        {type:'arrow',from:[50,75],to:[50,145],style:'run'},
+        {type:'arrow',from:[50,145],to:[100,183],style:'shot'}
       ]}
     },
 
@@ -1140,11 +1238,13 @@ window.EXERCISES_DATA = [
         'Spillere på sidene skyter i stedet for keeperne',
         'Større avstand (15m) for å øve utspark'
       ],
-      diagram: { width:200, height:120, field:'none', elements:[
-        {type:'goal',x:10,y:30,w:12,h:60,vertical:true},{type:'goal',x:178,y:30,w:12,h:60,vertical:true},
-        {type:'keeper',x:25,y:60},{type:'keeper',x:175,y:60},
-        {type:'ball',x:50,y:55},
-        {type:'arrow',from:[50,55],to:[165,65],style:'pass'}
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:80,y:88,team:'b',label:''},
+        {type:'player',x:162,y:85,team:'a',label:''},{type:'ball',x:170,y:81},
+        {type:'player',x:120,y:62,team:'a',label:''},
+        {type:'keeper',x:120,y:170},
+        {type:'arrow',from:[162,85],to:[122,168],style:'shot'},
+        {type:'arrow',from:[120,168],to:[82,90],style:'pass'}
       ]}
     },
 
@@ -1175,14 +1275,15 @@ window.EXERCISES_DATA = [
         'Kun venstre fot, kun utside',
         'Løype med vending + skudd på mål til slutt'
       ],
-      diagram: { width:220, height:140, field:'none', elements:[
-        {type:'player',x:20,y:25,team:'a',label:''},{type:'player',x:20,y:50,team:'a',label:''},
-        {type:'player',x:20,y:75,team:'a',label:''},{type:'ball',x:28,y:21},
-        {type:'player',x:20,y:100,team:'b',label:''},{type:'player',x:20,y:125,team:'b',label:''},
-        {type:'cone',x:75,y:50},{type:'cone',x:110,y:90},{type:'cone',x:145,y:50},{type:'cone',x:180,y:90},
-        {type:'arrow',from:[30,25],to:[70,50],style:'run'},
-        {type:'arrow',from:[75,55],to:[105,85],style:'run'},
-        {type:'arrow',from:[110,85],to:[140,50],style:'run'}
+      diagram: { width:220, height:150, field:'small', elements:[
+        {type:'cone',x:110,y:20},{type:'cone',x:110,y:130},
+        {type:'player',x:30,y:40,team:'a',label:'1'},{type:'ball',x:38,y:36},
+        {type:'player',x:30,y:75,team:'a',label:'2'},
+        {type:'player',x:30,y:110,team:'a',label:'3'},
+        {type:'player',x:190,y:40,team:'b',label:'1'},
+        {type:'player',x:190,y:75,team:'b',label:'2'},
+        {type:'arrow',from:[30,40],to:[108,22],style:'run'},
+        {type:'arrow',from:[108,22],to:[30,65],style:'pass'}
       ]}
     },
 
