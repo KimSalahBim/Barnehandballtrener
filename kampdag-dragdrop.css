@@ -112,7 +112,7 @@
 .kd-pitch-field {
   position: relative;
   width: 100%;
-  aspect-ratio: 20 / 41;
+  aspect-ratio: 4 / 5;
   background: #1a82c4;
   border-radius: 6px;
   overflow: hidden;

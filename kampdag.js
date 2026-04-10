@@ -92,7 +92,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
   // Formation presets per format
   const FORMATIONS = {
-    4: {},
+    4: { '4-er': [1,0,2] },
     5: { '2-2': [2,0,2], '1-2-1': [1,1,2] },
     6: { '3-2': [3,0,2], '2-2-1': [2,1,2] },
     7: { '3-2-1': [3,1,2], '4-2': [4,0,2] },
@@ -101,52 +101,62 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // Slot layouts for visual pitch rendering (drag & drop)
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
+    // ── 4-er: 3 outfield (keeper rotates — shown in own half) ──
+    '4-er': [
+      { key:'VK',  label:'VK', zone:'A', x:12, y:30 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
+      { key:'HK',  label:'HK', zone:'A', x:88, y:30 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+    ],
+    // ── 5-er ──────────────────────────────────────────────────
     '2-2': [
-      { key:'VK', label:'VK', zone:'A', x:12, y:24 },
-      { key:'HK', label:'HK', zone:'A', x:88, y:24 },
-      { key:'VB', label:'VB', zone:'F', x:26, y:40 },
-      { key:'HB', label:'HB', zone:'F', x:74, y:40 },
-      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
+      { key:'VK',  label:'VK', zone:'A', x:12, y:28 },
+      { key:'HK',  label:'HK', zone:'A', x:88, y:28 },
+      { key:'VB',  label:'VB', zone:'F', x:26, y:46 },
+      { key:'HB',  label:'HB', zone:'F', x:74, y:46 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '1-2-1': [
-      { key:'LJ', label:'LJ', zone:'M', x:50, y:22 },
-      { key:'VK', label:'VK', zone:'A', x:12, y:28 },
-      { key:'HK', label:'HK', zone:'A', x:88, y:28 },
-      { key:'MB', label:'MB', zone:'F', x:50, y:40 },
-      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
+      { key:'LJ',  label:'LJ', zone:'M', x:50, y:30 },
+      { key:'VK',  label:'VK', zone:'A', x:12, y:34 },
+      { key:'HK',  label:'HK', zone:'A', x:88, y:34 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
+    // ── 6-er ──────────────────────────────────────────────────
     '3-2': [
-      { key:'VK', label:'VK', zone:'A', x:8,  y:23 },
-      { key:'HK', label:'HK', zone:'A', x:92, y:23 },
-      { key:'VB', label:'VB', zone:'F', x:20, y:38 },
-      { key:'MB', label:'MB', zone:'F', x:50, y:40 },
-      { key:'HB', label:'HB', zone:'F', x:80, y:38 },
-      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
+      { key:'VK',  label:'VK', zone:'A', x:8,  y:28 },
+      { key:'HK',  label:'HK', zone:'A', x:92, y:28 },
+      { key:'VB',  label:'VB', zone:'F', x:20, y:46 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:48 },
+      { key:'HB',  label:'HB', zone:'F', x:80, y:46 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '2-2-1': [
-      { key:'LJ', label:'LJ', zone:'M', x:50, y:22 },
-      { key:'VK', label:'VK', zone:'A', x:10, y:25 },
-      { key:'HK', label:'HK', zone:'A', x:90, y:25 },
-      { key:'VB', label:'VB', zone:'F', x:24, y:38 },
-      { key:'HB', label:'HB', zone:'F', x:76, y:38 },
-      { key:'GK', label:'K',  zone:'K', x:50, y:88 },
+      { key:'LJ',  label:'LJ', zone:'M', x:50, y:30 },
+      { key:'VK',  label:'VK', zone:'A', x:10, y:34 },
+      { key:'HK',  label:'HK', zone:'A', x:90, y:34 },
+      { key:'VB',  label:'VB', zone:'F', x:24, y:46 },
+      { key:'HB',  label:'HB', zone:'F', x:76, y:46 },
+      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
+    // ── 7-er ──────────────────────────────────────────────────
     '3-2-1': [
-      { key:'LJ',  label:'LJ', zone:'M', x:50, y:22 },
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:24 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:24 },
-      { key:'VB',  label:'VB', zone:'F', x:18, y:38 },
-      { key:'MB',  label:'MB', zone:'F', x:50, y:40 },
-      { key:'HB',  label:'HB', zone:'F', x:82, y:38 },
+      { key:'LJ',  label:'LJ', zone:'M', x:50, y:30 },
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:32 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:32 },
+      { key:'VB',  label:'VB', zone:'F', x:18, y:46 },
+      { key:'MB',  label:'MB', zone:'F', x:50, y:48 },
+      { key:'HB',  label:'HB', zone:'F', x:82, y:46 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '4-2': [
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:24 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:24 },
-      { key:'VB',  label:'VB', zone:'F', x:14, y:38 },
-      { key:'MB1', label:'MB', zone:'F', x:36, y:40 },
-      { key:'MB2', label:'MB', zone:'F', x:64, y:40 },
-      { key:'HB',  label:'HB', zone:'F', x:86, y:38 },
+      { key:'VK',  label:'VK', zone:'A', x:4,  y:32 },
+      { key:'HK',  label:'HK', zone:'A', x:96, y:32 },
+      { key:'VB',  label:'VB', zone:'F', x:14, y:46 },
+      { key:'MB1', label:'MB', zone:'F', x:36, y:48 },
+      { key:'MB2', label:'MB', zone:'F', x:64, y:48 },
+      { key:'HB',  label:'HB', zone:'F', x:86, y:46 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
   };
@@ -646,7 +656,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // Formation & positions
   // ------------------------------
   function getDefaultFormationKey(format) {
-    const map = { 4: '', 5: '2-2', 6: '3-2', 7: '3-2-1' };
+    const map = { 4: '4-er', 5: '2-2', 6: '3-2', 7: '3-2-1' };
     return map[format] || '3-2-1';
   }
 
@@ -2129,23 +2139,19 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         </div>`;
 
       // Build pitch SVG
-      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 400 820" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="10" width="400" height="800" fill="#3dbde8"/>
-        <path d="M 80 10 A 120 120 0 0 0 320 10 Z" fill="#e8830e" opacity="0.75"/>
-        <path d="M 80 810 A 120 120 0 0 1 320 810 Z" fill="#e8830e" opacity="0.75"/>
-        <rect x="0" y="10" width="400" height="800" fill="none" stroke="white" stroke-width="3"/>
+      const pitchSVG = `<svg class="kd-pitch-lines" viewBox="0 0 400 500"
+          preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="10" width="400" height="490" fill="#3dbde8"/>
+        <path d="M 80 10 A 120 120 0 0 0 320 10 Z" fill="#e8830e" opacity="0.85"/>
+        <rect x="0" y="10" width="400" height="490" fill="none" stroke="white" stroke-width="3"/>
         <polyline points="170,10 170,0 230,0 230,10" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
-        <polyline points="170,810 170,820 230,820 230,810" fill="#3dbde8" stroke="white" stroke-width="2.5"/>
         <line x1="170" y1="10" x2="230" y2="10" stroke="white" stroke-width="5"/>
-        <line x1="170" y1="810" x2="230" y2="810" stroke="white" stroke-width="5"/>
         <path d="M 80 10 A 120 120 0 0 0 320 10" fill="none" stroke="white" stroke-width="2.5"/>
-        <path d="M 80 810 A 120 120 0 0 1 320 810" fill="none" stroke="white" stroke-width="2.5"/>
-        <path d="M 20 10 A 180 180 0 0 0 380 10" fill="none" stroke="white" stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
-        <path d="M 20 810 A 180 180 0 0 1 380 810" fill="none" stroke="white" stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
+        <path d="M 20 10 A 180 180 0 0 0 380 10" fill="none" stroke="white"
+              stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
         <line x1="190" y1="150" x2="210" y2="150" stroke="white" stroke-width="3"/>
-        <line x1="190" y1="670" x2="210" y2="670" stroke="white" stroke-width="3"/>
         <line x1="0" y1="410" x2="400" y2="410" stroke="white" stroke-width="2.5"/>
-        <circle cx="200" cy="410" r="30" fill="none" stroke="white" stroke-width="2"/>
+        <path d="M 170 410 A 30 30 0 0 1 230 410" fill="none" stroke="white" stroke-width="2"/>
         <circle cx="200" cy="410" r="4" fill="white"/>
       </svg>`;
 
