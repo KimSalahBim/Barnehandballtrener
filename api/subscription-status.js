@@ -41,6 +41,8 @@ function idKey(prefix, parts) {
 
 function isDebugHost(hostHeader) {
   const h = String(hostHeader || '').toLowerCase().split(':')[0];
+  if (h === 'barnehandballtrener.no' || h === 'www.barnehandballtrener.no') return true;
+  if (h === 'barnehandballtrener.vercel.app') return true;
   return h === 'localhost' || h === '127.0.0.1' || h.endsWith('.vercel.app');
 }
 
@@ -400,7 +402,28 @@ export default async function handler(req, res) {
     // ============================================================
     const { access: clubAccess, info: clubInfo } = await getClubStatus(user.id);
 
-    const customer = await findOrCreateCustomer(email, user.id);
+    let customer;
+    try {
+      customer = await findOrCreateCustomer(email, user.id);
+    } catch (stripeErr) {
+      console.error('[subscription-status] ❌ Stripe customer lookup failed:',
+        stripeErr?.message || stripeErr);
+      // Fail gracefully — user exists but Stripe is unreachable
+      return res.status(200).json({
+        active: false,
+        trial: false,
+        lifetime: false,
+        plan: null,
+        subscription_id: null,
+        status: null,
+        current_period_end: null,
+        cancel_at_period_end: false,
+        cancel_at: null,
+        trial_ends_at: null,
+        canStartTrial: true,
+        reason: 'stripe_unavailable',
+      });
+    }
 
     // Ensure deterministic binding for future lookups.
     const meta = customer?.metadata || {};
