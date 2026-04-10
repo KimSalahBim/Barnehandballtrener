@@ -548,7 +548,7 @@
     }
 
     if (w.learningGoals && w.learningGoals.length > 0) {
-      html += '<div class="ls-workout-goals">Laeringsmal: ' +
+      html += '<div class="ls-workout-goals">Læringsmål: ' +
         w.learningGoals.map(esc).join('. ') + '</div>';
     }
 
