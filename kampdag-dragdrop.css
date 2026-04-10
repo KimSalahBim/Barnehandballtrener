@@ -357,15 +357,9 @@
   .kd-slot-small .kd-pos-bubble { width: 62px; height: 62px; }
   .kd-slot-small .kd-pos-bubble .kd-p-name { font-size: 11px; max-width: 56px; }
 
-  /* Constrain pitch card size on desktop - prevent oversized cards */
-  .kd-pitch-field {
-    max-height: 380px;
-  }
-  .kd-pitch-wrap {
-    max-height: 400px;
-  }
+  /* Handball court: let aspect-ratio control height, limit card width */
   .kd-pitch-card {
-    max-width: 520px;
+    max-width: 400px;
   }
   /* Bench bubbles slightly larger on desktop */
   .kd-bench-bubble { width: 44px; height: 44px; }
