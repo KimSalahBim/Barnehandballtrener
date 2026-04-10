@@ -67,7 +67,6 @@
     'overload': '2v1',
     'possession_joker': 'possession',
     'possession_even': 'possession',
-    'square_german': 'square_game',
     'surprise': 'ssg',
   };
 
@@ -655,7 +654,17 @@
     s += '<marker id="wo_as' + uid + '" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7" fill="#FDD835"/></marker>';
     s += '</defs>';
     // Field background
-    if (field === 'small' || field === 'quarter') {
+    if (field === 'handball_half') {
+      var cx = width / 2;
+      var cy = height - 8;
+      var r6 = Math.round((height - 16) * 0.38);
+      var r9 = Math.round((height - 16) * 0.57);
+      s += '<rect x="8" y="8" width="' + (width-16) + '" height="' + (height-16) + '" rx="4" fill="#3dbde8" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>';
+      s += '<path d="M ' + (cx-r6) + ' ' + cy + ' A ' + r6 + ' ' + r6 + ' 0 0 0 ' + (cx+r6) + ' ' + cy + ' Z" fill="rgba(232,131,14,0.35)" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>';
+      s += '<path d="M ' + (cx-r9) + ' ' + cy + ' A ' + r9 + ' ' + r9 + ' 0 0 0 ' + (cx+r9) + ' ' + cy + '" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-dasharray="6,4"/>';
+      s += '<circle cx="' + cx + '" cy="' + (cy - Math.round(r6 * 7/6)) + '" r="3" fill="rgba(255,255,255,0.8)"/>';
+      s += '<rect x="' + (cx-22) + '" y="' + (cy-2) + '" width="44" height="8" rx="1" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="1.5"/>';
+    } else if (field === 'small' || field === 'quarter') {
       s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3d8b37" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
     } else if (field === 'half') {
       s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3d8b37" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
@@ -2956,7 +2965,6 @@ function serializeWorkoutFromState() {
     [
       { key: 'tag', min: 8 },
       { key: 'warm_ball', min: 10 },
-      { key: 'pass_square', min: 12 },
       { key: 'drink', min: 2 },
       { parallel: true, a: { key: '2v1', min: 12 }, b: { key: 'keeper', min: 12 } },
       { key: 'ssg', min: 25 },
@@ -3132,7 +3140,6 @@ function serializeWorkoutFromState() {
     const dist = NFF_TIME_DISTRIBUTION[ageGroup] || NFF_TIME_DISTRIBUTION['8-9'];
     const drinkMin = 2;
     const available = durationMin - drinkMin;
-    const is1316 = ageGroup === '13-16';
 
     // Calculate minutes per category
     const catMinutes = {};
@@ -3145,19 +3152,13 @@ function serializeWorkoutFromState() {
     }
 
     // Find exercises for each category, preferring those matching the theme
-    function pickExercise(nffCatId, excludeKeys, preferKey) {
+    function pickExercise(nffCatId, excludeKeys) {
       const candidates = EXERCISES.filter(ex =>
         ex.category !== 'special' &&
         ex.nffCategory === nffCatId &&
         !excludeKeys.has(ex.key) &&
         (!ex.ages || ex.ages.includes(ageGroup))
       );
-
-      // If a specific key is preferred (e.g. 'prepp' for 13-16 oppvarming)
-      if (preferKey) {
-        const preferred = candidates.find(ex => ex.key === preferKey);
-        if (preferred) return preferred;
-      }
 
       // Prefer theme-matching exercises
       const themed = candidates.filter(ex => ex.themes && ex.themes.includes(themeId));
@@ -3169,23 +3170,18 @@ function serializeWorkoutFromState() {
     const blocks = [];
     const usedKeys = new Set();
 
-    // Category order differs for 13-16 (Prepp → Situasjonsøving → Scoring → Spill)
-    // Same categories, but sjef=Prepp, med/mot=Situasjonsøving, spill=Spill
     const categoryOrder = ['sjef_over_ballen', 'spille_med_og_mot', 'scoringstrening', 'smalagsspill'];
 
     for (const catId of categoryOrder) {
       let remaining = catMinutes[catId] || 0;
       if (remaining <= 0) continue;
 
-      // For 13-16 sjef_over_ballen: prefer 'prepp' exercise
-      const preferKey = (is1316 && catId === 'sjef_over_ballen') ? 'prepp' : null;
-
       // For large allocations, try to pick 2 exercises
       const numExercises = remaining >= 20 ? 2 : 1;
       const perExercise = Math.round(remaining / numExercises);
 
       for (let i = 0; i < numExercises; i++) {
-        const ex = pickExercise(catId, usedKeys, i === 0 ? preferKey : null);
+        const ex = pickExercise(catId, usedKeys);
         if (!ex) break;
         usedKeys.add(ex.key);
 

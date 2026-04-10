@@ -107,40 +107,39 @@ window.NFF_DATA = {
 
   NFF_TEMPLATES: {
     '6-7': [
-      { title: 'Leik og føring (45 min)', theme: 'foering_dribling', duration: 45, blocks: [
+      { title: 'Lek og kast (45 min)', theme: 'kast_teknikk', duration: 45, blocks: [
+        { key: 'ball_luften', min: 8 },
+        { key: 'kastlek_halvdeler', min: 8 },
+        { key: 'drink', min: 2 },
+        { key: 'ssg', min: 18 },
+        { key: 'shot', min: 9 }
+      ]},
+      { title: 'Ball og bevegelse (45 min)', theme: 'dribling_bevegelse', duration: 45, blocks: [
         { key: 'tag', min: 8 },
-        { key: 'ball_tag', min: 8 },
+        { key: 'warm_ball', min: 8 },
         { key: 'driving', min: 8 },
         { key: 'drink', min: 2 },
         { key: 'ssg', min: 15 },
-        { key: 'shot', min: 4 }
+        { key: 'kanonball', min: 4 }
       ]},
-      { title: 'Score mål! (45 min)', theme: 'avslutning', duration: 45, blocks: [
-        { key: 'tag', min: 6 },
-        { key: 'warm_ball', min: 8 },
-        { key: 'shot', min: 8 },
+      { title: 'Kast og mål (60 min)', theme: 'kast_teknikk', duration: 60, blocks: [
+        { key: 'kongen_haugen', min: 10 },
+        { key: 'kast_vegg', min: 10 },
+        { key: 'ball_sisten', min: 8 },
         { key: 'drink', min: 2 },
-        { key: 'game_activity', min: 18 },
-        { key: 'shot_race', min: 3 }
-      ]},
-      { title: 'Føring og spill (60 min)', theme: 'foering_dribling', duration: 60, blocks: [
-        { key: 'ball_tag', min: 8 },
-        { key: 'driving', min: 10 },
-        { key: 'relay_ball', min: 8 },
-        { key: 'drink', min: 2 },
-        { key: 'dribble', min: 10 },
-        { key: 'ssg', min: 18 },
+        { key: 'shot', min: 10 },
+        { key: 'ssg', min: 16 },
         { key: 'shot_race', min: 4 }
       ]}
     ],
     '8-9': [
-      { title: 'Pasning og samspill (60 min)', theme: 'pasning_samspill', duration: 60, blocks: [
-        { key: 'tag', min: 6 },
+      { title: 'Pasning og samspill (60 min)', theme: 'mottak_pasning', duration: 60, blocks: [
+        { key: 'ball_sisten', min: 8 },
         { key: 'pass_pair', min: 10 },
         { key: 'pass_move', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'wall_pass', min: 10 },
-        { key: 'ssg_theme', min: 18 },
+        { key: 'possession', min: 12 },
+        { key: 'ssg_theme', min: 14 },
         { key: 'shot', min: 4 }
       ]},
       { title: 'Forsvarsspill (60 min)', theme: 'forsvarsspill', duration: 60, blocks: [
@@ -152,40 +151,40 @@ window.NFF_DATA = {
         { key: 'ssg', min: 20 },
         { key: 'shot_race', min: 4 }
       ]},
-      { title: 'Avslutning og mål (75 min)', theme: 'avslutning', duration: 75, blocks: [
-        { key: 'tag', min: 8 },
-        { key: 'warm_ball', min: 10 },
+      { title: 'Kast og avslutning (75 min)', theme: 'kast_teknikk', duration: 75, blocks: [
+        { key: 'kongen_haugen', min: 8 },
+        { key: 'pass_pair', min: 10 },
         { key: 'shot', min: 10 },
         { key: 'drink', min: 2 },
         { key: 'finish_assist', min: 10 },
         { key: '2v1', min: 10 },
-        { key: 'ssg', min: 22 },
-        { key: 'shot_race', min: 3 }
+        { key: 'ssg', min: 21 },
+        { key: 'shot_race', min: 4 }
       ]},
-      { title: 'Dribling og 1v1 (60 min)', theme: '1v1_duell', duration: 60, blocks: [
-        { key: 'ball_tag', min: 8 },
+      { title: 'Finter og 1v1 (60 min)', theme: '1v1_duell', duration: 60, blocks: [
+        { key: 'ball_sisten', min: 8 },
         { key: 'driving', min: 8 },
-        { key: '1v1', min: 10 },
+        { key: 'turn', min: 10 },
         { key: 'drink', min: 2 },
-        { key: '1v1_gates', min: 10 },
+        { key: '1v1', min: 10 },
         { key: 'ssg', min: 18 },
         { key: 'shot', min: 4 }
       ]}
     ],
     '10-12': [
-      { title: 'Spilloppbygging (75 min)', theme: 'spilloppbygging', duration: 75, blocks: [
+      { title: 'Linjespill og samarbeid (75 min)', theme: 'linjespill', duration: 75, blocks: [
         { key: 'tag', min: 8 },
         { key: 'rondo_easy', min: 10 },
-        { key: 'pass_square', min: 10 },
+        { key: 'receive_turn', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'possession_dir', min: 15 },
+        { key: '3v2', min: 12 },
         { key: 'ssg_theme', min: 25 },
-        { key: 'shot', min: 5 }
+        { key: 'shot', min: 8 }
       ]},
-      { title: 'Omstilling (75 min)', theme: 'omstilling', duration: 75, blocks: [
+      { title: 'Omstilling og kontring (75 min)', theme: 'kontring_retur', duration: 75, blocks: [
         { key: 'tag', min: 8 },
         { key: 'warm_ball', min: 8 },
-        { key: 'defend_press', min: 10 },
+        { key: 'kontring', min: 10 },
         { key: 'drink', min: 2 },
         { key: 'transition', min: 15 },
         { key: 'ssg_theme', min: 25 },
@@ -208,49 +207,53 @@ window.NFF_DATA = {
         { key: 'warm_ball', min: 8 },
         { key: 'defend_press', min: 10 },
         { key: 'drink', min: 2 },
-        { key: '2v2', min: 12 },
-        { key: 'block_shot', min: 10 },
+        { key: '2v1', min: 12 },
+        { key: 'kontring', min: 10 },
         { key: 'ssg', min: 22 },
-        { key: 'shot', min: 3 }
+        { key: 'shot', min: 5 }
       ]}
     ],
     '13-16': [
-      { title: 'Prepp + Forsvarsspill (90 min)', theme: 'forsvarsspill', duration: 90, blocks: [
-        { key: 'prepp', min: 12 },
+      { title: 'Forsvarsspill og pressing (90 min)', theme: 'forsvarsspill', duration: 90, blocks: [
+        { key: 'rondo_easy', min: 10 },
         { key: 'defend_press', min: 12 },
         { key: 'drink', min: 2 },
-        { key: 'sit_defend', min: 15 },
-        { key: 'zone_defense', min: 15 },
-        { key: 'ssg_theme', min: 28 },
-        { key: 'cross_finish', min: 6 }
-      ]},
-      { title: 'Prepp + Spilloppbygging (90 min)', theme: 'spilloppbygging', duration: 90, blocks: [
-        { key: 'prepp', min: 12 },
-        { key: 'rondo_easy', min: 10 },
-        { key: 'drink', min: 2 },
-        { key: 'build_up', min: 15 },
-        { key: 'sit_attack', min: 15 },
-        { key: 'ssg_theme', min: 30 },
-        { key: 'shot', min: 6 }
-      ]},
-      { title: 'Prepp + Omstilling (75 min)', theme: 'omstilling', duration: 75, blocks: [
-        { key: 'prepp', min: 12 },
-        { key: 'wall_pass', min: 10 },
-        { key: 'drink', min: 2 },
+        { key: 'wall_pass', min: 12 },
         { key: 'transition', min: 15 },
         { key: 'ssg_theme', min: 28 },
-        { key: 'finish_assist', min: 8 }
+        { key: 'shot', min: 8 },
+        { key: 'drink', min: 3 }
       ]},
-      { title: 'Prepp + Angrep og avslutning (90 min)', theme: 'avslutning', duration: 90, blocks: [
-        { key: 'prepp', min: 12 },
-        { key: 'pass_square', min: 10 },
+      { title: 'Linjespill og kombinasjon (90 min)', theme: 'linjespill', duration: 90, blocks: [
+        { key: 'rondo_easy', min: 10 },
+        { key: 'receive_turn', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'sit_attack', min: 15 },
-        { key: 'finish_assist', min: 10 },
+        { key: '3v2', min: 12 },
+        { key: 'wall_pass', min: 12 },
         { key: 'ssg_theme', min: 30 },
-        { key: 'cross_finish', min: 8 },
+        { key: 'shot', min: 8 },
         { key: 'drink', min: 2 },
-        { key: 'game_activity', min: 1 }
+        { key: 'game_activity', min: 4 }
+      ]},
+      { title: 'Omstilling og kontring (75 min)', theme: 'kontring_retur', duration: 75, blocks: [
+        { key: 'rondo_easy', min: 10 },
+        { key: 'wall_pass', min: 10 },
+        { key: 'drink', min: 2 },
+        { key: 'kontring', min: 12 },
+        { key: 'transition', min: 15 },
+        { key: 'ssg_theme', min: 20 },
+        { key: 'finish_assist', min: 6 }
+      ]},
+      { title: 'Angrep og avslutning (90 min)', theme: 'kast_teknikk', duration: 90, blocks: [
+        { key: 'rondo_easy', min: 10 },
+        { key: 'pass_move', min: 10 },
+        { key: 'drink', min: 2 },
+        { key: 'finish_assist', min: 12 },
+        { key: '3v2', min: 12 },
+        { key: 'ssg_theme', min: 28 },
+        { key: 'shot_race', min: 8 },
+        { key: 'drink', min: 2 },
+        { key: 'game_activity', min: 6 }
       ]}
     ]
   }
