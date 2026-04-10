@@ -325,24 +325,32 @@
     }
     const initFmt = parseInt(formatEl?.value, 10) || 7;
     const formPanel = $('skdFormationPanel');
-    if (initFmt === 3 || initFmt === 4) {
+    if (initFmt === 3) {
       if (formCard) formCard.style.display = 'none';
     } else {
-      if (formCard) formCard.style.display = '';
-      if (formPanel) formPanel.style.display = 'block';
+      if (initFmt === 4) {
+        if (formCard) formCard.style.display = 'none';
+      } else {
+        if (formCard) formCard.style.display = '';
+        if (formPanel) formPanel.style.display = 'block';
+      }
       renderFormationGrid();
     }
 
-    // Formation changes when format changes (hide entire card for 3-er)
+    // Formation changes when format changes (hide entire card for 3-er; 4-er keeps grid synced but UI hidden)
     if (formatEl) formatEl.addEventListener('change', () => {
       const fmt = parseInt(formatEl.value, 10) || 7;
       const fp = $('skdFormationPanel');
       const fc = $('skdFormationToggle')?.closest('.settings-card');
-      if (fmt === 3 || fmt === 4) {
+      if (fmt === 3) {
         if (fc) fc.style.display = 'none';
       } else {
-        if (fc) fc.style.display = '';
-        if (fp) fp.style.display = 'block';
+        if (fmt === 4) {
+          if (fc) fc.style.display = 'none';
+        } else {
+          if (fc) fc.style.display = '';
+          if (fp) fp.style.display = 'block';
+        }
         renderFormationGrid();
       }
     });
