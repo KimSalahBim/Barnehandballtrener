@@ -2050,7 +2050,7 @@
       const minuteSumDisplay = minuteSum.toFixed(1);
       const timelineChartHtml = `
         <div class="kd-timeline-chart">
-          <div class="kd-timeline-title">${T} MIN \u00b7 ${format}-ER \u00b7 ${lastFormationKey} \u00b7 ${presentPlayers.length} SPILLERE${hasBenchSwap ? ' \u00b7 JUSTERT' : ''}</div>
+          <div class="kd-timeline-title">${T} MIN \u00b7 ${format}-ER \u00b7 ${escapeHtml(lastFormationKey)} \u00b7 ${presentPlayers.length} SPILLERE${hasBenchSwap ? ' \u00b7 JUSTERT' : ''}</div>
           ${tlRows}
           <div class="kd-tl-sum" style="display:flex;justify-content:flex-end;font-size:10px;color:rgba(255,255,255,0.5);padding:2px 0 4px;">Sum: ${minuteSumDisplay} / ${T} min</div>
           <div class="kd-tl-axis">${ticks.map(t => `<span>${t}</span>`).join('')}</div>
@@ -2107,7 +2107,7 @@
 
         lineupEl.innerHTML = `
           <div class="kd-dark-output">
-            <h3 class="kd-dark-heading">Startoppstilling \u00b7 ${lastFormationKey}
+            <h3 class="kd-dark-heading">Startoppstilling \u00b7 ${escapeHtml(lastFormationKey)}
               ${hasAnyOverride ? `<button class="kd-reset-all-btn" id="skdResetAllSlots">\u21ba Tilbakestill alle</button>` : ''}
             </h3>
             <div class="kd-pitch-card">
@@ -2508,7 +2508,7 @@
       }).join('');
       const benchNames0 = sm0.bench.map(pid => escapeHtml(idToName[pid] || pid)).join(' \u00b7 ') || '\u2014';
       startSection = `
-        <div class="section-title">Startoppstilling \u00b7 ${formationKey}${hasAnyOverride ? ' \u00b7 Justert' : ''}</div>
+        <div class="section-title">Startoppstilling \u00b7 ${escapeHtml(formationKey)}${hasAnyOverride ? ' \u00b7 Justert' : ''}</div>
         <div style="position:relative;width:100%;max-width:420px;margin:0 auto;height:${startH}px;background:linear-gradient(180deg,#1a5c1a,#145214);border-radius:12px;overflow:hidden;border:2px solid #2a7a2a;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots0}</div>
         <div class="bench">Benk: ${benchNames0}</div>`;
     }
@@ -2551,7 +2551,7 @@
       timelineHtml = `
         <div class="section-title">Beregnet spilletid${hasAnyOverride ? ' (justert)' : ''}</div>
         <div class="tl-chart">
-          <div class="tl-header">${T} MIN \u00b7 ${format}-ER \u00b7 ${formationKey} \u00b7 ${present.length} SPILLERE${hasAnyOverride ? ' \u00b7 JUSTERT' : ''}</div>
+          <div class="tl-header">${T} MIN \u00b7 ${format}-ER \u00b7 ${escapeHtml(formationKey)} \u00b7 ${present.length} SPILLERE${hasAnyOverride ? ' \u00b7 JUSTERT' : ''}</div>
           ${rows}
           <div class="tl-axis">${ticks.map(t => `<span>${t}</span>`).join('')}</div>
           <div class="tl-legend"><span><i style="background:#4ade80"></i> Back</span><span><i style="background:#60a5fa"></i> Linjespiller</span><span><i style="background:#f87171"></i> Kant</span><span><i style="background:#c084fc"></i> Keeper</span></div>
@@ -2697,7 +2697,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
   <div class="header">
     <div class="logo"><img src="${escapeHtml(logoUrl)}" alt=""></div>
     <div>
-      <div class="h-title">Kampdag \u2014 ${format}-er h\u00e5ndball${useFormation && formationKey ? ` \u00b7 ${formationKey}` : ''}</div>
+      <div class="h-title">Kampdag \u2014 ${format}-er h\u00e5ndball${useFormation && formationKey ? ` \u00b7 ${escapeHtml(formationKey)}` : ''}</div>
       <div class="h-sub">${escapeHtml(today)} \u00b7 ${T} min \u00b7 ${present.length} spillere${hasAnyOverride ? " \u00b7 Justert oppstilling" : ""}</div>
     </div>
   </div>
