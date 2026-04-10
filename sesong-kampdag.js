@@ -2046,10 +2046,13 @@
       for (let t = 0; t <= T; t += step) ticks.push(t);
       if (ticks[ticks.length - 1] !== T) ticks.push(T);
 
+      const minuteSum = minutesArr.reduce((acc, m) => acc + m.min, 0);
+      const minuteSumDisplay = minuteSum.toFixed(1);
       const timelineChartHtml = `
         <div class="kd-timeline-chart">
           <div class="kd-timeline-title">${T} MIN \u00b7 ${format}-ER \u00b7 ${lastFormationKey} \u00b7 ${presentPlayers.length} SPILLERE${hasBenchSwap ? ' \u00b7 JUSTERT' : ''}</div>
           ${tlRows}
+          <div class="kd-tl-sum" style="display:flex;justify-content:flex-end;font-size:10px;color:rgba(255,255,255,0.5);padding:2px 0 4px;">Sum: ${minuteSumDisplay} / ${T} min</div>
           <div class="kd-tl-axis">${ticks.map(t => `<span>${t}</span>`).join('')}</div>
           <div class="kd-tl-legend">
             <div class="kd-tl-legend-item"><div class="kd-tl-legend-dot" style="background:#4ade80;"></div> Back</div>
@@ -2352,6 +2355,8 @@
     const minutesArr = Object.keys(effMins).map(id => ({ id, name: idToName[id] || id, min: effMins[id] }));
     minutesArr.sort((a, b) => b.min - a.min);
     minutesArr.forEach(m => lines.push(` ${m.name}: ${m.min.toFixed(1)} min`));
+    const pdfSum = minutesArr.reduce((acc, m) => acc + m.min, 0);
+    lines.push(` Sum: ${pdfSum.toFixed(1)} / ${T} min`);
 
     lines.push('');
     lines.push('Bytteplan');
@@ -2554,7 +2559,7 @@
     } else {
       timelineHtml = `
         <div class="section-title">Beregnet spilletid</div>
-        <div class="time-list">${minutesArr.map(m => `<div class="time-row"><span>${escapeHtml(m.name)}</span><span>${m.min.toFixed(1)} min</span></div>`).join('')}</div>`;
+        <div class="time-list">${minutesArr.map(m => `<div class="time-row"><span>${escapeHtml(m.name)}</span><span>${m.min.toFixed(1)} min</span></div>`).join('')}<div class="time-row" style="border-top:1px solid rgba(255,255,255,0.15);margin-top:4px;padding-top:4px;opacity:0.6;"><span>Sum</span><span>${minutesArr.reduce((a,m)=>a+m.min,0).toFixed(1)} / ${T} min</span></div></div>`;
     }
 
     // Build bytteplan cards using slot maps (mini pitches)
