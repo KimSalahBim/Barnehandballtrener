@@ -408,7 +408,6 @@ export default async function handler(req, res) {
     } catch (stripeErr) {
       console.error('[subscription-status] ❌ Stripe customer lookup failed:',
         stripeErr?.message || stripeErr);
-      // Fail gracefully — user exists but Stripe is unreachable
       return res.status(200).json({
         active: false,
         trial: false,
@@ -586,6 +585,7 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     const errorId = `ss_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    if (err?.type) console.error('[subscription-status] Stripe error type:', err.type, err.message);
     console.error('[subscription-status] error_id=%s', errorId, err);
 
     const debug = isDebugHost(req.headers.host);
