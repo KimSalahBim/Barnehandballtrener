@@ -520,7 +520,15 @@ console.log('✅ Supabase client opprettet (window.supabase = client)');
   // Helper: Get canonical redirect URL (prevents /pricing.html trap)
   // -------------------------------
   function getCanonicalRedirectUrl() {
-    // Strip filename, keep directory (prevents /pricing.html redirect, preserves subpath deployments)
+    var hostname = window.location.hostname;
+    var isStaging = hostname === 'localhost' ||
+                    hostname === '127.0.0.1' ||
+                    hostname.endsWith('.vercel.app');
+    if (!isStaging) {
+      // Always redirect to canonical domain in production
+      return 'https://barnehandballtrener.no/';
+    }
+    // On staging/localhost: use current origin
     var p = window.location.pathname || '/';
     if (!p.endsWith('/')) {
       p = p.replace(/\/[^\/]*$/, '/');
