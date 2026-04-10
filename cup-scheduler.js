@@ -1,5 +1,5 @@
 // © 2026 barnehandballtrener.no. All rights reserved.
-/* cup-scheduler.js â€” Ren funksjonell schedulermotor for cup/turnering.
+/* cup-scheduler.js — Ren funksjonell schedulermotor for cup/turnering.
    Delt mellom minicup (Liga-fanen) og full cupmodul (/cup).
    Ingen DOM, ingen side-effekter. Kun pure functions.
    
@@ -10,7 +10,7 @@
   'use strict';
 
   // =========================================================================
-  //  NFF REGELVERK â€” aldersklasse -> spillformat
+  //  NFF REGELVERK — aldersklasse -> spillformat
   // =========================================================================
   const NFF_RULES = {
     '6':  { playFormat: '3v3',   matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 3,  maxPlayers: 6,  noPlayoffs: true,  noRanking: true  },
@@ -638,7 +638,7 @@
 
   /**
    * Sjekk om en bane allerede er opptatt i tidsrommet (hard constraint).
-   * Fanger overlapp pÃ¥ tvers av klasser og med lÃ¥ste kamper.
+   * Fanger overlapp på tvers av klasser og med låste kamper.
    */
   function pitchBusy(placed, pitchId, dayIndex, start, end) {
     for (var i = 0; i < placed.length; i++) {
@@ -1261,7 +1261,7 @@
   // =========================================================================
 
   /**
-   * getNffDefaults(age) â€” kombinerer getNffRules + getCupMatchMinutes
+   * getNffDefaults(age) — kombinerer getNffRules + getCupMatchMinutes
    * Returnerer { playFormat, matchMinutes, noRanking, noPlayoffs }
    */
   function getNffDefaults(age) {
@@ -1278,7 +1278,7 @@
   }
 
   /**
-   * generateRoundRobinFull(teams, seed) â€” aksepterer lag-objekter ({id,name,...})
+   * generateRoundRobinFull(teams, seed) — aksepterer lag-objekter ({id,name,...})
    * og returnerer fulle match-objekter med id, score, locked.
    * Bakoverkompatibel med cup.js som kaller CS.generateRoundRobin(cls.teams, seed).
    */
@@ -1313,7 +1313,7 @@
   }
 
   /**
-   * calcFeasibility(classes, pitches, days) â€” per-klasse array
+   * calcFeasibility(classes, pitches, days) — per-klasse array
    * cup.js forventer: [{classId, className, feasible, reason, totalMatches, totalSlots}]
    */
   function calcFeasibility(classes, pitches, days) {
@@ -1686,7 +1686,7 @@
 
   /**
    * validateSchedule(classes, entries)
-   * Post-schedule validering â€” sjekker bane-overlap og lag-overlap.
+   * Post-schedule validering — sjekker bane-overlap og lag-overlap.
    * Returnerer array av { type, message }.
    */
   function validateSchedule(classes, entries) {

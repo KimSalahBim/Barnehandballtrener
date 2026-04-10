@@ -163,7 +163,7 @@
         active: p.active !== false
       }));
     } catch (e) {
-      console.error('[Competitions] âŒ Feil ved lesing fra storage:', e);
+      console.error('[Competitions] ❌ Feil ved lesing fra storage:', e);
       return [];
     }
   }

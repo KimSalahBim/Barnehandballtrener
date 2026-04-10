@@ -123,7 +123,7 @@ export default async function handler(req, res) {
         }
 
         // NOTE: We do NOT delete the Stripe customer record
-        // Reason: BokfÃ¸ringsloven requires keeping payment records for 7 years
+        // Reason: Bokføringsloven requires keeping payment records for 7 years
         // Instead, we anonymize the customer metadata
         try {
           await stripe.customers.update(customerId, {
@@ -460,7 +460,7 @@ export default async function handler(req, res) {
     }
 
     // 6) Log deletion for audit trail (GDPR compliance requirement)
-    console.log('[delete-account] âœ… Account deleted:', {
+    console.log('[delete-account] ✅ Account deleted:', {
       user_id: userId,
       email: email,
       timestamp: new Date().toISOString(),
@@ -473,7 +473,7 @@ export default async function handler(req, res) {
       success: true,
       message: 'Your account has been permanently deleted.',
       details: deletionResults,
-      note: 'Payment records are retained for 7 years per Norwegian accounting law (bokfÃ¸ringsloven), but your personal information has been anonymized.',
+      note: 'Payment records are retained for 7 years per Norwegian accounting law (bokføringsloven), but your personal information has been anonymized.',
     });
 
   } catch (err) {
