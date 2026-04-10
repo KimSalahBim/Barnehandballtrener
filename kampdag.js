@@ -143,16 +143,16 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     // ── 7-er ──────────────────────────────────────────────────
     '3-2-1': [
       { key:'LJ',  label:'LJ', zone:'M', x:50, y:30 },
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:32 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:32 },
+      { key:'VK',  label:'VK', zone:'A', x:8,  y:32 },
+      { key:'HK',  label:'HK', zone:'A', x:92, y:32 },
       { key:'VB',  label:'VB', zone:'F', x:18, y:46 },
       { key:'MB',  label:'MB', zone:'F', x:50, y:48 },
       { key:'HB',  label:'HB', zone:'F', x:82, y:46 },
       { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
     ],
     '4-2': [
-      { key:'VK',  label:'VK', zone:'A', x:4,  y:32 },
-      { key:'HK',  label:'HK', zone:'A', x:96, y:32 },
+      { key:'VK',  label:'VK', zone:'A', x:8,  y:32 },
+      { key:'HK',  label:'HK', zone:'A', x:92, y:32 },
       { key:'VB',  label:'VB', zone:'F', x:14, y:46 },
       { key:'MB1', label:'MB', zone:'F', x:36, y:48 },
       { key:'MB2', label:'MB', zone:'F', x:64, y:48 },
