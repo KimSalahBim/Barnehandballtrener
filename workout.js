@@ -3445,8 +3445,8 @@ function serializeWorkoutFromState() {
       --card:#ffffff;
       --muted:#556070;
       --line:#e6e9ef;
-      --brand:#456C4B;
-      --brand2:#5a8a60;
+      --brand:#1a82c4;
+      --brand2:#3dbde8;
       --soft:#f6f8fc;
     }
     *{box-sizing:border-box}
@@ -3730,7 +3730,7 @@ function serializeWorkoutFromState() {
 
     if (type === 'share') {
       dialog.innerHTML =
-        '<strong><i class="fas fa-share-from-square" style="margin-right:6px;color:#456C4B;"></i>Del \u00f8kta med medtrener</strong>' +
+        '<strong><i class="fas fa-share-from-square" style="margin-right:6px;color:#1a82c4;"></i>Del \u00f8kta med medtrener</strong>' +
         '<div>Sender \u00f8kta som en \u00f8ktfil (.json) som medtreneren kan importere i sin egen app.</div>' +
         '<ol>' +
           '<li>Trykk <b>Send \u00f8ktfil</b> under</li>' +
@@ -3758,7 +3758,7 @@ function serializeWorkoutFromState() {
 
     } else if (type === 'import') {
       dialog.innerHTML =
-        '<strong><i class="fas fa-file-import" style="margin-right:6px;color:#456C4B;"></i>Importer \u00f8kt fra medtrener</strong>' +
+        '<strong><i class="fas fa-file-import" style="margin-right:6px;color:#1a82c4;"></i>Importer \u00f8kt fra medtrener</strong>' +
         '<div>Har du f\u00e5tt en \u00f8ktfil (.json) fra en medtrener? Importer den her.</div>' +
         '<ol>' +
           '<li>Trykk <b>Velg fil</b> under</li>' +

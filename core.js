@@ -339,7 +339,7 @@
   // Team management (Supabase)
   // ------------------------------
   const MAX_TEAMS = 6;
-  const TEAM_COLORS = ['#456C4B', '#d32f2f', '#2e7d32', '#f57c00', '#7b1fa2', '#00838f'];
+  const TEAM_COLORS = ['#1a82c4', '#d32f2f', '#2e7d32', '#f57c00', '#7b1fa2', '#00838f'];
 
   function generateTeamId() {
     var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -577,7 +577,7 @@
     }
 
     // Opprett standardlag
-    var team = await createTeam('Mitt lag', '#456C4B');
+    var team = await createTeam('Mitt lag', '#1a82c4');
     if (!team) return;
 
     // Migrer spillere uten team_id (server-side migration bør ha gjort dette,
@@ -1671,7 +1671,7 @@
       return `
         <div class="player-card" data-id="${escapeHtml(p.id)}">
           <div class="pc-avatar-wrap" style="flex-shrink:0;cursor:pointer;" title="Endre avatar">
-            ${window.Avatar ? window.Avatar.render(p.avatar, 44, p.name) : '<div style="width:44px;height:44px;border-radius:50%;background:#456C4B;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>'}
+            ${window.Avatar ? window.Avatar.render(p.avatar, 44, p.name) : '<div style="width:44px;height:44px;border-radius:50%;background:#1a82c4;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>'}
           </div>
           <div class="player-info">
             <div class="player-name">${escapeHtml(p.name)}</div>
@@ -1860,13 +1860,13 @@
     var avatarHtml = window.Avatar
       ? (p.avatar
         ? '<img src="/avatars/' + p.avatar + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
-        : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>')
-      : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>';
+        : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>')
+      : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>';
 
     var html =
       '<div class="settings-card" style="margin-top:8px;">' +
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">' +
-          '<button type="button" id="profileBack" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--primary,#456C4B);font-weight:700;font-family:inherit;padding:4px 0;">‹ Spillere</button>' +
+          '<button type="button" id="profileBack" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--primary,#1a82c4);font-weight:700;font-family:inherit;padding:4px 0;">‹ Spillere</button>' +
           '<span style="font-size:17px;font-weight:800;color:var(--text-900,#1a1a1a);">' + escapeHtml(p.name) + '</span>' +
         '</div>' +
 
@@ -1888,8 +1888,8 @@
         '<div style="margin-bottom:14px;">' +
           '<label style="font-size:13px;font-weight:700;color:var(--text-600,#666);display:block;margin-bottom:4px;">Kan stå i mål?</label>' +
           '<div style="display:flex;gap:0;max-width:200px;">' +
-            '<button type="button" class="profileGkBtn' + (!p.goalie ? ' profile-gk-active' : '') + '" data-val="false" style="flex:1;padding:8px;border:1px solid var(--border,#d8e4da);background:' + (!p.goalie ? 'var(--primary,#456C4B)' : 'var(--bg,#f3f6f3)') + ';color:' + (!p.goalie ? '#fff' : 'var(--text-700,#444)') + ';font-weight:700;font-size:13px;border-radius:8px 0 0 8px;cursor:pointer;font-family:inherit;">Nei</button>' +
-            '<button type="button" class="profileGkBtn' + (p.goalie ? ' profile-gk-active' : '') + '" data-val="true" style="flex:1;padding:8px;border:1px solid var(--border,#d8e4da);border-left:none;background:' + (p.goalie ? 'var(--primary,#456C4B)' : 'var(--bg,#f3f6f3)') + ';color:' + (p.goalie ? '#fff' : 'var(--text-700,#444)') + ';font-weight:700;font-size:13px;border-radius:0 8px 8px 0;cursor:pointer;font-family:inherit;">Ja</button>' +
+            '<button type="button" class="profileGkBtn' + (!p.goalie ? ' profile-gk-active' : '') + '" data-val="false" style="flex:1;padding:8px;border:1px solid var(--border,#d8e4da);background:' + (!p.goalie ? 'var(--primary,#1a82c4)' : 'var(--bg,#f3f6f3)') + ';color:' + (!p.goalie ? '#fff' : 'var(--text-700,#444)') + ';font-weight:700;font-size:13px;border-radius:8px 0 0 8px;cursor:pointer;font-family:inherit;">Nei</button>' +
+            '<button type="button" class="profileGkBtn' + (p.goalie ? ' profile-gk-active' : '') + '" data-val="true" style="flex:1;padding:8px;border:1px solid var(--border,#d8e4da);border-left:none;background:' + (p.goalie ? 'var(--primary,#1a82c4)' : 'var(--bg,#f3f6f3)') + ';color:' + (p.goalie ? '#fff' : 'var(--text-700,#444)') + ';font-weight:700;font-size:13px;border-radius:0 8px 8px 0;cursor:pointer;font-family:inherit;">Ja</button>' +
           '</div>' +
         '</div>' +
 
@@ -1914,7 +1914,7 @@
         // Save / Cancel
         '<div style="display:flex;gap:8px;margin-bottom:16px;">' +
           '<button type="button" id="profileCancel" style="flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border,#d8e4da);background:var(--bg,#f3f6f3);color:var(--text-700,#444);font-family:inherit;">Avbryt</button>' +
-          '<button type="button" id="profileSave" style="flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--primary,#456C4B);color:#fff;font-family:inherit;">✓ Lagre</button>' +
+          '<button type="button" id="profileSave" style="flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--primary,#1a82c4);color:#fff;font-family:inherit;">✓ Lagre</button>' +
         '</div>' +
 
         // Delete
@@ -1957,7 +1957,7 @@
           if (avPreview) {
             avPreview.innerHTML = newAvatar
               ? '<img src="/avatars/' + newAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
-              : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>';
+              : '<div style="width:88px;height:88px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px;">' + escapeHtml((p.name || '?').charAt(0).toUpperCase()) + '</div>';
           }
           if (avBtn) avBtn.textContent = newAvatar ? 'Endre avatar' : 'Velg avatar';
         });
@@ -1972,7 +1972,7 @@
         profileView.querySelectorAll('.profileGkBtn').forEach(function(b) {
           b.classList.remove('profile-gk-active');
           var active = b === btn;
-          b.style.background = active ? 'var(--primary,#456C4B)' : 'var(--bg,#f3f6f3)';
+          b.style.background = active ? 'var(--primary,#1a82c4)' : 'var(--bg,#f3f6f3)';
           b.style.color = active ? '#fff' : 'var(--text-700,#444)';
           if (active) b.classList.add('profile-gk-active');
         });

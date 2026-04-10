@@ -231,7 +231,7 @@
   border-radius:7px; padding:3px 9px; font-size:12px; font-weight:500; white-space:nowrap;
 }
 .kd-pp-f{background:rgba(34,197,94,0.2); color:#4ade80; border:1px solid rgba(34,197,94,0.3);}
-.kd-pp-m{background:rgba(69,108,75,0.25); color:#7bc88a; border:1px solid rgba(69,108,75,0.4);}
+.kd-pp-m{background:rgba(26,130,196,0.25); color:#93c5fd; border:1px solid rgba(26,130,196,0.4);}
 .kd-pp-a{background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.3);}
 .kd-pp-k{background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3);}
 .kd-bench-strip{background:var(--bg,#f8f9fa); border-radius:8px; padding:7px 10px; margin-top:8px; font-size:12px; color:var(--bg0,#6b7280);}

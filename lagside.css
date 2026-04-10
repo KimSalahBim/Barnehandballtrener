@@ -2,7 +2,7 @@
 /* Standalone: no dependency on style.css or any app CSS */
 
 :root {
-  --ls-green: #456C4B;
+  --ls-green: #1a82c4;
   --ls-green-light: #5a8560;
   --ls-bg: #f4f6f5;
   --ls-card: #ffffff;
@@ -366,7 +366,7 @@ body {
 /* --- Oppslagstavle --- */
 .ls-announcements { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .ls-announcement { border-left: 3px solid #D4A017; border-radius: 0 8px 8px 0; padding: 10px 14px; background: #FEF9E7; }
-.ls-announcement:nth-child(n+2) { border-left-color: var(--ls-accent, #456C4B); background: #F0F7F1; }
+.ls-announcement:nth-child(n+2) { border-left-color: var(--ls-accent, #1a82c4); background: #f0f7fc; }
 .ls-announcement-label { font-size: 11px; font-weight: 600; color: #8B6914; margin-bottom: 3px; }
 .ls-announcement:nth-child(n+2) .ls-announcement-label { color: #2D5A33; }
 .ls-announcement-text { font-size: 14px; line-height: 1.45; color: #333; }
@@ -385,7 +385,7 @@ body {
   width: 100%; padding: 12px; margin-top: 12px;
   background: transparent; border: 1px solid var(--ls-border, #e5e7eb);
   border-radius: 12px; font-size: 14px; font-weight: 500;
-  color: var(--ls-green, #456C4B); cursor: pointer;
+  color: var(--ls-green, #1a82c4); cursor: pointer;
 }
 .ls-ical-btn:active { transform: scale(0.98); }
 
@@ -399,13 +399,13 @@ body {
   display: flex; align-items: flex-start; gap: 12px; padding: 6px 0;
 }
 .ls-logistics-row > i:first-child {
-  width: 20px; text-align: center; color: var(--ls-green, #456C4B);
+  width: 20px; text-align: center; color: var(--ls-green, #1a82c4);
   font-size: 14px; margin-top: 2px; flex-shrink: 0;
 }
 .ls-logistics-primary { font-size: 14px; font-weight: 500; }
 .ls-logistics-secondary { font-size: 12px; color: var(--ls-text-secondary, #6b7280); }
 .ls-logistics-link {
-  color: var(--ls-green, #456C4B); text-decoration: none;
+  color: var(--ls-green, #1a82c4); text-decoration: none;
   font-weight: 500; font-size: 14px;
 }
 .ls-logistics-link:hover { text-decoration: underline; }

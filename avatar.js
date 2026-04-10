@@ -31,10 +31,10 @@
         'alt="" width="' + size + '" height="' + size + '" ' +
         'style="border-radius:50%;display:block;object-fit:cover;" loading="lazy" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
-        '<div class="av-fallback" style="display:none;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' +
+        '<div class="av-fallback" style="display:none;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' +
         (name ? name.charAt(0).toUpperCase() : '?') + '</div>';
     }
-    return '<div class="av-fallback" style="display:flex;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' +
+    return '<div class="av-fallback" style="display:flex;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' +
       (name ? name.charAt(0).toUpperCase() : '?') + '</div>';
   }
 
@@ -75,7 +75,7 @@
 
     var btnBase = 'border:1px solid var(--border,#d8e4da);border-radius:99px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600;font-family:inherit;transition:all 0.12s;';
     var btnOff = btnBase + 'background:var(--bg,#f3f6f3);color:var(--text-700,#444);';
-    var btnOn = btnBase + 'background:var(--primary,#456C4B);color:#fff;border-color:var(--primary,#456C4B);';
+    var btnOn = btnBase + 'background:var(--primary,#1a82c4);color:#fff;border-color:var(--primary,#1a82c4);';
 
     function makeFilterRow(label, options) {
       var row = document.createElement('div');
@@ -139,7 +139,7 @@
         btn.setAttribute('data-avatar', fname);
         btn.type = 'button';
         var isSelected = fname === currentAvatar;
-        btn.style.cssText = 'border:2px solid ' + (isSelected ? 'var(--primary,#456C4B)' : 'transparent') + ';border-radius:12px;padding:2px;cursor:pointer;background:' + (isSelected ? 'var(--bg,#eef4ee)' : 'transparent') + ';outline:none;';
+        btn.style.cssText = 'border:2px solid ' + (isSelected ? 'var(--primary,#1a82c4)' : 'transparent') + ';border-radius:12px;padding:2px;cursor:pointer;background:' + (isSelected ? 'var(--bg,#eef4ee)' : 'transparent') + ';outline:none;';
         btn.innerHTML = '<img src="' + AVATAR_PATH + fname + '" width="44" height="44" style="border-radius:50%;display:block;" loading="lazy">';
         grid.appendChild(btn);
         count++;

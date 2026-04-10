@@ -1,20 +1,25 @@
 /* Barnehandballtrener App - Premium Design */
 :root {
   /* Primær */
-  --primary: #456C4B;
-  --primary-light: #5a8a60;
-  --primary-dim: rgba(69, 108, 75, 0.10);
-  --primary-glow: rgba(69, 108, 75, 0.25);
+  --primary: #1a82c4;
+  --primary-light: #3dbde8;
+  --primary-dim: rgba(26, 130, 196, 0.10);
+  --primary-glow: rgba(26, 130, 196, 0.25);
+
+  --accent: #e8830e;
+  --accent-light: #f5a030;
+  --accent-dim: rgba(232, 131, 14, 0.12);
+  --gold: #f5c518;
 
   /* Bakgrunner – lys modus */
-  --bg: #f3f6f3;
+  --bg: #f0f7fc;
   --bg-card: #FFFFFF;
-  --bg-input: #f3f6f3;
+  --bg-input: #f0f7fc;
 
   /* Bakgrunner – mørke seksjoner (kampdag bane/spilletid) */
-  --bg-dark: #0F172A;
-  --bg-dark-card: #1A2332;
-  --bg-dark-input: #111827;
+  --bg-dark: #031730;
+  --bg-dark-card: #0a2a50;
+  --bg-dark-input: #061e3a;
 
   /* Tekst – lys modus */
   --text-900: #0F172A;
@@ -40,12 +45,12 @@
   --error-dim: rgba(220, 38, 38, 0.10);
 
   /* Bane */
-  --grass: #1B5E20;
-  --grass-alt: #2D6A2E;
+  --grass: #1a82c4;
+  --grass-alt: #3dbde8;
 
   /* Border */
-  --border: #d8e4da;
-  --border-light: #edf1ed;
+  --border: #cce4f4;
+  --border-light: #e4f2fb;
   --border-dark: rgba(255, 255, 255, 0.08);
 
   /* Radius */
@@ -59,9 +64,9 @@
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 
-  /* Legacy-kompatibilitet (pricing overlay / login flow — grønn palett) */
-  --egge-blue: #456C4B;
-  --egge-light-blue: #5d8a66;
+  /* Legacy-kompatibilitet (pricing overlay / login flow) */
+  --egge-blue: #1a82c4;
+  --egge-light-blue: #3dbde8;
   --gray-50: #F8FAFC;
   --gray-200: #E2E8F0;
   --gray-300: #CBD5E1;
@@ -72,6 +77,14 @@
   --gray-800: #1E293B;
   --gray-900: #0F172A;
 }
+
+/* Display font for headings */
+h1, h2, .app-name, .lp-hero-title, .section-title {
+  font-family: 'Barlow Condensed', 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -95,7 +108,7 @@ body {
     /* Pre-login viewport wrapper (do NOT scroll the page; scroll inside the card) */
     overflow: hidden;
 
-    background: linear-gradient(to bottom, #2d5433, #3a5e40);
+    background: linear-gradient(to bottom, #031730, #0a2a50);
     z-index: 1000;
 
     /* Safe-area friendly padding (iOS notch/home indicator) */
@@ -1672,7 +1685,7 @@ body {
 }
 
 :root{
-  --primary-green:#456C4B;
+  --primary-green:#1a82c4;
   --primary-orange:#E88B2C;
   --primary-dark:#153F30;
   --primary-ink:#07292A;

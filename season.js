@@ -60,7 +60,7 @@
         '</div>';
     }
     var initial = (name || '?').charAt(0).toUpperCase();
-    return '<div style="width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' + initial + '</div>';
+    return '<div style="width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:' + Math.round(size * 0.4) + 'px;">' + initial + '</div>';
   }
 
   // Cache: lagside state
@@ -197,7 +197,7 @@
   }
 
   // Sub-team helpers
-  var SUB_TEAM_COLORS = ['#456C4B', '#ea580c', '#059669', '#7c3aed', '#ec4899'];
+  var SUB_TEAM_COLORS = ['#1a82c4', '#ea580c', '#059669', '#7c3aed', '#ec4899'];
 
   // NHF aldersklasse → format, varighet, barnehåndball-status
   var NHF_AGE_RULES = {
@@ -2612,7 +2612,7 @@
     var teamId = getTeamId();
     if (!teamId) return;
 
-    var cardStyle = 'border-left:4px solid var(--primary,#456C4B);padding:12px 14px;margin-bottom:12px;';
+    var cardStyle = 'border-left:4px solid var(--primary,#1a82c4);padding:12px 14px;margin-bottom:12px;';
 
     card.innerHTML = '<div class="settings-card" style="' + cardStyle + '">' +
       '<div style="display:flex;align-items:center;gap:8px;">' +
@@ -2689,7 +2689,7 @@
       return !a.expires_at || new Date(a.expires_at) > new Date();
     });
     var badgeHtml = announcements.length > 0
-      ? '<span style="font-size:11px;background:#456C4B;color:#fff;padding:1px 7px;border-radius:99px;margin-left:6px;">' + announcements.length + ' beskjed' + (announcements.length > 1 ? 'er' : '') + '</span>'
+      ? '<span style="font-size:11px;background:#1a82c4;color:#fff;padding:1px 7px;border-radius:99px;margin-left:6px;">' + announcements.length + ' beskjed' + (announcements.length > 1 ? 'er' : '') + '</span>'
       : '';
 
     card.innerHTML = '<div class="settings-card" style="' + cardStyle + 'cursor:pointer;" id="snLagsideCardInner">' +
@@ -4079,7 +4079,7 @@
     'samarbeidsspill': { label: 'Samarbeidsspill', icon: '\uD83D\uDC65', color: '#06b6d4' },
     'forsvarsspill': { label: 'Forsvarsspill', icon: '\uD83D\uDEE1\ufe0f', color: '#64748b' },
     'omstilling': { label: 'Omstilling', icon: '\uD83D\uDD01', color: '#ec4899' },
-    'spilloppbygging': { label: 'Spilloppbygging', icon: '\uD83D\uDCD0', color: '#456C4B' },
+    'spilloppbygging': { label: 'Spilloppbygging', icon: '\uD83D\uDCD0', color: '#1a82c4' },
     'keeper': { label: 'Keeper', icon: '\uD83E\uDDE4', color: '#eab308' }
   };
 
@@ -4195,7 +4195,7 @@
         html +=
           '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;">' +
             '<div style="font-size:11px; font-weight:500; color:var(--text-600);">' + mc + '</div>' +
-            '<div style="width:100%; max-width:32px; height:' + barH + 'px; background:#456C4B; border-radius:4px;"></div>' +
+            '<div style="width:100%; max-width:32px; height:' + barH + 'px; background:#1a82c4; border-radius:4px;"></div>' +
             '<div style="font-size:10px; color:var(--text-400);">' + MONTH_NAMES_NO[monthIdx] + '</div>' +
           '</div>';
       }
@@ -4530,7 +4530,7 @@
         '<div style="display:flex;flex-direction:column;align-items:center;margin:12px 0 4px;">' +
           (psAvatar
             ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;"><img src="/avatars/' + psAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-            : '<div style="width:72px;height:72px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>') +
+            : '<div style="width:72px;height:72px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>') +
         '</div>';
 
     // Badges
@@ -4691,7 +4691,7 @@
         if (pgm) {
           var parts = [];
           if (pgm.goals > 0) parts.push('\u26BD' + (pgm.goals > 1 ? '\u00d7' + pgm.goals : ''));
-          if (pgm.assists > 0) parts.push('<span style="font-weight:500; color:var(--primary, #456C4B);">A</span>' + (pgm.assists > 1 ? '\u00d7' + pgm.assists : ''));
+          if (pgm.assists > 0) parts.push('<span style="font-weight:500; color:var(--primary, #1a82c4);">A</span>' + (pgm.assists > 1 ? '\u00d7' + pgm.assists : ''));
           if (parts.length > 0) goalBadge = '<div style="font-size:12px; white-space:nowrap;">' + parts.join(' ') + '</div>';
         }
 
@@ -5206,7 +5206,7 @@
             '<div id="snEditAvatarPreview" style="width:80px;height:80px;border-radius:50%;overflow:hidden;' + (isImported ? 'cursor:pointer;' : '') + '">' +
               (currentAvatar
                 ? '<img src="/avatars/' + currentAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
-                : '<div style="width:80px;height:80px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>') +
+                : '<div style="width:80px;height:80px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>') +
             '</div>' +
             (isImported
               ? '<button type="button" id="snEditAvatarBtn" style="margin-top:10px;border:1px solid var(--border);background:var(--bg,#f3f6f3);border-radius:8px;padding:6px 16px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit;">' + (currentAvatar ? 'Endre avatar' : 'Velg avatar') + '</button>'
@@ -5285,7 +5285,7 @@
           if (avatarPreview) {
             avatarPreview.innerHTML = newAvatar
               ? '<img src="/avatars/' + newAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
-              : '<div style="width:80px;height:80px;border-radius:50%;background:var(--primary,#456C4B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>';
+              : '<div style="width:80px;height:80px;border-radius:50%;background:var(--primary,#1a82c4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;">' + (sp.name || '?').charAt(0).toUpperCase() + '</div>';
           }
           if (avatarBtn) avatarBtn.textContent = newAvatar ? 'Endre avatar' : 'Velg avatar';
         });
@@ -7359,7 +7359,7 @@
   function matchEventItemHtml(item, showActions) {
     var isAssist = item.type === 'assist';
     var icon = isAssist
-      ? '<span style="font-weight:500; color:var(--primary, #456C4B); font-size:14px; width:20px; text-align:center;">A</span>'
+      ? '<span style="font-weight:500; color:var(--primary, #1a82c4); font-size:14px; width:20px; text-align:center;">A</span>'
       : '<span>\u26BD</span>';
     var actions = '';
     if (showActions) {

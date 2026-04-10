@@ -8,7 +8,7 @@ Besluttet: 13. mars 2026
 ## Designprinsipper
 
 1. **Font-weight ned.** 400 er default. 500 for titler og spillernavn. 700 kun for logo/app-navn.
-2. **Grønn primary.** #456C4B erstatter #2563EB overalt.
+2. **Grønn primary.** #1a82c4 erstatter #2563EB overalt.
 3. **Konsekvent radius.** 16px for kort, 12px for elementer inne i kort, 10px for små badges.
 4. **Mykere borders.** 1px solid, ikke 2px. Farge: #d8e4da (grønntonet) i stedet for #E2E8F0 (blåtonet).
 5. **Pill-badges for status.** Kamp = grønn pill, Trening = oransje pill, Keeper = gul pill.
@@ -22,10 +22,10 @@ Besluttet: 13. mars 2026
 
 ### Primary (erstatter blå)
 ```
---primary:       #456C4B
---primary-light:  #5a8a60
---primary-dim:    rgba(69, 108, 75, 0.10)
---primary-glow:   rgba(69, 108, 75, 0.25)
+--primary:       #1a82c4
+--primary-light:  #3dbde8
+--primary-dim:    rgba(26, 130, 196, 0.10)
+--primary-glow:   rgba(26, 130, 196, 0.25)
 ```
 
 ### Bakgrunner
@@ -112,18 +112,18 @@ Besluttet: 13. mars 2026
 - border: 1px solid #d8e4da
 - padding: 16px
 - Ikon-sirkel: 36px, border-radius 12px
-  - Kamp: bg #e8f0e9, ikon #456C4B
+  - Kamp: bg #e8f0e9, ikon #1a82c4
   - Trening: bg #fef3e6, ikon #E88B2C
 - Type-pill høyrejustert: font-size 11px, padding 3px 10px, border-radius 20px
 - Fremtidige hendelser med opacity 0.55
 
 ### Bunnmeny
-- Aktiv: solid grønn sirkel (28px, bg #456C4B, ikon hvit)
+- Aktiv: solid grønn sirkel (28px, bg #1a82c4, ikon hvit)
 - Inaktiv: ingen bakgrunn, ikon #8a9a8e, tekst 9px weight 400
-- Aktiv tekst: #456C4B, weight 500
+- Aktiv tekst: #1a82c4, weight 500
 
 ### Knapper
-- Primary: bg #456C4B, color white, radius 12px, weight 500, padding 10px 18px
+- Primary: bg #1a82c4, color white, radius 12px, weight 500, padding 10px 18px
 - Secondary: bg white, border 1px #d8e4da, color #153F30, weight 500
 - Hover: ingen translateY, bruk filter:brightness(0.95) på primary, bg #f3f6f3 på secondary
 
@@ -151,28 +151,28 @@ Besluttet: 13. mars 2026
 
 | Fil | Søk | Erstatt | Kontekst |
 |-----|-----|---------|----------|
-| kampdag.js:808 | `'#2563eb'` | `'#456C4B'` | Midtbane fargekode |
-| kampdag.js:2764 | `#0b5bd3` | `#456C4B` | PDF header gradient |
-| kampdag.js:2764 | `#19b0ff` | `#5a8a60` | PDF header gradient slutt |
-| kampdag.js:2863 | `#0b5bd3` | `#456C4B` | PDF print-knapp |
-| season.js:175 | `'#3b82f6'` | `'#456C4B'` | Sub-team farge 1 |
-| season.js:3622 | `'#3b82f6'` | `'#456C4B'` | Spilloppbygging farge |
-| season.js:3738 | `#3b82f6` | `#456C4B` | Stats bar-farge |
-| season.js:4226 | `#2563eb` | `#456C4B` | Assist-ikon farge |
-| season.js:6733 | `#2563eb` | `#456C4B` | Assist-ikon farge |
-| sesong-kampdag.js:714 | `'#2563eb'` | `'#456C4B'` | Midtbane fargekode |
-| sesong-kampdag.js:2674 | `#0b5bd3` | `#456C4B` | PDF header |
-| sesong-kampdag.js:2773 | `#0b5bd3` | `#456C4B` | PDF print-knapp |
-| sesong-kampdag.js:3037 | `#3b82f6` | `#456C4B` | Timer border |
-| sesong-workout.js:1378 | `#0b5bd3` | `#456C4B` | PDF header |
-| sesong-workout.js:1387 | `#0b5bd3` | `#456C4B` | PDF knapper |
-| workout.js:3448 | `#0b5bd3` | `#456C4B` | Brand-variabel |
-| workout.js:3733 | `#2563eb` | `#456C4B` | Del økt-ikon |
-| workout.js:3761 | `#2563eb` | `#456C4B` | Import økt-ikon |
-| core.js:335 | `'#1976d2'` | `'#456C4B'` | Default team-farge |
-| core.js:573 | `'#1976d2'` | `'#456C4B'` | Nytt lag farge |
-| onboarding.js:247 | `'#2563eb'` | `'#456C4B'` | Farge-palette |
-| cup.js:882 | `'#3b82f6'` | `'#456C4B'` | Cup-farge |
+| kampdag.js:808 | `'#2563eb'` | `'#1a82c4'` | Midtbane fargekode |
+| kampdag.js:2764 | `#0b5bd3` | `#1a82c4` | PDF header gradient |
+| kampdag.js:2764 | `#19b0ff` | `#3dbde8` | PDF header gradient slutt |
+| kampdag.js:2863 | `#0b5bd3` | `#1a82c4` | PDF print-knapp |
+| season.js:175 | `'#3b82f6'` | `'#1a82c4'` | Sub-team farge 1 |
+| season.js:3622 | `'#3b82f6'` | `'#1a82c4'` | Spilloppbygging farge |
+| season.js:3738 | `#3b82f6` | `#1a82c4` | Stats bar-farge |
+| season.js:4226 | `#2563eb` | `#1a82c4` | Assist-ikon farge |
+| season.js:6733 | `#2563eb` | `#1a82c4` | Assist-ikon farge |
+| sesong-kampdag.js:714 | `'#2563eb'` | `'#1a82c4'` | Midtbane fargekode |
+| sesong-kampdag.js:2674 | `#0b5bd3` | `#1a82c4` | PDF header |
+| sesong-kampdag.js:2773 | `#0b5bd3` | `#1a82c4` | PDF print-knapp |
+| sesong-kampdag.js:3037 | `#3b82f6` | `#1a82c4` | Timer border |
+| sesong-workout.js:1378 | `#0b5bd3` | `#1a82c4` | PDF header |
+| sesong-workout.js:1387 | `#0b5bd3` | `#1a82c4` | PDF knapper |
+| workout.js:3448 | `#0b5bd3` | `#1a82c4` | Brand-variabel |
+| workout.js:3733 | `#2563eb` | `#1a82c4` | Del økt-ikon |
+| workout.js:3761 | `#2563eb` | `#1a82c4` | Import økt-ikon |
+| core.js:335 | `'#1976d2'` | `'#1a82c4'` | Default team-farge |
+| core.js:573 | `'#1976d2'` | `'#1a82c4'` | Nytt lag farge |
+| onboarding.js:247 | `'#2563eb'` | `'#1a82c4'` | Farge-palette |
+| cup.js:882 | `'#3b82f6'` | `'#1a82c4'` | Cup-farge |
 
 ---
 

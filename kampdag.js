@@ -727,7 +727,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const needs = { F: kdFormation[0], M: kdFormation[1], A: kdFormation[2] };
     const zones = [
       { key: 'F', name: 'Back', need: needs.F, have: counts.F, color: '#16a34a' },
-      { key: 'M', name: 'Linjespiller', need: needs.M, have: counts.M, color: '#456C4B' },
+      { key: 'M', name: 'Linjespiller', need: needs.M, have: counts.M, color: '#1a82c4' },
       { key: 'A', name: 'Kant', need: needs.A, have: counts.A, color: '#dc2626' },
     ].filter(z => z.need > 0);
 
@@ -2689,7 +2689,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;background:#0f172a;color:#e2e8f0;line-height:1.45}
 .wrap{max-width:900px;margin:0 auto;padding:16px}
-.header{background:linear-gradient(135deg,#456C4B,#5a8a60);color:#fff;border-radius:10px;padding:6px 10px;display:flex;gap:8px;align-items:center;box-shadow:0 3px 8px rgba(11,91,211,0.3)}
+.header{background:linear-gradient(135deg,#1a82c4,#3dbde8);color:#fff;border-radius:10px;padding:6px 10px;display:flex;gap:8px;align-items:center;box-shadow:0 3px 8px rgba(11,91,211,0.3)}
 .logo{width:40px;height:40px;border-radius:8px;background:#fff;overflow:hidden;flex-shrink:0}
 .logo img{width:40px;height:40px;object-fit:cover}
 .h-title{font-size:13px;font-weight:700}
@@ -2788,7 +2788,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 
   <div class="footer">Laget med Barnehandballtrener.no</div>
   <div class="actions" style="display:flex;gap:10px;margin-top:12px;">
-    <button style="border:0;border-radius:10px;padding:10px 16px;font-weight:500;background:#456C4B;color:#fff;cursor:pointer;font-size:13px;" onclick="window.print()">Lagre som PDF</button>
+    <button style="border:0;border-radius:10px;padding:10px 16px;font-weight:500;background:#1a82c4;color:#fff;cursor:pointer;font-size:13px;" onclick="window.print()">Lagre som PDF</button>
   </div>
   <div id="saveGuide" style="margin-top:12px;"></div>
   <script>

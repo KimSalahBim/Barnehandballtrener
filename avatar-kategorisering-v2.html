@@ -7,16 +7,16 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f3f6f3; color: #2c2c2c; padding: 12px; }
-  h1 { color: #456C4B; margin-bottom: 4px; font-size: 20px; }
+  h1 { color: #1a82c4; margin-bottom: 4px; font-size: 20px; }
   .info { color: #666; margin-bottom: 8px; font-size: 13px; }
 
   .toolbar { background: white; border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; border: 1px solid #d8e4da; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .toolbar button { background: #456C4B; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
-  .toolbar .count { font-size: 13px; color: #456C4B; font-weight: 600; }
+  .toolbar button { background: #1a82c4; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .toolbar .count { font-size: 13px; color: #1a82c4; font-weight: 600; }
 
   .mode-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
-  .mode-tab { background: #e8efe8; border: 1px solid #d8e4da; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 13px; color: #456C4B; }
-  .mode-tab.active { background: #456C4B; color: white; border-color: #456C4B; }
+  .mode-tab { background: #e8efe8; border: 1px solid #d8e4da; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 13px; color: #1a82c4; }
+  .mode-tab.active { background: #1a82c4; color: white; border-color: #1a82c4; }
 
   /* === SINGLE MODE === */
   .single-view { display: none; text-align: center; }
@@ -24,35 +24,35 @@
   .single-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid #d8e4da; max-width: 400px; margin: 0 auto; }
   .single-card img { width: 180px; height: 180px; border-radius: 50%; display: block; margin: 0 auto 16px; }
   .single-num { font-size: 14px; color: #888; margin-bottom: 12px; }
-  .single-current { font-size: 14px; font-weight: 700; color: #456C4B; margin-bottom: 16px; }
+  .single-current { font-size: 14px; font-weight: 700; color: #1a82c4; margin-bottom: 16px; }
   .cat-row { margin-bottom: 12px; }
   .cat-row label { font-size: 12px; font-weight: 700; color: #888; display: block; margin-bottom: 4px; }
   .cat-opts { display: flex; gap: 6px; justify-content: center; }
   .cat-btn { border: 2px solid #d8e4da; border-radius: 10px; padding: 8px 16px; font-size: 14px; cursor: pointer; font-weight: 700; background: #f8faf8; transition: all 0.1s; min-width: 70px; }
-  .cat-btn:hover { border-color: #456C4B; background: #eef4ee; }
-  .cat-btn.active { background: #456C4B; color: white; border-color: #456C4B; }
+  .cat-btn:hover { border-color: #1a82c4; background: #eef4ee; }
+  .cat-btn.active { background: #1a82c4; color: white; border-color: #1a82c4; }
   .cat-btn .key { font-size: 10px; display: block; color: #aaa; margin-top: 2px; }
   .cat-btn.active .key { color: rgba(255,255,255,0.7); }
   .nav-btns { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
   .nav-btns button { padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid #d8e4da; background: #f8faf8; }
-  .nav-btns button.primary { background: #456C4B; color: white; border-color: #456C4B; }
+  .nav-btns button.primary { background: #1a82c4; color: white; border-color: #1a82c4; }
   .progress-bar { height: 6px; background: #e8efe8; border-radius: 3px; margin-bottom: 10px; }
-  .progress-fill { height: 100%; background: #456C4B; border-radius: 3px; transition: width 0.2s; }
+  .progress-fill { height: 100%; background: #1a82c4; border-radius: 3px; transition: width 0.2s; }
 
   /* === GRID MODE === */
   .grid-view { display: none; }
   .grid-view.active { display: block; }
   .page-nav { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-  .page-btn { background: #e8efe8; border: 1px solid #d8e4da; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-weight: 600; color: #456C4B; }
-  .page-btn.active { background: #456C4B; color: white; }
+  .page-btn { background: #e8efe8; border: 1px solid #d8e4da; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-weight: 600; color: #1a82c4; }
+  .page-btn.active { background: #1a82c4; color: white; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 5px; }
   .card { text-align: center; background: white; border-radius: 10px; padding: 4px; border: 2px solid #d8e4da; cursor: pointer; transition: border-color 0.15s; }
-  .card:hover { border-color: #456C4B; }
+  .card:hover { border-color: #1a82c4; }
   .card.done { border-color: #22c55e; }
   .card.undone { border-color: #fbbf24; }
   .card img { width: 60px; height: 60px; border-radius: 50%; display: block; margin: 0 auto; }
   .card .num { font-size: 10px; color: #888; }
-  .card .meta { font-size: 9px; font-weight: 700; color: #456C4B; margin-top: 1px; }
+  .card .meta { font-size: 9px; font-weight: 700; color: #1a82c4; margin-top: 1px; }
   .card .meta.empty { color: #ccc; }
 
   .export-area { margin-top: 16px; }
@@ -126,7 +126,7 @@
 <div class="export-area" id="exportArea" style="display:none;">
   <p style="font-weight:600;margin-bottom:6px;">Metadata-streng (kopier til avatar.js):</p>
   <textarea id="exportText" readonly></textarea>
-  <button onclick="copyExport()" style="margin-top:8px;background:#456C4B;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">Kopier til utklippstavle</button>
+  <button onclick="copyExport()" style="margin-top:8px;background:#1a82c4;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">Kopier til utklippstavle</button>
 </div>
 
 <script>
