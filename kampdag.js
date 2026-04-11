@@ -228,7 +228,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       renderKampdagPlayers();
       updateKampdagCounts();
       refreshKeeperUI();
-      if (kdFormationOn) { renderPositionList(); updateCoverage(); }
+      if (kdFormationOn) { renderPositionList(); }
       if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Players re-rendered, count:', getPlayersArray().length);
     } catch (err) {
       console.error('[Kampdag] Error in players:updated handler:', err);
@@ -324,14 +324,14 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       kdSelected = new Set(getPlayersArray().map(p => p.id));
       renderKampdagPlayers();
       refreshKeeperUI();
-      if (kdFormationOn) { renderPositionList(); updateCoverage(); }
+      if (kdFormationOn) { renderPositionList(); }
     });
 
     if (deselectAllBtn) deselectAllBtn.addEventListener('click', () => {
       kdSelected = new Set();
       renderKampdagPlayers();
       refreshKeeperUI();
-      if (kdFormationOn) { renderPositionList(); updateCoverage(); }
+      if (kdFormationOn) { renderPositionList(); }
     });
 
     if (refreshBtn) refreshBtn.addEventListener('click', () => {
@@ -577,7 +577,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         updateKampdagCounts();
         refreshKeeperUI();
         updateKeeperSummary();
-        if (kdFormationOn) { renderPositionList(); updateCoverage(); }
+        if (kdFormationOn) { renderPositionList(); }
       });
     });
 
@@ -786,12 +786,10 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         kdFormation = opts[key];
         grid.querySelectorAll('.kd-formation-opt').forEach(o => o.classList.remove('kd-formation-active'));
         opt.classList.add('kd-formation-active');
-        updateCoverage();
       });
     });
 
     renderPositionList();
-    updateCoverage();
   }
 
   function renderPositionList() {
@@ -816,48 +814,6 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         posStatus.innerHTML = '<span style="color:var(--warning,#b45309);font-size:12px;font-weight:600;">⚠️ ' + withoutPref + ' spiller' + (withoutPref > 1 ? 'e' : '') + ' mangler posisjonsinnstilling — sett i Spillere-fanen</span>';
       }
     }
-  }
-
-  function updateCoverage() {
-    const el = $('kdCoverage');
-    if (!el || !kdFormation) { if (el) el.style.display = 'none'; return; }
-
-    const present = getPresentPlayers();
-    const posMap = getPositionsMap();
-    const counts = { F: 0, M: 0, A: 0 };
-    present.forEach(p => {
-      const pos = posMap[p.id] || new Set(['F', 'M', 'A']);
-      if (pos.has('F')) counts.F++;
-      if (pos.has('M')) counts.M++;
-      if (pos.has('A')) counts.A++;
-    });
-
-    const needs = { F: kdFormation[0], M: kdFormation[1], A: kdFormation[2] };
-    const zones = [
-      { key: 'F', name: 'Back', need: needs.F, have: counts.F, color: '#16a34a' },
-      { key: 'M', name: 'Linjespiller', need: needs.M, have: counts.M, color: '#1a82c4' },
-      { key: 'A', name: 'Kant', need: needs.A, have: counts.A, color: '#dc2626' },
-    ].filter(z => z.need > 0);
-
-    const warn = zones.some(z => z.have < z.need);
-    el.style.display = 'block';
-    el.style.background = warn ? 'var(--warning-dim)' : 'var(--success-dim)';
-    el.style.color = warn ? 'var(--warning)' : 'var(--success)';
-
-    el.innerHTML = `<div style="font-weight:500; margin-bottom:6px;">${warn ? '\u26a0 ' : ''}Sonedekning for ${kdFormationKey}</div>` +
-      zones.map(z => {
-        const pct = Math.min(100, Math.round((z.have / Math.max(1, present.length)) * 100));
-        const low = z.have < z.need;
-        return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${z.color};flex-shrink:0;"></span>
-          <span style="width:72px;">${z.name} (${z.need})</span>
-          <div style="flex:1;height:6px;background:rgba(0,0,0,0.06);border-radius:3px;overflow:hidden;">
-            <div style="height:100%;width:${pct}%;background:${low ? 'var(--warning)' : z.color};border-radius:3px;"></div>
-          </div>
-          <span style="width:32px;text-align:right;font-weight:500;${low ? 'color:var(--warning);' : ''}">${z.have}${low ? ' \u26a0' : ''}</span>
-        </div>`;
-      }).join('') +
-      (warn ? `<div style="margin-top:6px;font-size:12px;">Noen spillere vil bli plassert utenfor preferanse.</div>` : '');
   }
 
   // Assign positions to a lineup based on formation + preferences
@@ -3087,7 +3043,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     // 4. Oppdater avhengig UI
     refreshKeeperUI();
     updateKampdagCounts();
-    if (kdFormationOn) { renderPositionList(); updateCoverage(); }
+    if (kdFormationOn) { renderPositionList(); }
 
     if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Prefilled from sesong:', opts);
     return true;

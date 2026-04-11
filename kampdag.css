@@ -483,9 +483,10 @@
   font-size: 14px; flex-shrink: 0;
 }
 .kd-keeper-select {
-  flex: 1; border: none; background: transparent;
+  flex: 1; min-width: 80px; width: 0;
+  border: none; background: transparent;
   font-family: inherit; font-size: 14px; font-weight: 600;
-  color: var(--text-900, #0f172a); outline: none; cursor: pointer; min-width: 0;
+  color: var(--text-900, #0f172a); outline: none; cursor: pointer;
 }
 .kd-keeper-min-input {
   width: 48px; border: 1.5px solid var(--border, #e2e8f0);
