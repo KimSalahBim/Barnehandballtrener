@@ -711,7 +711,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   function makeKeeperOptions(presentPlayers) {
     const header = `<option value="">Velg spiller</option>`;
     const items = presentPlayers.map(p => {
-      const icon = p.goalie ? '\ud83e\udde4' : '\u26bd';
+      const icon = p.goalie ? '🧤' : '🤾';
       return `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} ${icon}</option>`;
     }).join('');
     return header + items;
