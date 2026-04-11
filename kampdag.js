@@ -13,9 +13,9 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // ------------------------------
   function $(id) { return document.getElementById(id); }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
-  /** Outfield bonus minutes for multi-keeper balance (2–4 min, scales with match length). */
+  /** Outfield bonus minutes for multi-keeper balance (1–4 min, scales with match length). */
   function keeperBonusFromMatchMinutes(T) {
-    return Math.min(4, Math.max(2, Math.round(T / 20)));
+    return Math.min(4, Math.max(1, Math.round(T / 20)));
   }
 
   function getPlayersArray() {
