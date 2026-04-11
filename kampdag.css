@@ -438,63 +438,6 @@
 }
 .kd-mode-chip.kd-freq-active .kd-chip-sub { color: var(--primary, #1a82c4); opacity: 0.7; }
 
-/* Keeper counter */
-.kd-counter {
-  display: flex; align-items: center;
-  border: 1.5px solid var(--border, #e2e8f0);
-  border-radius: 10px; overflow: hidden;
-  background: var(--bg, #f8fafc);
-}
-.kd-counter-btn {
-  width: 36px; height: 36px; border: none; background: transparent;
-  font-size: 20px; font-weight: 700; cursor: pointer;
-  color: var(--primary, #1a82c4); font-family: inherit;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.1s;
-}
-.kd-counter-btn:hover { background: var(--primary-dim, rgba(26,130,196,0.1)); }
-.kd-counter-btn:disabled { color: var(--text-400, #94a3b8); cursor: not-allowed; }
-#kdKeeperCountDisplay {
-  width: 34px; text-align: center; font-size: 17px; font-weight: 800;
-  color: var(--text-900, #0f172a);
-  border-left: 1px solid var(--border, #e2e8f0);
-  border-right: 1px solid var(--border, #e2e8f0);
-  line-height: 36px;
-}
-
-/* Keeper rows — avoid overflow:hidden (breaks native <select> on many mobile browsers) */
-.kd-keeper-row {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg, #f8fafc);
-  border: 1.5px solid var(--border, #e2e8f0);
-  border-radius: 10px; padding: 8px 10px;
-  min-width: 0;
-}
-.kd-keeper-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--primary, #1a82c4); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.kd-keeper-select {
-  flex: 1; min-width: 0; max-width: 100%;
-  width: 100%;
-  border: none; background: transparent;
-  font-family: inherit; font-size: 14px; font-weight: 600;
-  color: var(--text-900, #0f172a); outline: none; cursor: pointer;
-}
-.kd-keeper-min-input {
-  width: 48px; border: 1.5px solid var(--border, #e2e8f0);
-  border-radius: 8px; padding: 4px 6px; font-family: inherit;
-  font-size: 14px; font-weight: 700; text-align: center;
-  color: var(--text-900, #0f172a); background: white;
-  outline: none; flex-shrink: 0;
-}
-.kd-keeper-min-label {
-  font-size: 11px; color: var(--text-400, #94a3b8);
-  font-weight: 500; flex-shrink: 0;
-}
-
 /* ── KAMPDAG UI REDESIGN ── */
 .kd-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
@@ -589,11 +532,21 @@
   font-size: 14px; flex-shrink: 0;
 }
 .kd-keeper-select {
-  flex: 1; min-width: 0;
-  border: none; background: transparent;
-  font-family: inherit; font-size: 14px; font-weight: 600;
-  color: var(--text-900, #0f172a); outline: none; cursor: pointer;
-  -webkit-appearance: auto; appearance: auto;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-900, #0f172a);
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: auto;
+  appearance: auto;
 }
 .kd-keeper-min-input {
   width: 52px; border: 1.5px solid var(--border, #e2e8f0);
