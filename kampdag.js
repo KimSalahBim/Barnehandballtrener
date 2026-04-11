@@ -253,18 +253,18 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         const nffMap = {
           6:  { format: '4', minutes: 20 },
           7:  { format: '4', minutes: 20 },
-          8:  { format: '4', minutes: 20 },
-          9:  { format: '5', minutes: 30 },
-          10: { format: '5', minutes: 30 },
-          11: { format: '6', minutes: 40 },
-          12: { format: '6', minutes: 40 },
+          8:  { format: '5', minutes: 25 },
+          9:  { format: '5', minutes: 25 },
+          10: { format: '6', minutes: 25 },
+          11: { format: '6', minutes: 25 },
+          12: { format: '7', minutes: 40 },
           13: { format: '7', minutes: 40 }
         };
         const nff = nffMap[ageNum];
         if (nff) {
           const formatEl = $('kdFormat');
           const minutesEl = $('kdMinutes');
-          if (formatEl && formatEl.value === '7' && minutesEl && minutesEl.value === '40') {
+          if (formatEl && minutesEl) {
             // Only override if user hasn't changed defaults
             formatEl.value = nff.format;
             minutesEl.value = nff.minutes;
@@ -301,7 +301,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       // Auto-set match duration based on format (Norwegian youth handball defaults)
       if (minutesEl) {
         const fmt = parseInt(formatEl.value, 10) || 7;
-        const defaultMinutes = { 4: 20, 5: 30, 6: 40, 7: 40 };
+        const defaultMinutes = { 4: 20, 5: 25, 6: 25, 7: 40 };
         if (defaultMinutes[fmt]) {
           minutesEl.value = defaultMinutes[fmt];
           // Programmatic value change doesn't fire 'input' event,
@@ -449,6 +449,98 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         renderFormationGrid();
       }
     });
+
+    // ── Helper: activate duration pill by value ──
+    function activateDurPill(min) {
+      var durPillsEl = document.getElementById('kdDurPills');
+      if (!durPillsEl) return;
+      durPillsEl.querySelectorAll('.kd-dur-pill').forEach(function(b) {
+        b.classList.toggle('kd-pill-active', parseInt(b.dataset.min, 10) === min);
+      });
+      var customRow = document.getElementById('kdDurCustomRow');
+      if (customRow) customRow.style.display = 'none';
+      var el = $('kdMinutes');
+      if (el) {
+        el.value = min;
+        el.dispatchEvent(new Event('input'));
+      }
+    }
+
+    // ── Helper: update keeper counter display ──
+    function updateKeeperCounter(delta) {
+      var kcEl = $('kdKeeperCount');
+      var display = $('kdKeeperCountDisplay');
+      var current = clamp(parseInt(kcEl ? kcEl.value : '1', 10), 0, 4);
+      var next = clamp(current + delta, 0, 4);
+      if (kcEl) kcEl.value = String(next);
+      if (display) display.textContent = String(next);
+      var minusBtn = $('kdKeeperMinus');
+      var plusBtn = $('kdKeeperPlus');
+      if (minusBtn) minusBtn.disabled = (next <= 0);
+      if (plusBtn) plusBtn.disabled = (next >= 4);
+      refreshKeeperUI();
+      autoFillKeeperMinutes();
+      updateKeeperSummary();
+    }
+
+    // ── Format pills ──
+    var formatPillsEl = document.getElementById('kdFormatPills');
+    if (formatPillsEl) {
+      formatPillsEl.addEventListener('click', function(e) {
+        var btn = e.target.closest('.kd-pill[data-format]');
+        if (!btn) return;
+        formatPillsEl.querySelectorAll('.kd-pill').forEach(function(b) {
+          b.classList.remove('kd-pill-active');
+        });
+        btn.classList.add('kd-pill-active');
+        var fmt = btn.dataset.format;
+        var formatEl2 = $('kdFormat');
+        if (formatEl2) {
+          formatEl2.value = fmt;
+          formatEl2.dispatchEvent(new Event('change'));
+        }
+        // Set handball-correct duration and update pill UI
+        var durMap = { '4': 20, '5': 25, '6': 25, '7': 40 };
+        var autoMin = durMap[fmt];
+        if (autoMin) activateDurPill(autoMin);
+        // Trigger same downstream updates as existing change handler
+        refreshKeeperUI();
+        updateKampdagCounts();
+      });
+    }
+
+    // ── Duration pills ──
+    var durPillsEl2 = document.getElementById('kdDurPills');
+    if (durPillsEl2) {
+      durPillsEl2.addEventListener('click', function(e) {
+        var btn = e.target.closest('.kd-dur-pill[data-min]');
+        if (!btn) return;
+        durPillsEl2.querySelectorAll('.kd-dur-pill').forEach(function(b) {
+          b.classList.remove('kd-pill-active');
+        });
+        btn.classList.add('kd-pill-active');
+        var customRow = document.getElementById('kdDurCustomRow');
+        var min = parseInt(btn.dataset.min, 10);
+        if (min === 0) {
+          if (customRow) customRow.style.display = 'block';
+          var inp = $('kdMinutes');
+          if (inp) inp.focus();
+        } else {
+          if (customRow) customRow.style.display = 'none';
+          var el = $('kdMinutes');
+          if (el) {
+            el.value = min;
+            el.dispatchEvent(new Event('input'));
+          }
+        }
+      });
+    }
+
+    // ── Keeper counter buttons ──
+    var keeperMinusBtn = $('kdKeeperMinus');
+    var keeperPlusBtn = $('kdKeeperPlus');
+    if (keeperMinusBtn) keeperMinusBtn.addEventListener('click', function() { updateKeeperCounter(-1); });
+    if (keeperPlusBtn) keeperPlusBtn.addEventListener('click', function() { updateKeeperCounter(1); });
   }
 
   // ------------------------------
@@ -708,6 +800,22 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
     container.innerHTML = '';
     container.closest('section, .kd-card, [class*="section"]')?.style.setProperty('display','none');
+
+    var posStatus = $('kdPosStatus');
+    if (posStatus) {
+      var present = getPresentPlayers();
+      var posMap = getPositionsMap();
+      var withoutPref = present.filter(function(p) {
+        var pos = posMap[p.id];
+        return !pos || pos.size === 0;
+      }).length;
+      posStatus.style.display = 'block';
+      if (withoutPref === 0) {
+        posStatus.innerHTML = '<span style="color:var(--success,#15803d);font-size:12px;font-weight:700;">✓ Alle spillere har posisjonsinnstilling</span>';
+      } else {
+        posStatus.innerHTML = '<span style="color:var(--warning,#b45309);font-size:12px;font-weight:600;">⚠️ ' + withoutPref + ' spiller' + (withoutPref > 1 ? 'e' : '') + ' mangler posisjonsinnstilling — sett i Spillere-fanen</span>';
+      }
+    }
   }
 
   function updateCoverage() {
