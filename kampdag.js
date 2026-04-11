@@ -471,12 +471,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       var kcEl = $('kdKeeperCount');
       var display = $('kdKeeperCountDisplay');
       var current = clamp(parseInt(kcEl ? kcEl.value : '1', 10), 0, 4);
-      var next = clamp(current + delta, 0, 4);
+      var next = clamp(current + delta, 1, 4);
       if (kcEl) kcEl.value = String(next);
       if (display) display.textContent = String(next);
       var minusBtn = $('kdKeeperMinus');
       var plusBtn = $('kdKeeperPlus');
-      if (minusBtn) minusBtn.disabled = (next <= 0);
+      if (minusBtn) minusBtn.disabled = (next <= 1);
       if (plusBtn) plusBtn.disabled = (next >= 4);
       refreshKeeperUI();
       autoFillKeeperMinutes();
@@ -655,6 +655,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const kcEl = $('kdKeeperCount');
     if (kcEl && parseInt(kcEl.value, 10) < 1) {
       kcEl.value = '1';
+      const disp = $('kdKeeperCountDisplay');
+      if (disp) disp.textContent = '1';
+      const minusBtn = $('kdKeeperMinus');
+      const plusBtn = $('kdKeeperPlus');
+      if (minusBtn) minusBtn.disabled = true;
+      if (plusBtn) plusBtn.disabled = false;
       autoFillKeeperMinutes();
     }
 
