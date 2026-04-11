@@ -658,8 +658,9 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       autoFillKeeperMinutes();
     }
 
+    // Fall back to all players if no one is marked present yet
     const present = getPresentPlayers();
-    const opts = makeKeeperOptions(present);
+    const opts = makeKeeperOptions(present.length > 0 ? present : getPlayersArray());
 
     for (let i = 1; i <= 4; i++) {
       const sel = $(`kdKeeper${i}`);
