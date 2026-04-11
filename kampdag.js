@@ -13,6 +13,10 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // ------------------------------
   function $(id) { return document.getElementById(id); }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  /** Outfield bonus minutes for multi-keeper balance (2–4 min, scales with match length). */
+  function keeperBonusFromMatchMinutes(T) {
+    return Math.min(4, Math.max(2, Math.round(T / 20)));
+  }
 
   function getPlayersArray() {
     const raw = window.players;
@@ -1414,7 +1418,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const keepers = keeperTimeline || [];
     if (keepers.length >= 2 && P && N) {
       const target = P * T / N;
-      const keeperBonus = Math.min(4, Math.max(2, Math.round(T / 20)));
+      const keeperBonus = keeperBonusFromMatchMinutes(T);
       for (const kseg of keepers) {
         const kTime = kseg.end - kseg.start;
         const outfield = Math.round(Math.max(5, target - kTime + keeperBonus));
@@ -1535,7 +1539,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       keeperExcludeSegs[kid] = new Set();
     }
     if (keeperSet.size >= 2) {
-      const keeperBonus = Math.min(4, Math.max(2, Math.round(T / 20)));
+      const keeperBonus = keeperBonusFromMatchMinutes(T);
       for (const ktlSeg of (keeperTimeline || [])) {
         const kid = ktlSeg.keeperId;
         if (!keeperSet.has(kid)) continue;
