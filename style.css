@@ -408,9 +408,10 @@ body {
     animation: fadeInContent 0.4s ease;
 }
 
+/* Opacity only — transform on .tab-content breaks native <select> on iOS Safari */
 @keyframes fadeInContent {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Tab Headers */
@@ -2807,6 +2808,16 @@ body.gated #mainApp {
   #kampdag .kd-keeper-row select,
   #kampdag .kd-keeper-row input {
     min-width: 0 !important;
+  }
+  /* Keeper select must not fill 100% — it sits in a flex row with avatar + minute input + label */
+  #kampdag .kd-keeper-row select.kd-keeper-select {
+    width: auto !important;
+    max-width: 100% !important;
+    flex: 1 1 0 !important;
+  }
+  #kampdag .kd-keeper-row input.kd-keeper-min-input {
+    width: 48px !important;
+    flex-shrink: 0 !important;
   }
   #kampdag .selection-header {
     margin-top: 6px !important;

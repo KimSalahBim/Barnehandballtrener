@@ -358,6 +358,17 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       if (min) min.addEventListener('input', updateKeeperSummary);
     }
 
+    const keeperPanel = $('kdKeeperPanel');
+    if (keeperPanel && !keeperPanel.dataset.kdFocusOutBound) {
+      keeperPanel.dataset.kdFocusOutBound = '1';
+      keeperPanel.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          if (keeperPanel.contains(document.activeElement)) return;
+          refreshKeeperUI();
+        });
+      });
+    }
+
     if (genBtn) genBtn.addEventListener('click', generateKampdagPlan);
     if (copyBtn) copyBtn.addEventListener('click', copyKampdagPlan);
 
@@ -672,6 +683,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const sel = $(`kdKeeper${i}`);
       if (!sel) continue;
 
+      // iOS: replacing options while the native picker is open breaks the control.
+      if (sel === document.activeElement) continue;
+
+      if (sel.dataset.kdOptsSig === opts) continue;
+
+      sel.dataset.kdOptsSig = opts;
       const prev = sel.value;
       sel.innerHTML = opts;
 
