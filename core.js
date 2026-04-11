@@ -37,6 +37,23 @@
     }
   }
 
+  (function injectMultiTabCSS() {
+    if (document.getElementById('bft-multitab-style')) return;
+    var s = document.createElement('style');
+    s.id = 'bft-multitab-style';
+    s.textContent = '#bft-stale-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1e3a5f;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;font-family:inherit;box-shadow:0 -2px 12px rgba(0,0,0,0.3);}#bft-stale-banner button{background:#3dbde8;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}';
+    document.head.appendChild(s);
+  })();
+
+  function showStaleDataBanner() {
+    if (document.getElementById('bft-stale-banner')) return;
+    var banner = document.createElement('div');
+    banner.id = 'bft-stale-banner';
+    banner.innerHTML = '<span>⚠️ Siden er oppdatert fra en annen enhet. Last inn på nytt for å se siste data.</span>'
+      + '<button onclick="window.location.reload()">Last inn på nytt</button>';
+    document.body.appendChild(banner);
+  }
+
   // ------------------------------
   // Keys (per bruker hvis innlogget)
   // ------------------------------
@@ -283,7 +300,19 @@
         return null;
       }
 
-      return result.data || [];
+      var rows = result.data || [];
+      try {
+        if (rows.length > 0) {
+          var newestCloud = rows.reduce(function(max, r) {
+            return (r.updated_at && r.updated_at > max) ? r.updated_at : max;
+          }, '');
+          var localKey = 'bft_last_pull_' + (state.currentTeamId || 'default');
+          var lastPull = safeGet(localKey) || '';
+          if (lastPull && newestCloud > lastPull) showStaleDataBanner();
+          safeSet(localKey, new Date().toISOString());
+        }
+      } catch (_) {}
+      return rows;
     } catch (e) {
       console.warn('[core.js] Cloud load feilet:', e.message);
       return null;
@@ -1598,7 +1627,7 @@
 
       if (state.currentTeamId === tid) {
         renderAll();
-        console.log('[core.js] Cloud data lastet (settings, liga)');
+        if (window.__BF_IS_DEBUG_HOST) console.log('[core.js] Cloud data lastet (settings, liga)');
       }
     } catch (e) {
       console.warn('[core.js] loadCloudUserData feilet:', e.message);
@@ -1614,7 +1643,7 @@
     var ligaRaw = safeGet(k('liga'));
     if (ligaRaw) debouncedCloudSync('liga', ligaRaw);
 
-    console.log('[core.js] Bootstrap: pusher lokal data til cloud');
+    if (window.__BF_IS_DEBUG_HOST) console.log('[core.js] Bootstrap: pusher lokal data til cloud');
   }
 
   function saveState() {

@@ -3,11 +3,11 @@
 // Kampdag: oppm\u00f8te -> start/benk -> bytteplan med roligere bytter og bedre spilletidsfordeling.
 // Bruker global variabel "window.players" (Array) som settes av core.js.
 
-console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
+if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
 (function () {
   'use strict';
-  console.log('KAMPDAG.JS - INSIDE IIFE');
+  if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS - INSIDE IIFE');
   // ------------------------------
   // Utils
   // ------------------------------
@@ -178,11 +178,11 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // ------------------------------
   
   // Register event listener IMMEDIATELY (not waiting for DOMContentLoaded)
-  console.log('[Kampdag] Script loaded - registering event listener');
+  if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Script loaded - registering event listener');
 
   // Reset kampdag when team changes
   window.addEventListener('team:changed', () => {
-    console.log('[Kampdag] team:changed  -  resetting kampdag state');
+    if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] team:changed  -  resetting kampdag state');
     try {
       // Stop timer if running
       if (kdTimerInterval || kdTimerStart) stopMatchTimer();
@@ -210,7 +210,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   });
 
   window.addEventListener('players:updated', (e) => {
-    console.log('[Kampdag] players:updated event mottatt:', e.detail);
+    if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] players:updated event mottatt:', e.detail);
     try {
       // Sync selection: add new players, remove deleted ones, preserve user's deselections
       const currentIds = new Set(getPlayersArray().map(p => p.id));
@@ -229,17 +229,17 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       updateKampdagCounts();
       refreshKeeperUI();
       if (kdFormationOn) { renderPositionList(); updateCoverage(); }
-      console.log('[Kampdag] Players re-rendered, count:', getPlayersArray().length);
+      if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Players re-rendered, count:', getPlayersArray().length);
     } catch (err) {
       console.error('[Kampdag] Error in players:updated handler:', err);
     }
   });
   
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Kampdag] DOMContentLoaded');
+    if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] DOMContentLoaded');
     const root = $('kampdag');
     if (!root) {
-      console.log('[Kampdag] Root element ikke funnet');
+      if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Root element ikke funnet');
       return;
     }
 
@@ -268,7 +268,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
             // Only override if user hasn't changed defaults
             formatEl.value = nff.format;
             minutesEl.value = nff.minutes;
-            console.log('[Kampdag] Pre-set from onboarding:', ageClass, '->', nff.format + 'er', nff.minutes + 'min');
+            if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Pre-set from onboarding:', ageClass, '->', nff.format + 'er', nff.minutes + 'min');
           }
         }
       }
@@ -276,7 +276,7 @@ console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     
     // Sjekk om spillere allerede er tilgjengelig
     const players = getPlayersArray();
-    console.log('[Kampdag] Initial players:', players.length);
+    if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Initial players:', players.length);
     if (players.length > 0) {
       kdSelected = new Set(players.map(p => p.id));
       kdPreviousPlayerIds = new Set(players.map(p => p.id));
@@ -2981,7 +2981,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     updateKampdagCounts();
     if (kdFormationOn) { renderPositionList(); updateCoverage(); }
 
-    console.log('[Kampdag] Prefilled from sesong:', opts);
+    if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Prefilled from sesong:', opts);
     return true;
   };
 })();

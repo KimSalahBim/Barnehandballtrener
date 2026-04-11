@@ -14,7 +14,7 @@
     if (e.persisted) {
       // Siden ble restored fra bfcache - clear state og rebind
       delete window.__bf_subscription_click_handler;
-      console.log(`${LOG_PREFIX} 🔄 State cleared after bfcache restore, rebinding...`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🔄 State cleared after bfcache restore, rebinding...`);
       // Trigger rebind
       bind();
     }
@@ -35,7 +35,7 @@
       Date.now() < statusCache.expires &&
       statusCache.userId === currentUserId
     ) {
-      console.log(`${LOG_PREFIX} 💾 Using cached subscription status for user ${currentUserId?.substring(0, 8)}... (${Math.floor((statusCache.expires - Date.now())/1000)}s left)`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 💾 Using cached subscription status for user ${currentUserId?.substring(0, 8)}... (${Math.floor((statusCache.expires - Date.now())/1000)}s left)`);
       return statusCache.status;
     }
     return null;
@@ -56,7 +56,7 @@
     if (tokenCache.token && 
         Date.now() < tokenCache.expires && 
         tokenCache.userId === currentUserId) {
-      console.log(`${LOG_PREFIX} 💾 Using cached token for user ${currentUserId?.substring(0, 8)}... (${Math.floor((tokenCache.expires - Date.now())/1000)}s left)`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 💾 Using cached token for user ${currentUserId?.substring(0, 8)}... (${Math.floor((tokenCache.expires - Date.now())/1000)}s left)`);
       return tokenCache.token;
     }
     return null;
@@ -66,7 +66,7 @@
     tokenCache.token = token;
     tokenCache.userId = userId;
     tokenCache.expires = Date.now() + (5 * 60 * 1000); // 5 min
-    console.log(`${LOG_PREFIX} 💾 Cached token for user ${userId?.substring(0, 8)}... (5 min)`);
+    if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 💾 Cached token for user ${userId?.substring(0, 8)}... (5 min)`);
   }
 
   function clearTokenCache() {
@@ -74,7 +74,7 @@
     tokenCache = { token: null, expires: 0, userId: null };
     clearStatusCache();
     if (hadToken) {
-      console.log(`${LOG_PREFIX} 🗑️ Token cache cleared`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🗑️ Token cache cleared`);
     }
   }
 
@@ -93,11 +93,11 @@
         const newUserId = session?.user?.id || null;
         const cachedUserId = tokenCache.userId;
 
-        console.log(`${LOG_PREFIX} 🔒 Auth state change: ${event}, user: ${newUserId?.substring(0, 8) || 'none'}`);
+        if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🔒 Auth state change: ${event}, user: ${newUserId?.substring(0, 8) || 'none'}`);
 
         // Clear cache if user changed or signed out
         if (newUserId !== cachedUserId) {
-          console.log(`${LOG_PREFIX} ⚠️ User changed (${cachedUserId?.substring(0, 8) || 'none'} → ${newUserId?.substring(0, 8) || 'none'}), clearing token cache`);
+          if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ⚠️ User changed (${cachedUserId?.substring(0, 8) || 'none'} → ${newUserId?.substring(0, 8) || 'none'}), clearing token cache`);
           clearTokenCache();
         }
       });
@@ -193,7 +193,7 @@
         const token = s?.data?.session?.access_token;
         const userId = s?.data?.session?.user?.id;
         if (token && userId) {
-          console.log(`${LOG_PREFIX} ✅ Got token from getSession`);
+          if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ Got token from getSession`);
           setCachedToken(token, userId);
           return token;
         }
@@ -214,7 +214,7 @@
         const token2 = s2?.data?.session?.access_token;
         const userId2 = s2?.data?.session?.user?.id;
         if (token2 && userId2) {
-          console.log(`${LOG_PREFIX} ✅ Got token after refresh`);
+          if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ Got token after refresh`);
           setCachedToken(token2, userId2);
           return token2;
         }
@@ -228,7 +228,7 @@
         // getUser returnerer ikke token, men hvis den feiler pga manglende session,
         // gir vi Supabase litt tid og prøver igjen.
         if (u?.data?.user) {
-          console.log(`${LOG_PREFIX} ⚠️ User exists but no token, retrying...`);
+          if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ⚠️ User exists but no token, retrying...`);
           // user finnes, men token mangler -> prøv en runde til
         }
       } catch (err) {
@@ -330,7 +330,7 @@
         throw new Error("Trial only supported for month/year plans");
       }
 
-      console.log(`${LOG_PREFIX} 🎁 Starting trial for user ${userId}, plan: ${planType}`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🎁 Starting trial for user ${userId}, plan: ${planType}`);
 
       const token = await getAccessToken();
       const data = await callApiJson(TRIAL_ENDPOINT, {
@@ -339,7 +339,7 @@
         body: { planType },
       });
 
-      console.log(`${LOG_PREFIX} ✅ Trial started:`, data);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ Trial started:`, data);
       clearStatusCache();
 
       // Expected response: { success:true, trial_started_at, trial_ends_at, trial_days }
@@ -587,7 +587,7 @@ if (cancelBtn && !cancelBtn.__bound) {
         e.stopPropagation();
         if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
 
-        console.log(`${LOG_PREFIX} 📥 Eksporterer data...`);
+        if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 📥 Eksporterer data...`);
         
         try {
           const token = await getAccessToken();
@@ -663,7 +663,7 @@ if (cancelBtn && !cancelBtn.__bound) {
           return;
         }
 
-        console.log(`${LOG_PREFIX} 🗑️ Sletter konto...`);
+        if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🗑️ Sletter konto...`);
         
         try {
           const token = await getAccessToken();
@@ -726,13 +726,13 @@ if (cancelBtn && !cancelBtn.__bound) {
   }
 
   function bind() {
-    console.log(`${LOG_PREFIX} 🔧 bind() called, readyState=${document.readyState}`);
+    if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🔧 bind() called, readyState=${document.readyState}`);
 
     // IDEMPOTENT binding: Fjern gammel handler først, registrer ny
     const oldHandler = window.__bf_subscription_click_handler;
     if (oldHandler) {
       document.removeEventListener("click", oldHandler, true);
-      console.log(`${LOG_PREFIX} 🗑️ Removed old click handler`);
+      if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🗑️ Removed old click handler`);
     }
 
     // Lag ny handler
@@ -744,7 +744,7 @@ if (cancelBtn && !cancelBtn.__bound) {
         e.stopPropagation();
         if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
 
-        console.log(`${LOG_PREFIX} ⚙️ Gear clicked, opening modal...`);
+        if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ⚙️ Gear clicked, opening modal...`);
         openSubscriptionModal().catch((err) => console.error(`${LOG_PREFIX} ❌ openSubscriptionModal failed:`, err));
         return;
       }
@@ -753,7 +753,7 @@ if (cancelBtn && !cancelBtn.__bound) {
       const close = e.target.closest("#closeSubscriptionModal, [data-close='subscriptionModal']");
       if (close) {
         e.preventDefault();
-        console.log(`${LOG_PREFIX} ❌ Close clicked`);
+        if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ❌ Close clicked`);
         closeSubscriptionModal();
         return;
       }
@@ -763,7 +763,7 @@ if (cancelBtn && !cancelBtn.__bound) {
     document.addEventListener("click", clickHandler, true);
     window.__bf_subscription_click_handler = clickHandler;
 
-    console.log(`${LOG_PREFIX} ✅ Delegated click handlers bound (idempotent)`);
+    if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ Delegated click handlers bound (idempotent)`);
 
     // Fallback: direkte binding på lukkeknapp hvis den har ID
     const closeBtn = document.getElementById("closeSubscriptionModal");
@@ -788,5 +788,5 @@ if (cancelBtn && !cancelBtn.__bound) {
     bind();
   }
 
-  console.log(`${LOG_PREFIX} ✅ subscription.js loaded (browser-safe + bfcache-aware)`);
+  if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ subscription.js loaded (browser-safe + bfcache-aware)`);
 })();

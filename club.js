@@ -198,7 +198,7 @@
     // Sjekk om vi bør vise utløpt-varsel
     showExpiredBannerIfNeeded();
 
-    console.log(`${LOG_PREFIX} ✅ Klubbseksjon injisert`);
+    if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ Klubbseksjon injisert`);
   }
 
   function showExpiredBannerIfNeeded() {
@@ -478,7 +478,7 @@
   function init() {
     watchPricingPage();
     watchSubscriptionModal();
-    console.log(`${LOG_PREFIX} ✅ club.js v3 loaded`);
+    if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} ✅ club.js v3 loaded`);
   }
 
   if (document.readyState === "loading") {
