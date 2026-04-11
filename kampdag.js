@@ -295,7 +295,6 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const minutesEl = $('kdMinutes');
     const selectAllBtn = $('kdSelectAll');
     const deselectAllBtn = $('kdDeselectAll');
-    const refreshBtn = $('kdRefresh');
     const manualKeeperEl = $('kdManualKeeper');
     const keeperCountEl = $('kdKeeperCount');
     const genBtn = $('kdGenerate');
@@ -336,12 +335,6 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       renderKampdagPlayers();
       refreshKeeperUI();
       if (kdFormationOn) { renderPositionList(); }
-    });
-
-    if (refreshBtn) refreshBtn.addEventListener('click', () => {
-      renderKampdagPlayers();
-      refreshKeeperUI();
-      updateKampdagCounts();
     });
 
     if (manualKeeperEl) manualKeeperEl.addEventListener('change', () => {
