@@ -1108,6 +1108,290 @@ window.EXERCISES_DATA = [
       ]}
     },
 
+    // --- Dribling med ball ---
+    {
+      key: 'dribbling',
+      label: 'Dribling',
+      defaultMin: 10,
+      category: 'teknikk',
+      ages: ['6-7','8-9','10-12','13-16'],
+      players: '4-20',
+      equipment: '1 ball per spiller, kjegler',
+      nffCategory: 'sjef_over_ballen',
+      themes: ['dribling_bevegelse', 'finter'],
+      nffPhases: ['angrep_fremover'],
+      learningGoals: ['Stusse ballen uten å se ned', 'Bytte hånd og retning uten å miste kontroll', 'Drible i fart med hodet opp'],
+      intensity: 'medium',
+      hasOpposition: false,
+      playerCount: { min: 4, max: 20 },
+      equipmentTags: ['ball', 'kjegler'],
+      description: 'Grunnleggende driblingsteknikk. Alle har egen ball og øver på å stusse kontrollert i bevegelse. Essensielt for å frigjøre seg fra press og skape rom i angrep.',
+      setup: 'Alle spillere har én ball. Avgrens et område (15x15m) eller sett opp kjegleløyper i parallelle baner.',
+      steps: [
+        'Stusse på stedet med dominante hånd — ballen til hoftelengde, trykk med fingertupper.',
+        'Stusse i sakte gang fremover. Blikket opp, ikke ned på ballen.',
+        'Øk tempo: stusse i løp gjennom kjegleløype.',
+        'Bytt hånd mellom kjeglene. Avslutt med fritt drible i area — bytt retning på signal.'
+      ],
+      coaching: [
+        'Trykk med fingertupper, ikke flat hånd',
+        'Blikket opp — se mot mål, ikke på ballen',
+        'Drible på siden av kroppen, ikke foran beina',
+        'Lav og kontrollert — høy dribel er lettere å snappe'
+      ],
+      variations: [
+        'Island hopping: drible mellom kjegler mens 2 fangere prøver å snappe ballen',
+        'Bytt hånd for hvert stuss — venstrehåndsrunde'
+      ],
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:40,y:30},{type:'cone',x:40,y:70},{type:'cone',x:40,y:110},
+        {type:'cone',x:110,y:30},{type:'cone',x:110,y:70},{type:'cone',x:110,y:110},
+        {type:'player',x:40,y:145,team:'a',label:''},{type:'ball',x:40,y:130},
+        {type:'player',x:110,y:145,team:'b',label:''},{type:'ball',x:110,y:130},
+        {type:'arrow',from:[40,143],to:[40,118],style:'run'},
+        {type:'arrow',from:[110,143],to:[110,118],style:'run'}
+      ]}
+    },
+
+    // --- Pasning i bevegelse ---
+    {
+      key: 'pass_run',
+      label: 'Pasning i bevegelse',
+      defaultMin: 10,
+      category: 'teknikk',
+      ages: ['6-7','8-9','10-12','13-16'],
+      players: '6-20',
+      equipment: '1 ball per par, kjegler',
+      nffCategory: 'sjef_over_ballen',
+      themes: ['kast_teknikk', 'mottak_pasning'],
+      nffPhases: ['angrep_fremover'],
+      learningGoals: ['Kaste presist til løpende medspiller', 'Motta ballen i full fart uten å stoppe', 'Holde jevn avstand og tempo side om side'],
+      suggestedGroupSize: 2,
+      intensity: 'medium',
+      hasOpposition: false,
+      playerCount: { min: 6, max: 20 },
+      equipmentTags: ['ball', 'kjegler'],
+      description: 'Den klassiske håndball-oppvarmingen. To og to løper side om side og kaster til hverandre mens begge er i bevegelse. Trener kast i fart, mottak i løp og timing.',
+      setup: 'Del i par. Parene stiller seg opp to og to side om side med 3-4 meters avstand. Alle par løper samtidig fra en ende til den andre og tilbake.',
+      steps: [
+        'Løp side om side med 3-4 meters mellomrom. Kast kontinuerlig til hverandre.',
+        'Mottaker løper mot ballen — ikke vent på at den skal komme til deg.',
+        'Etter 2 lengder: øk avstand til 5-6 meter.',
+        'Etter 4 lengder: stusspasning — ballen skal stusse i gulvet halvveis mellom dere.'
+      ],
+      coaching: [
+        'Kast foran medspilleren, ikke på dem — led løpet',
+        'Løp mot ballen, ta imot i bevegelse',
+        'Hold jevnt tempo — ikke sprint og vent',
+        'Kommuniser: "her!", "til meg!" — bruk stemmene'
+      ],
+      variations: [
+        'Tre og tre: midtperson mottar og sender videre, roterer',
+        'Kun svak hånd på retur-lengden'
+      ],
+      diagram: { width:220, height:160, field:'none', elements:[
+        {type:'player',x:30,y:55,team:'a',label:'1'},{type:'ball',x:38,y:51},
+        {type:'player',x:30,y:105,team:'b',label:'2'},
+        {type:'arrow',from:[30,55],to:[190,55],style:'run'},
+        {type:'arrow',from:[30,105],to:[190,105],style:'run'},
+        {type:'arrow',from:[42,53],to:[178,103],style:'pass'},
+        {type:'player',x:190,y:55,team:'a',label:''},
+        {type:'player',x:190,y:105,team:'b',label:''}
+      ]}
+    },
+
+    // --- Forsvarsstilling og sideforflytning ---
+    {
+      key: 'defensive_movement',
+      label: 'Forsvarsstilling',
+      defaultMin: 10,
+      category: 'spill_m_motstand',
+      ages: ['8-9','10-12','13-16'],
+      players: '4-16',
+      equipment: 'Kjegler, vester',
+      nffCategory: 'spille_med_og_mot',
+      themes: ['forsvarsspill', '1v1_duell'],
+      nffPhases: ['forsvar_vinne_ball'],
+      learningGoals: ['Sidelengs forflytning uten å krysse beina', 'Lav beredskapsstilling: bøyde knær, vekt fremover', 'Stå mellom angriper og mål til enhver tid'],
+      suggestedGroupSize: 2,
+      intensity: 'medium',
+      hasOpposition: true,
+      playerCount: { min: 4, max: 16 },
+      equipmentTags: ['kjegler', 'vester'],
+      description: 'Dedikert øvelse for forsvarsstilling og sidelengs forflytning. Den viktigste individuelle forsvarsferdigheten — spillere som ikke kan flytte seg sidelengs uten å krysse beina vil alltid tape 1v1.',
+      setup: 'Marker en linje med kjegler langs 6m-sonen. Forsvarere stiller seg på linja. Angripere foran med ball.',
+      steps: [
+        'Grunnstilling: fyll ut bredde, bøyde knær, vekt fremover på tærne, armer ute til sidene.',
+        'Trener peker: forsvarerne forflytter seg sidelengs med shufflesteg (aldri kryss beina).',
+        'Angriper beveger seg sakte med ball — forsvarer følger og holder positur.',
+        'Øk: angriper akselererer og forsøker å bryte gjennom. Forsvarer holder stillingen.'
+      ],
+      coaching: [
+        'Aldri kryss beina — shufflesteg!',
+        'Bøy knærne — ikke stå strak',
+        'Armer ut og opp — sperr pasningslinjene',
+        'Øyne på angriperens hofter, ikke ballen eller beina'
+      ],
+      variations: [
+        'Speil: forsvarer spiller speil mot angriper langs linja uten ball — ren fotarbeid',
+        'Legg til passiv angriper som kan avslutte etter 5 sek — tving ekte forsvarsvalg'
+      ],
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'player',x:70,y:140,team:'b',label:'F'},
+        {type:'player',x:120,y:140,team:'b',label:'F'},
+        {type:'player',x:170,y:140,team:'b',label:'F'},
+        {type:'player',x:70,y:105,team:'a',label:''},{type:'ball',x:78,y:101},
+        {type:'player',x:120,y:95,team:'a',label:''},
+        {type:'player',x:170,y:105,team:'a',label:''},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[70,105],to:[115,138],style:'run'},
+        {type:'arrow',from:[170,105],to:[125,138],style:'run'}
+      ]}
+    },
+
+    // --- Hoppskudd ---
+    {
+      key: 'jump_shot',
+      label: 'Hoppskudd',
+      defaultMin: 12,
+      category: 'avslutning',
+      ages: ['10-12','13-16'],
+      players: '4-14',
+      equipment: 'Mål med keeper, baller, kjegler',
+      nffCategory: 'scoringstrening',
+      themes: ['kast_teknikk'],
+      nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Sats med ett ben, ta av fra riktig fot', 'Kast i toppunktet av hoppet — ikke på vei ned', 'Heng i luften: ikke slipp skulderen for tidlig'],
+      intensity: 'high',
+      hasOpposition: false,
+      playerCount: { min: 4, max: 14 },
+      equipmentTags: ['maal', 'ball', 'kjegler'],
+      description: 'Hoppskuddet er det viktigste avslutningsvåpenet i håndball. Trener sats, flyvefase og kast i toppunktet. Introduseres gradvis fra 10-12 år med fokus på teknikk fremfor kraft.',
+      setup: 'Spillere i kø ved 9m-linja. Keeper i mål. Baller klare. Start med sakte innløp — ikke full fart til teknikken sitter.',
+      steps: [
+        'Løp mot mål i moderat fart. Sats med ett ben (venstrehendt: høyre ben, høyrehendt: venstre ben).',
+        'I luften: trekk kastearmen opp og bak, løft albuen høyt.',
+        'Kast i toppunktet — arm og skulder svinges fremover, trykk med fingertupper.',
+        'Varier: hoppskudd fra venstre kant, høyre kant, sentralt.'
+      ],
+      coaching: [
+        'Sats med ett ben — ikke ta av med to',
+        'Kast i toppunktet, ikke på vei ned',
+        'Løft albuen — ikke kast fra siden',
+        'Start rolig: teknikk først, kraft kommer med trening'
+      ],
+      variations: [
+        'Etter mottak: mottaker løper, mottar pasning, satser og skyter',
+        'Legg til passiv forsvarer som hever armene — tving spilleren til å kaste over'
+      ],
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'cone',x:70,y:118},{type:'cone',x:120,y:105},{type:'cone',x:170,y:118},
+        {type:'player',x:70,y:90,team:'a',label:'VK'},
+        {type:'player',x:120,y:78,team:'a',label:'MB'},
+        {type:'player',x:170,y:90,team:'a',label:'HK'},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[70,88],to:[70,120],style:'run'},
+        {type:'arrow',from:[70,118],to:[100,183],style:'shot'},
+        {type:'arrow',from:[120,76],to:[120,183],style:'shot'},
+        {type:'arrow',from:[170,88],to:[140,183],style:'shot'}
+      ]}
+    },
+
+    // --- Aktivitetsløype ---
+    {
+      key: 'activity_course',
+      label: 'Aktivitetsløype',
+      defaultMin: 10,
+      category: 'avslutning',
+      ages: ['6-7','8-9'],
+      players: '4-16',
+      equipment: 'Kjegler, matter, baller, mål',
+      nffCategory: 'scoringstrening',
+      themes: ['kast_teknikk', 'dribling_bevegelse', 'leik_stafett'],
+      nffPhases: ['angrep_avslutning'],
+      learningGoals: ['Mestre ulike bevegelser i serie', 'Avslutte på mål etter aktivitet', 'Ha det gøy med varierte utfordringer'],
+      intensity: 'high',
+      hasOpposition: false,
+      playerCount: { min: 4, max: 16 },
+      equipmentTags: ['kjegler', 'ball', 'maal'],
+      description: 'Spillerne beveger seg gjennom en serie av hindre og avslutter med skudd på mål. Fast element i NHFs øktplaner for 6-9 år. Høy aktivitet, mange repetisjoner og garantert engasjement.',
+      setup: 'Sett opp 3-5 stasjoner i rekke: kjegleslalåm, balansebom (benk), hopp over matter, drible-sone — avslutt med skudd på mål. Del i 2-3 parallelle løyper.',
+      steps: [
+        'Spiller 1 starter: slalåm gjennom kjegler med ball.',
+        'Hopp over liggende matter (eller gå over benk sidelengs).',
+        'Drible frem til skuddlinja.',
+        'Avslutt på mål — løp tilbake og gi høyfive til neste.'
+      ],
+      coaching: [
+        'Fart OG kontroll — ikke rush og miste ballen',
+        'Alle hindre skal gjennomføres — ikke kutt hjørner',
+        'Ros forsøk og innsats, ikke bare mål',
+        'Varier hindretyper — kreativitet gir glede'
+      ],
+      variations: [
+        'Stafett: to lag konkurrerer om hvem som scorer flest på tid',
+        'Bytt ut ett hinder hver runde for variasjon'
+      ],
+      diagram: { width:240, height:200, field:'handball_half', elements:[
+        {type:'cone',x:50,y:160},{type:'cone',x:70,y:145},{type:'cone',x:50,y:130},
+        {type:'cone',x:120,y:150},{type:'cone',x:150,y:150},
+        {type:'player',x:50,y:175,team:'a',label:''},{type:'ball',x:58,y:171},
+        {type:'player',x:190,y:175,team:'b',label:''},
+        {type:'keeper',x:120,y:175},
+        {type:'arrow',from:[50,173],to:[50,165],style:'run'},
+        {type:'arrow',from:[70,143],to:[118,130],style:'run'},
+        {type:'arrow',from:[120,128],to:[115,183],style:'shot'}
+      ]}
+    },
+
+    // --- Lenkesisten ---
+    {
+      key: 'chain_tag',
+      label: 'Lenkesisten',
+      defaultMin: 8,
+      category: 'oppvarming',
+      ages: ['6-7','8-9','10-12'],
+      players: '8-20',
+      equipment: 'Håndball (én per spiller), kjegler til avgrensning',
+      nffCategory: 'sjef_over_ballen',
+      themes: ['dribling_bevegelse', 'leik_stafett'],
+      nffPhases: ['noytral'],
+      learningGoals: ['Drible med kontroll under press', 'Reagere raskt og skifte retning', 'Samarbeide i lenken for å fange'],
+      intensity: 'high',
+      hasOpposition: false,
+      playerCount: { min: 8, max: 20 },
+      equipmentTags: ['ball', 'kjegler'],
+      description: 'Klassisk NHF-oppvarmingslek. Alle starter med å drible. Den som fanges legger fra seg ballen og tar hånden til fangeren — lenken vokser. Siste frie spiller vinner. Kombinerer dribling med sisten og lagarbeid.',
+      setup: 'Avgrens et område (ca. 20x20m). Alle spillere starter med håndball og dribler fritt. Én starter som fanger uten ball.',
+      steps: [
+        'Alle dribler innenfor området. Én spiller er fanger — uten ball.',
+        'Fangeren prøver å ta en spiller ved å berøre dem.',
+        'Den som tas: legg fra seg ballen og ta hånden til fangeren. Nå er dere to i lenken.',
+        'Lenken vokser for hvert fang. Siste frie spiller vinner!'
+      ],
+      coaching: [
+        'Lenken må holde hverandre i hånden hele tiden',
+        'Frie spillere: drible med hodet opp — se lenken, unngå hjørner',
+        'Lenken: spre dere ut for å stenge av area',
+        'Bytt hvem som starter som fanger'
+      ],
+      variations: [
+        'Uten ball — ren lenkesisten for de yngste (6-7 år)',
+        'To startende fangere for raskere spill med stor gruppe'
+      ],
+      diagram: { width:220, height:160, field:'small', elements:[
+        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
+        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
+        {type:'player',x:80,y:80,team:'b',label:'F'},
+        {type:'player',x:115,y:80,team:'b',label:'F'},
+        {type:'player',x:55,y:50,team:'a',label:''},{type:'ball',x:63,y:46},
+        {type:'player',x:160,y:45,team:'a',label:''},{type:'ball',x:168,y:41},
+        {type:'player',x:170,y:110,team:'a',label:''},{type:'ball',x:178,y:106},
+        {type:'arrow',from:[80,80],to:[60,58],style:'run'},
+        {type:'arrow',from:[55,50],to:[35,70],style:'run'}
+      ]}
+    },
+
     // ── EGENDEFINERT (alltid nederst) ──
     { key: 'custom', label: 'Skriv inn selv', defaultMin: 10, isCustom: true, category: 'special',
       nffCategory: 'sjef_over_ballen', themes: [], nffPhases: [], learningGoals: [],
