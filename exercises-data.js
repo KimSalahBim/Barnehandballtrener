@@ -136,17 +136,17 @@ window.EXERCISES_DATA = [
       description: 'Avslutninger fra ulike posisjoner. Fokus på plassering framfor kraft. Alle barn elsker å skyte på mål — la dem gjøre det mye!',
       setup: 'Mål med keeper (eller åpent med kjegler). Spillere i kø ca. 12-16m fra mål. Baller klare på rekke.',
       steps: [
-        'Spilleren fører ball mot mål fra sentralt.',
+        'Spilleren mottar ball og løper mot mål fra sentralt.',
         'Avslutt på mål fra ca. 10-12 meter.',
         'Neste runde: skudd fra venstre side.',
         'Tredje runde: skudd fra høyre side.',
         'Fjerde runde: mottar pasning fra siden og avslutter direkte.'
       ],
       coaching: [
-        'Plassering slår kraft — sikte lavt i hjørnene',
-        'Støttefot peker mot mål',
-        'Treffe midt/øvre del av ballen for lavt skudd',
-        'Følg opp skuddet — vær klar for retur!'
+        'Plassering slår kraft — sikte i hjørnene',
+        'Stemfot peker mot mål — sats og kast',
+        'Høy arm, piskebevegelse fra skulder',
+        'Følg opp kastet — vær klar for retur!'
       ],
       variations: [
         'Konkurranse: hvem scorer flest av 5 forsøk?',
@@ -188,13 +188,13 @@ window.EXERCISES_DATA = [
         'Keeper i mål for ekstra utfordring'
       ],
       diagram: { width:240, height:200, field:'handball_half', elements:[
-        {type:'cone',x:55,y:95},{type:'cone',x:88,y:78},
-        {type:'cone',x:120,y:73},{type:'cone',x:152,y:78},{type:'cone',x:185,y:95},
-        {type:'player',x:55,y:108,team:'a',label:''},{type:'ball',x:63,y:104},
-        {type:'player',x:185,y:108,team:'b',label:''},
+        {type:'cone',x:60,y:150},{type:'cone',x:60,y:120},{type:'cone',x:60,y:90},
+        {type:'cone',x:180,y:150},{type:'cone',x:180,y:120},{type:'cone',x:180,y:90},
+        {type:'player',x:60,y:170,team:'a',label:''},{type:'ball',x:68,y:166},
+        {type:'player',x:180,y:170,team:'b',label:''},
         {type:'keeper',x:120,y:175},
-        {type:'arrow',from:[55,108],to:[100,185],style:'shot'},
-        {type:'arrow',from:[185,108],to:[140,185],style:'shot'}
+        {type:'arrow',from:[60,148],to:[95,183],style:'shot'},
+        {type:'arrow',from:[180,148],to:[145,183],style:'shot'}
       ]}
     },
 
@@ -527,26 +527,26 @@ window.EXERCISES_DATA = [
       ages: ['6-7', '8-9'], players: '6-20',
       equipment: '1 ball per spiller, kjegler til bane',
       nffCategory: 'sjef_over_ballen', themes: ['dribling_bevegelse', 'leik_stafett'], nffPhases: ['noytral'],
-      learningGoals: ['Hold ballen nær foten mens du ser deg rundt', 'Retningsforandring for å unngå fanger', 'Bruk kroppen til å skjerme ballen'],
+      learningGoals: ['Hold ballen i hånden under press', 'Retningsforandring for å unngå fangere', 'Bruk kroppen til å skjerme ballen'],
       intensity: 'high', hasOpposition: false,
       playerCount: { min: 6, max: 20 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Sistenlek der alle har egen ball. Fangeren fører sin ball samtidig som den prøver å ta de andre. Kombinerer ballkontroll med bevegelse og romforståelse.',
+      description: 'Sistenlek der alle har egen ball. Fangeren løper med ball i hånden samtidig som den prøver å ta de andre. Kombinerer ballkontroll med bevegelse og romforståelse.',
       setup: 'Avgrens et område (15x15 til 20x20m). Alle spillere har egen ball. Velg 1-2 fangere (vester).',
       steps: [
-        'Alle fører ball innenfor området.',
+        'Alle løper med ball i hånden innenfor området.',
         'Fangerne (med vest) prøver å ta de andre ved å berøre dem.',
-        'Blir du tatt, stopp og gjør 5 fotbytter på ballen. Så er du fri igjen.',
+        'Blir du tatt, stopp og stuss ballen 5 ganger på stedet. Så er du fri igjen.',
         'Bytt fangere hvert 2. minutt.'
       ],
       coaching: [
-        'Hold ballen nær foten — korte, raske touch',
-        'Løft blikket! Se hvor fangeren er',
+        'Hold ballen trygt i hånden — ikke slipp den',
+        'Løft blikket! Se hvor fangerne er',
         'Bruk retningsforandring for å stikke unna',
         'Fangere: ikke bare jag — avskjær!'
       ],
       variations: [
         'Tatt = bli fanger selv (siste spiller igjen vinner)',
-        'Fangere uten ball — sparker andres ball ut av området'
+        'Fangere uten ball — tar de andre ved å berøre dem med hånden'
       ],
       diagram: { width:220, height:160, field:'small', elements:[
         {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
@@ -556,7 +556,7 @@ window.EXERCISES_DATA = [
         {type:'player',x:90,y:110,team:'a',label:''},{type:'ball',x:98,y:106},
         {type:'player',x:140,y:40,team:'a',label:''},
         {type:'player',x:50,y:90,team:'a',label:''},
-        {type:'arrow',from:[90,110],to:[52,90],style:'pass'},
+        {type:'arrow',from:[90,110],to:[52,90],style:'run'},
         {type:'arrow',from:[155,100],to:[130,70],style:'run'}
       ]}
     },
@@ -587,7 +587,7 @@ window.EXERCISES_DATA = [
       ],
       variations: [
         '2v1: legg til en medangriper for å øve samarbeid i forsvar',
-        'Gi forsvareren poeng for å tvinge skudd utenfor 16-meter'
+        'Gi forsvareren poeng for å tvinge skudd fra utenfor 9m-linjen'
       ],
       diagram: { width:240, height:160, field:'small', elements:[
         {type:'cone',x:15,y:15},{type:'cone',x:225,y:15},
@@ -735,21 +735,21 @@ window.EXERCISES_DATA = [
       description: 'Avslutningsøvelse der to spillere samarbeider om å score. Øver på tverrballer, tilbakelegg og direkte avslutning — mer realistisk enn å skyte alene.',
       setup: 'Spillere i par. Kø sentralt og på høyre/venstre side, 20m fra mål. Keeper i mål.',
       steps: [
-        'Spiller A fører ball langs siden mot dødlinja.',
+        'Spiller A fører ball langs siden mot mållinja.',
         'Spiller B løper inn i boksen fra sentralt.',
         'A slår tverrball eller tilbakelegg til B.',
         'B avslutter på mål — helst på direkten.',
         'Bytt sider og roller. Varier mellom høyre og venstre.'
       ],
       coaching: [
-        'Innlegger: løft blikket, finn medspillerens løp',
+        'Kantspiller: løft blikket, finn medspillerens løp',
         'Avslutter: timing! Ikke stå stille — løp inn i ballen',
         'Avslutt raskt, keeper skal ikke rekke å flytte seg',
         'Plassering i det ledige hjørnet, ikke rett på keeper'
       ],
       variations: [
         'Legg til en forsvarer som prøver å blokkere tverrballen',
-        'Varier: tilbakelegg fra dødlinja, tverrball fra 16m, gjennombrudd sentralt'
+        'Varier: tilbakelegg fra mållinja, tverrpass fra 9m, gjennombrudd sentralt'
       ],
       diagram: { width:240, height:200, field:'handball_half', elements:[
         {type:'player',x:80,y:88,team:'a',label:'B'},{type:'ball',x:88,y:84},
@@ -775,7 +775,7 @@ window.EXERCISES_DATA = [
       description: 'To keepere mot hverandre i hver sitt mål på kort avstand. Trener reaksjon, grep, plassering og utspark. Morsomt og intenst — alle får mange repetisjoner.',
       setup: 'To mål (småmål eller store) 8-12m fra hverandre. Én keeper i hvert mål. Ekstra baller bak målene.',
       steps: [
-        'Keeper A kaster eller sparker ballen mot Keeper Bs mål.',
+        'Keeper A kaster ballen mot Keeper Bs mål.',
         'Keeper B forsøker å redde og angriper umiddelbart tilbake.',
         'Spill fram og tilbake i perioder på 2 minutter.',
         'Tell poeng: mål = 1 poeng, redning + kontroll = 1 poeng til forsvarer.',
@@ -791,13 +791,13 @@ window.EXERCISES_DATA = [
         'Spillere på sidene skyter i stedet for keeperne',
         'Større avstand (15m) for å øve utspark'
       ],
-      diagram: { width:240, height:200, field:'handball_half', elements:[
-        {type:'player',x:80,y:88,team:'b',label:''},
-        {type:'player',x:162,y:85,team:'a',label:''},{type:'ball',x:170,y:81},
-        {type:'player',x:120,y:62,team:'a',label:''},
-        {type:'keeper',x:120,y:170},
-        {type:'arrow',from:[162,85],to:[122,168],style:'shot'},
-        {type:'arrow',from:[120,168],to:[82,90],style:'pass'}
+      diagram: { width:240, height:160, field:'none', elements:[
+        {type:'zone_line',x1:120,y1:15,x2:120,y2:145},
+        {type:'keeper',x:45,y:80},
+        {type:'keeper',x:195,y:80},
+        {type:'ball',x:120,y:80},
+        {type:'arrow',from:[55,78],to:[112,78],style:'shot'},
+        {type:'arrow',from:[185,82],to:[133,82],style:'pass'}
       ]}
     },
 
