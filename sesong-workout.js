@@ -1274,7 +1274,7 @@
         info += '<div style="color:#556070;font-size:12px;margin-top:4px;"><span style="font-weight:500;color:#374151;">Tips:</span> ' + meta.coaching.map(function(c) { return esc(c); }).join(' \u00b7 ') + '</div>';
       }
       if (meta.diagram) {
-        info += '<div style="margin:6px 0 2px;display:flex;justify-content:center;"><div style="max-width:200px;width:100%;background:#3d8b37;border-radius:8px;padding:6px;">' + shared.renderDrillSVG(meta.diagram) + '</div></div>';
+        info += '<div style="margin:6px 0 2px;display:flex;justify-content:center;"><div style="max-width:200px;width:100%;background:#3dbde8;border-radius:8px;padding:6px;">' + shared.renderDrillSVG(meta.diagram) + '</div></div>';
       }
       return info;
     }

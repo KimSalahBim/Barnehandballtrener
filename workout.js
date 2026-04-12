@@ -665,10 +665,10 @@
       s += '<circle cx="' + cx + '" cy="' + (cy - Math.round(r6 * 7/6)) + '" r="3" fill="rgba(255,255,255,0.8)"/>';
       s += '<rect x="' + (cx-22) + '" y="' + (cy-2) + '" width="44" height="8" rx="1" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="1.5"/>';
     } else if (field === 'small' || field === 'quarter') {
-      s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3d8b37" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
+      s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3dbde8" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>';
     } else if (field === 'half') {
-      s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3d8b37" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
-      s += '<line x1="' + (width / 2) + '" y1="8" x2="' + (width / 2) + '" y2="' + (height - 8) + '" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>';
+      s += '<rect x="8" y="8" width="' + (width - 16) + '" height="' + (height - 16) + '" rx="4" fill="#3dbde8" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>';
+      s += '<line x1="' + (width / 2) + '" y1="8" x2="' + (width / 2) + '" y2="' + (height - 8) + '" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>';
     }
     for (const el of elements) {
       switch (el.type) {
@@ -3475,7 +3475,7 @@ function serializeWorkoutFromState() {
     .exp-coaching{color:var(--muted); font-size:12px; margin-bottom:8px; line-height:1.5;}
     .exp-coaching-h{font-weight:500; color:#374151;}
     .exp-svg{margin:8px 0; display:flex; justify-content:center;}
-    .exp-svg svg{max-width:220px; width:100%; height:auto; background:#3d8b37; border-radius:8px; padding:6px;}
+    .exp-svg svg{max-width:220px; width:100%; height:auto; background:#3dbde8; border-radius:8px; padding:6px;}
     .exp-parallel{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
     .exp-par{border:1px solid var(--line); border-radius:14px; padding:10px; background:#fff;}
     .exp-par-h{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-weight:500; margin-bottom:6px;}
