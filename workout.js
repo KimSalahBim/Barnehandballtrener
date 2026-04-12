@@ -61,7 +61,7 @@
   const KEY_MIGRATION = {
     'warm_no_ball': 'tag',
     'long_pass': 'pass_pair',
-    'pass_turn': 'receive_turn',
+    'pass_turn': 'pass_pair',
     'juggle': 'custom',
     'competitions': 'custom',
     'overload': '2v1',

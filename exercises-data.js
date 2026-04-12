@@ -47,147 +47,35 @@ window.EXERCISES_DATA = [
         {type:'arrow',from:[60,50],to:[38,70],style:'run'}
       ]}
     },
-    {
-      key: 'warm_ball', label: 'Ballmestring', defaultMin: 10, category: 'oppvarming',
-      ages: ['6-7','8-9','10-12','13-16'], players: '4-20',
-      equipment: '1 ball per spiller, kjegler',
-      nffCategory: 'sjef_over_ballen', themes: ['dribling_bevegelse', 'leik_stafett'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Kontroll på ballen med korte touch', 'Bruk ulike deler av foten', 'Løft blikket mens du fører ballen'],
-      intensity: 'medium', hasOpposition: false,
-      playerCount: { min: 4, max: 20 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Individuell ballkontroll der hver spiller har sin egen ball. Føring med ulike deler av foten, vendinger, tempo-endringer. Bygger selvtillit og kontroll.',
-      setup: 'Avgrens et område på ca. 15x15 meter. Alle spillere med egen ball inne i området.',
-      steps: [
-        'Spillerne fører ball fritt i området med korte touch.',
-        'Treneren roper kommandoer: "Innsiden!", "Utsiden!", "Sålen!".',
-        'På signal: stopp ball med sålen, vend og skift retning.',
-        'Øk tempo gradvis. Avslutt med "hvem klarer flest vendinger på 30 sek?".'
-      ],
-      coaching: [
-        'Ballen tett i foten, korte touch',
-        'Løft blikket! Se etter rom og andre spillere',
-        'Bruk begge føtter'
-      ],
-      variations: [
-        'Kobling med nummersisten: trener roper tall, de med tallet blir fanger',
-        'Legg til kjegler som slalåmløype'
-      ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
-        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
-        {type:'player',x:60,y:50,team:'a',label:''},{type:'ball',x:68,y:56},
-        {type:'player',x:160,y:45,team:'a',label:''},{type:'ball',x:168,y:51},
-        {type:'player',x:100,y:100,team:'a',label:''},{type:'ball',x:108,y:106},
-        {type:'player',x:45,y:115,team:'a',label:''},{type:'ball',x:53,y:121},
-        {type:'player',x:170,y:110,team:'a',label:''},{type:'ball',x:178,y:116},
-        {type:'arrow',from:[60,50],to:[80,70],style:'run'},
-        {type:'arrow',from:[160,45],to:[140,65],style:'run'}
-      ]}
-    },
-    {
-      key: 'rondo_easy', label: 'Rondo (lett)', defaultMin: 10, category: 'oppvarming',
-      ages: ['8-9','10-12','13-16'], players: '5-8',
-      equipment: '1 ball, kjegler til firkant',
-      nffCategory: 'spille_med_og_mot', themes: ['mottak_pasning', 'samarbeidsspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
-      learningGoals: ['Gjør deg spillbar: avstand og vinkel til ballfører', 'Beveg deg etter pasning for å gi ny vinkel', 'Forsvarer: press på ballfører, steng pasningslinjer'],
-      intensity: 'medium', hasOpposition: true,
-      playerCount: { min: 5, max: 8 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Pasningsspill med overtall i firkant: 4 mot 1 eller 5 mot 2. Spillerne på utsiden holder ballen, den i midten prøver å vinne den. Kjerneøvelse i moderne fotball.',
-      setup: 'Sett opp en firkant på ca. 6x6 meter (8x8 for 5v2). Spillere på utsiden, 1-2 i midten.',
-      steps: [
-        'Spillerne på utsiden passer ballen med maks 2 touch.',
-        'Spilleren i midten jager ballen og prøver å ta den.',
-        'Ved erobring: den som mistet ballen bytter inn i midten.',
-        'Tell antall pasninger i strekk — sett rekord!'
-      ],
-      coaching: [
-        'Åpne kroppen mot banen, ikke bare mot ballen',
-        'Spill med innsiden for presisjon',
-        'Beveg deg etter pasning for å gi ny vinkel',
-        'Forsvareren: press på ballfører, steng pasningslinjer'
-      ],
-      variations: [
-        '4v1 for yngre/lavere nivå, 5v2 for eldre/høyere nivå',
-        'Kun 1 touch for mer intensitet'
-      ],
-      diagram: { width:200, height:200, field:'small', elements:[
-        {type:'player',x:100,y:22,team:'a',label:''},
-        {type:'player',x:172,y:68,team:'a',label:''},
-        {type:'player',x:172,y:132,team:'a',label:''},
-        {type:'player',x:100,y:178,team:'a',label:''},
-        {type:'player',x:28,y:132,team:'a',label:''},
-        {type:'player',x:28,y:68,team:'a',label:''},
-        {type:'player',x:88,y:100,team:'b',label:'F'},
-        {type:'ball',x:100,y:45},
-        {type:'arrow',from:[100,28],to:[168,65],style:'pass'},
-        {type:'arrow',from:[88,100],to:[100,50],style:'run'}
-      ]}
-    },
 
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     // ⚽ TEKNIKK
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     {
-      key: 'driving', label: 'Føring av ball', defaultMin: 10, category: 'teknikk',
-      ages: ['6-7','8-9','10-12','13-16'], players: '4-16',
-      equipment: '1 ball per spiller, 6-10 kjegler',
-      nffCategory: 'sjef_over_ballen', themes: ['dribling_bevegelse'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Ballen tett i foten med korte touch', 'Løft blikket mellom kjeglene', 'Bruk begge føtter og ulike deler av foten'],
-      intensity: 'medium', hasOpposition: false,
-      playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Spillerne fører ballen gjennom en kjegleløype med ulike deler av foten. Trener kontroll i fart og evnen til å holde ballen tett mens man beveger seg fremover.',
-      setup: 'Sett opp 6-10 kjegler i sikk-sakk med 2-3 meters mellomrom. 2-4 spillere starter samtidig i parallelle løyper.',
-      steps: [
-        'Før ballen med innsiden gjennom hele løypen.',
-        'Tilbake med utsiden av foten.',
-        'Tredje runde: veksle innside/utside rundt hver kjegle.',
-        'Fjerde runde: fri føring med maks fart!'
-      ],
-      coaching: [
-        'Korte touch, ballen nær foten',
-        'Blikket opp mellom kjeglene',
-        'Bruk begge føtter',
-        'Press tempoet gradvis'
-      ],
-      variations: [
-        'Siste kjegle = skudd på mål for motivasjon',
-        'Stafett mellom to lag for konkurranse'
-      ],
-      diagram: { width:220, height:150, field:'small', elements:[
-        {type:'cone',x:45,y:20},{type:'cone',x:45,y:55},
-        {type:'cone',x:45,y:90},{type:'cone',x:45,y:125},
-        {type:'player',x:80,y:25,team:'a',label:''},{type:'ball',x:88,y:21},
-        {type:'arrow',from:[80,25],to:[55,50],style:'run'},
-        {type:'arrow',from:[55,55],to:[75,80],style:'run'},
-        {type:'arrow',from:[75,90],to:[55,115],style:'run'},
-        {type:'arrow',from:[55,125],to:[80,145],style:'run'}
-      ]}
-    },
-    {
       key: 'pass_pair', label: 'Pasning parvis', defaultMin: 10, category: 'teknikk',
       ages: ['6-7','8-9','10-12','13-16'], players: '4-20',
       equipment: '1 ball per par, kjegler som markering',
       nffCategory: 'sjef_over_ballen', themes: ['kast_teknikk', 'mottak_pasning'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Støttefoten peker mot mottaker', 'Treffe midt på ballen med innsiden', 'Åpent mottak: demp og legg klar i én bevegelse'],
+      learningGoals: ['Strak arm og sving fra skulderen', 'Motta med begge hender foran kroppen', 'Øyekontakt med mottaker før kast'],
       suggestedGroupSize: 2, intensity: 'low', hasOpposition: false,
       playerCount: { min: 4, max: 20 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Grunnøvelsen i pasningsspill. To og to spillere sender ballen til hverandre med innsidetouch. Fokus på teknikk, mottak og presisjon.',
-      setup: 'Spillerne stiller seg parvis med 5-10 meters avstand (kortere for yngre). Hvert par har én ball.',
+      description: 'Grunnøvelsen i kasttrening. To og to spillere kaster ballen til hverandre. Fokus på riktig kastteknikk og trygt mottak — den viktigste byggeklossen i håndball.',
+      setup: 'Spillerne stiller seg parvis med 4-8 meters avstand (kortere for de yngste). Hvert par har én ball.',
       steps: [
-        'Spiller A sender innsidepasning til B.',
-        'B tar imot med innsiden (demper ballen), legger til rette.',
-        'B passer tilbake til A.',
-        'Etter 2 min: øk avstand. Etter 4 min: bruk kun venstre fot.'
+        'Spiller A kaster til B med overarmskast — strak arm, sving fra skulder.',
+        'B tar imot med begge hender foran kroppen og demper ballen.',
+        'B kaster tilbake til A.',
+        'Etter 2 min: øk avstand gradvis. Etter 4 min: prøv med ikke-dominante hånd.'
       ],
       coaching: [
-        'Støttefoten peker mot mottakeren',
-        'Treffe midt på ballen med innsiden',
-        'Åpent mottak: demp og legg klar i én bevegelse',
-        'Kommuniser! Rop "her!" eller bruk navn'
+        'Trykk ballen fremover med fingrene i siste øyeblikk',
+        'Motta med myke hender — ikke stiv',
+        'Øyekontakt FØR du kaster',
+        'Stå i klar stilling: ett steg foran med motsatt fot av kastehånden'
       ],
       variations: [
-        'Mottak med høyre, pass med venstre (og omvendt)',
-        'Legg til "vegg": en tredje spiller i midten som spiller videre'
+        'Kast i bevegelse: begge løper parallelt og kaster til hverandre',
+        'Legg til en vending etter mottak før neste kast'
       ],
       diagram: { width:220, height:110, field:'none', elements:[
         {type:'player',x:40,y:55,team:'a',label:''},{type:'ball',x:48,y:51},
@@ -199,30 +87,30 @@ window.EXERCISES_DATA = [
       ]}
     },
     {
-      key: 'pass_move', label: 'Pasning og bevegelse', defaultMin: 10, category: 'teknikk',
+      key: 'pass_move', label: 'Kast og bevegelse', defaultMin: 10, category: 'teknikk',
       ages: ['8-9','10-12','13-16'], players: '6-12',
       equipment: '2-3 baller, kjegler',
       nffCategory: 'sjef_over_ballen', themes: ['mottak_pasning', 'samarbeidsspill'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Beveg deg etter pasning (slå og gå)', 'Se deg rundt FØR ballen kommer', 'Førsteberøring legger ballen klar for neste pasning'],
+      learningGoals: ['Beveg deg etter kast — ikke stå stille', 'Se deg rundt FØR ballen kommer', 'Mottak i bevegelse: løp mot ballen'],
       intensity: 'medium', hasOpposition: false,
       playerCount: { min: 6, max: 12 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Etter å ha spilt pasning, beveger spilleren seg til ny posisjon for å motta igjen. Trener det viktigste prinsippet i lagspill: spill og flytt deg!',
+      description: 'Etter å ha kastet, beveger spilleren seg til ny posisjon. Trener det viktigste prinsippet i lagspill: kast og flytt deg! Gjør laget vanskeligere å forsvare.',
       setup: 'Sett opp en trekant med kjegler (8-10m mellom). Spillere fordelt på hjørnene, ball starter hos én.',
       steps: [
-        'A passer til B og løper mot Bs posisjon.',
-        'B tar imot, passer til C, og løper mot Cs posisjon.',
-        'C tar imot, passer til neste, og følger ballen.',
-        'Hold flyten gående. Ball og spillere sirkulerer hele tiden.'
+        'A kaster til B og løper mot Bs posisjon.',
+        'B tar imot, kaster til C, og løper mot Cs posisjon.',
+        'C tar imot, kaster til neste, og følger ballen.',
+        'Hold flyten gående — ballen og spillerne sirkulerer hele tiden.'
       ],
       coaching: [
-        'Beveg deg MED EN GANG etter pasning',
-        'Mottaker: se deg rundt FØR ballen kommer',
-        'Tempo på pasningene — trill ballen med fart',
-        'Førstekontakt legger ballen klar for neste pasning'
+        'Flytt deg MED EN GANG etter kast',
+        'Mottaker: løp mot ballen, ikke vent på den',
+        'Kast med fart og presisjon — ikke bare sleng',
+        'Se deg rundt FØR ballen kommer til deg'
       ],
       variations: [
         'To baller i omløp samtidig for mer intensitet',
-        'Legg til en forsvarer i midten (halvt rondo-prinsipp)'
+        'Firkant i stedet for trekant med 4 spillere'
       ],
       diagram: { width:220, height:160, field:'none', elements:[
         {type:'player',x:50,y:80,team:'a',label:'1'},{type:'ball',x:58,y:76},
@@ -234,81 +122,6 @@ window.EXERCISES_DATA = [
         {type:'arrow',from:[110,42],to:[165,78],style:'pass'}
       ]}
     },
-    {
-      key: 'turn', label: 'Vendinger', defaultMin: 10, category: 'teknikk',
-      ages: ['8-9','10-12','13-16'], players: '4-16',
-      equipment: '1 ball per spiller, kjegler',
-      nffCategory: 'sjef_over_ballen', themes: ['finter', 'dribling_bevegelse'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Brems ned FØR vendingen, akseler ETTER', 'Bruk kroppen til å skjerme ballen', 'Se deg rundt i vendingsøyeblikket'],
-      intensity: 'medium', hasOpposition: false,
-      playerCount: { min: 4, max: 16 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Trening av ulike vendeteknikker: Cruyff-vending, innsidevending, utsidedraging. Evnen til å snu med ball er avgjørende for å komme ut av press.',
-      setup: 'Spillerne fører ball mot en kjegle, utfører vending, og fører ball tilbake. 3-4 parallelle stasjoner.',
-      steps: [
-        'Før ballen mot kjeglen i rolig tempo.',
-        'Ved kjeglen: utfør vendeteknikk (trener viser hvilken).',
-        'Akseler ut av vendingen og før ball tilbake.',
-        'Roter mellom teknikkene: innsidevending, Cruyff, sålevending.'
-      ],
-      coaching: [
-        'Brems ned FØR vendingen, akseler ETTER',
-        'Bruk kroppen til å skjerme ballen',
-        'Se deg rundt i vendingsøyeblikket',
-        'Øv begge retninger!'
-      ],
-      variations: [
-        'Legg til en passiv forsvarer som presser lett',
-        'Vend og slå pasning til neste i køen'
-      ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:110,y:55},
-        {type:'player',x:55,y:55,team:'a',label:''},{type:'ball',x:63,y:51},
-        {type:'arrow',from:[55,55],to:[100,55],style:'run'},
-        {type:'arrow',from:[115,55],to:[165,35],style:'run'},
-        {type:'player',x:175,y:30,team:'a',label:''},
-        {type:'cone',x:110,y:110},
-        {type:'player',x:55,y:110,team:'a',label:''},
-        {type:'arrow',from:[55,110],to:[100,110],style:'run'},
-        {type:'arrow',from:[115,110],to:[165,130],style:'run'},
-        {type:'player',x:175,y:135,team:'a',label:''}
-      ]}
-    },
-    {
-      key: 'receive_turn', label: 'Mottak og vending', defaultMin: 10, category: 'teknikk',
-      ages: ['8-9','10-12','13-16'], players: '6-12',
-      equipment: '1 ball per par, kjegler',
-      nffCategory: 'sjef_over_ballen', themes: ['mottak_pasning'], nffPhases: ['angrep_fremover'],
-      learningGoals: ['Sjekk over skulderen FØR ballen kommer', 'Åpne kroppen mot dit du vil vende', 'Førstetouch i retning du skal spille'],
-      suggestedGroupSize: 2, intensity: 'medium', hasOpposition: false,
-      playerCount: { min: 6, max: 12 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Spilleren mottar pasning med ryggen mot spilleretning, vender med førstetouch, og spiller videre. Trener orientert førstetouch — en nøkkelferdighet.',
-      setup: 'Spillerne i par, 10m avstand. Én kjegle bak mottakeren (representerer retningen å vende mot).',
-      steps: [
-        'A passer til B som har ryggen mot Bs kjegle.',
-        'B tar imot med åpent mottak: vender kroppen og ballen i én bevegelse.',
-        'B fører ballen forbi kjeglen og passer tilbake til A.',
-        'Bytt roller etter 5 repetisjoner.'
-      ],
-      coaching: [
-        'Sjekk over skulderen FØR ballen kommer',
-        'Åpne kroppen mot dit du vil vende',
-        'Førstetouch i retning du skal spille',
-        'Bruk utsiden av foten for å ta med ballen rundt'
-      ],
-      variations: [
-        'Legg til en passiv forsvarer bak mottakeren',
-        'Mottak-vending-skudd: avslutt på mål etter vending'
-      ],
-      diagram: { width:220, height:100, field:'none', elements:[
-        {type:'player',x:30,y:50,team:'a',label:'L'},{type:'ball',x:38,y:46},
-        {type:'player',x:110,y:50,team:'neutral',label:'M'},
-        {type:'player',x:190,y:50,team:'b',label:'R'},
-        {type:'arrow',from:[42,50],to:[98,50],style:'pass'},
-        {type:'arrow',from:[120,50],to:[178,50],style:'pass'},
-        {type:'arrow',from:[110,62],to:[30,62],style:'run'}
-      ]}
-    },
-
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     // 🎯 AVSLUTNING
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -431,7 +244,7 @@ window.EXERCISES_DATA = [
       learningGoals: ['Angriper med ball: trekk forsvarer FØR pasning', 'Angriper uten ball: hold avstand og vinkel, vær spillbar', 'Timing: spill pasning i riktig øyeblikk'],
       suggestedGroupSize: 3, intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 12 }, equipmentTags: ['smaamaal', 'kjegler', 'ball'],
-      description: 'To angripere mot én forsvarer. Trener den viktigste beslutningen i fotball: når skal jeg drible, og når skal jeg spille pasning?',
+      description: 'To angripere mot én forsvarer. Trener den viktigste beslutningen i håndball: når skal jeg drible, og når skal jeg kaste?',
       setup: 'Bane 10x15m. Mål i ene enden. Forsvareren fra midten, angriperne fra andre enden.',
       steps: [
         'Angriperparet starter med ball fra baselinjen.',
@@ -556,7 +369,7 @@ window.EXERCISES_DATA = [
       setup: 'Tilpass banestørrelse (3v3: 20x25m, 5v5: 30x40m). To mål, vester for lagdeling.',
       steps: [
         'Del inn i to lag med vester.',
-        'Vanlige regler, innkast/innspark ved sidelinje.',
+        'Vanlige regler, innkast ved sidelinje.',
         'Spill perioder på 4-6 minutter, kort pause, nye lag.',
         'Trener kan stoppe kort for å veilede, men la spillet flyte!'
       ],
@@ -633,7 +446,7 @@ window.EXERCISES_DATA = [
       learningGoals: ['La barna løse problemene selv', 'Ros samarbeid og innsats, ikke bare scoring'],
       intensity: 'high', hasOpposition: true,
       playerCount: { min: 6, max: 20 }, equipmentTags: ['maal', 'ball', 'vester'],
-      description: 'Ustrukturert spill der barna styrer selv. Treneren observerer og heier, men griper minimalt inn. Gir eierskap, kreativitet og ren fotballglede.',
+      description: 'Ustrukturert spill der barna styrer selv. Treneren observerer og heier, men griper minimalt inn. Gir eierskap, kreativitet og ren håndballglede.',
       setup: 'Tilpasset bane med mål. Del inn i lag (kan være ujevne). Minimalt med regler.',
       steps: [
         'Del inn i lag. Forklar: "Nå er det match!".',
