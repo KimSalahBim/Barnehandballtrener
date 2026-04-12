@@ -9,14 +9,61 @@
   const STATUS_ENDPOINT = "/api/subscription-status";
   const TRIAL_ENDPOINT = "/api/start-trial";
 
+  const LS_SUB_KEY = "bf_sub_status";
+  const LS_SUB_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+  function persistStatusToStorage(status, userId) {
+    if (!userId || !status) return;
+    try {
+      localStorage.setItem(
+        LS_SUB_KEY + "_" + userId,
+        JSON.stringify({ status, expires: Date.now() + LS_SUB_TTL })
+      );
+    } catch (_) {}
+  }
+
+  function readStatusFromStorage(userId) {
+    if (!userId) return null;
+    try {
+      const raw = localStorage.getItem(LS_SUB_KEY + "_" + userId);
+      if (!raw) return null;
+      const item = JSON.parse(raw);
+      if (!item || Date.now() > item.expires) return null;
+      return item.status;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function clearStatusFromStorage(userId) {
+    if (!userId) return;
+    try {
+      localStorage.removeItem(LS_SUB_KEY + "_" + userId);
+    } catch (_) {}
+  }
+
   // --- BFCACHE FIX: Clear state ved browser back/forward restore ---
-  window.addEventListener('pageshow', (e) => {
+  window.addEventListener("pageshow", (e) => {
     if (e.persisted) {
-      // Siden ble restored fra bfcache - clear state og rebind
       delete window.__bf_subscription_click_handler;
       if (window.__BF_IS_DEBUG_HOST) console.log(`${LOG_PREFIX} 🔄 State cleared after bfcache restore, rebinding...`);
-      // Trigger rebind
       bind();
+
+      try {
+        const authSvc = window.authService;
+        if (authSvc?._mainShown && authSvc?.currentUser) {
+          clearStatusCache();
+          subscriptionService.checkSubscription({ forceFresh: true }).then((status) => {
+            if (status && !status.reason) {
+              const hasAccess = !!(status.active || status.trial || status.lifetime);
+              if (!hasAccess) {
+                console.warn(`${LOG_PREFIX} ⚠️ Subscription lapsed (bfcache restore) — showing pricing`);
+                authSvc.showPricingPage();
+              }
+            }
+          }).catch(() => {});
+        }
+      } catch (_) {}
     }
   });
 
@@ -45,9 +92,13 @@
     statusCache.status = status;
     statusCache.userId = userId;
     statusCache.expires = Date.now() + ttlMs;
+    if (status && !status.reason && userId) {
+      persistStatusToStorage(status, userId);
+    }
   }
 
   function clearStatusCache() {
+    clearStatusFromStorage(statusCache.userId);
     statusCache = { status: null, expires: 0, userId: null };
   }
 
@@ -180,6 +231,23 @@
       if (cached) return cached;
     }
 
+    // Fast path: authService single-flight session (unngår Supabase lock-konkurranse)
+    if (!skipCache) {
+      try {
+        const session = await withTimeout(
+          Promise.resolve(window.authService?.getSessionWithRetry?.()),
+          3000,
+          "authService.getSessionWithRetry"
+        );
+        const token = session?.access_token;
+        const userId = session?.user?.id;
+        if (token && userId) {
+          setCachedToken(token, userId);
+          return token;
+        }
+      } catch (_) {}
+    }
+
     // 2) Ikke bruk for aggressive timeouts her – det skaper "Invalid session" / flakiness.
     // Prøv flere ganger i tilfelle Supabase fortsatt "recoverAndRefresh"-er.
     for (let i = 0; i < retries; i++) {
@@ -269,6 +337,10 @@
     getLastKnownStatus() {
       if (statusCache.status && statusCache.userId) {
         return statusCache.status;
+      }
+      const userId = tokenCache.userId || window.authService?.getUserId?.() || null;
+      if (userId) {
+        return readStatusFromStorage(userId);
       }
       return null;
     },
