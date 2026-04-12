@@ -118,14 +118,14 @@ window.NFF_DATA = {
     '6-7': [
       { title: 'Lek og kast (45 min)', theme: 'kast_teknikk', duration: 45, blocks: [
         { key: 'ball_luften', min: 8 },
-        { key: 'kastlek_halvdeler', min: 8 },
+        { key: 'activity_course', min: 8 },
         { key: 'drink', min: 2 },
         { key: 'ssg', min: 18 },
         { key: 'shot', min: 9 }
       ]},
       { title: 'Ball og bevegelse (45 min)', theme: 'dribling_bevegelse', duration: 45, blocks: [
-        { key: 'tag', min: 8 },
-        { key: 'kastlek_halvdeler', min: 8 },
+        { key: 'chain_tag', min: 8 },
+        { key: 'dribbling', min: 8 },
         { key: 'ball_sisten', min: 8 },
         { key: 'drink', min: 2 },
         { key: 'ssg', min: 15 },
@@ -152,8 +152,8 @@ window.NFF_DATA = {
         { key: 'shot', min: 4 }
       ]},
       { title: 'Forsvarsspill (60 min)', theme: 'forsvarsspill', duration: 60, blocks: [
-        { key: 'tag', min: 6 },
-        { key: 'ball_sisten', min: 8 },
+        { key: 'chain_tag', min: 6 },
+        { key: 'defensive_movement', min: 8 },
         { key: 'defend_press', min: 10 },
         { key: 'drink', min: 2 },
         { key: '1v1', min: 10 },
@@ -163,6 +163,7 @@ window.NFF_DATA = {
       { title: 'Kast og avslutning (75 min)', theme: 'kast_teknikk', duration: 75, blocks: [
         { key: 'kongen_haugen', min: 8 },
         { key: 'pass_pair', min: 10 },
+        { key: 'activity_course', min: 10 },
         { key: 'shot', min: 10 },
         { key: 'drink', min: 2 },
         { key: '2v1', min: 10 },
@@ -172,7 +173,7 @@ window.NFF_DATA = {
       { title: 'Finter og 1v1 (60 min)', theme: '1v1_duell', duration: 60, blocks: [
         { key: 'ball_sisten', min: 8 },
         { key: 'kongen_haugen', min: 8 },
-        { key: 'kastlek_halvdeler', min: 10 },
+        { key: 'dribbling', min: 10 },
         { key: 'drink', min: 2 },
         { key: '1v1', min: 10 },
         { key: 'ssg', min: 18 },
@@ -190,7 +191,7 @@ window.NFF_DATA = {
         { key: 'shot', min: 8 }
       ]},
       { title: 'Omstilling og kontring (75 min)', theme: 'kontring_retur', duration: 75, blocks: [
-        { key: 'tag', min: 8 },
+        { key: 'chain_tag', min: 8 },
         { key: 'ball_sisten', min: 8 },
         { key: 'kontring', min: 10 },
         { key: 'drink', min: 2 },
@@ -212,21 +213,21 @@ window.NFF_DATA = {
       ]},
       { title: 'Forsvar og pressing (75 min)', theme: 'forsvarsspill', duration: 75, blocks: [
         { key: 'tag', min: 8 },
-        { key: 'ball_sisten', min: 8 },
+        { key: 'defensive_movement', min: 8 },
         { key: 'defend_press', min: 10 },
         { key: 'drink', min: 2 },
         { key: '2v1', min: 12 },
         { key: 'kontring', min: 10 },
-        { key: 'ssg', min: 22 },
+        { key: 'ssg', min: 20 },
         { key: 'shot', min: 5 }
       ]}
     ],
     '13-16': [
       { title: 'Forsvarsspill og pressing (90 min)', theme: 'forsvarsspill', duration: 90, blocks: [
-        { key: 'pass_move', min: 10 },
+        { key: 'dribbling', min: 10 },
         { key: 'defend_press', min: 12 },
         { key: 'drink', min: 2 },
-        { key: 'wall_pass', min: 12 },
+        { key: 'defensive_movement', min: 12 },
         { key: 'transition', min: 15 },
         { key: 'ssg_theme', min: 28 },
         { key: 'shot', min: 8 },
