@@ -399,46 +399,6 @@ window.EXERCISES_DATA = [
       ]}
     },
     {
-      key: 'possession', label: 'Ballbesittelse', defaultMin: 12, category: 'smalagsspill',
-      ages: ['8-9','10-12','13-16'], players: '7-15',
-      equipment: 'Vester, baller, kjegler til bane',
-      nffCategory: 'smalagsspill', themes: ['samarbeidsspill', 'mottak_pasning', 'forsvarsspill'], nffPhases: ['angrep_fremover', 'forsvar_vinne_ball'],
-      learningGoals: ['Gjør deg spillbar: avstand og vinkel til ballfører', 'Se opp før du får ballen: orienter deg', 'Forsvar: press sammen, steng midten'],
-      intensity: 'high', hasOpposition: true,
-      playerCount: { min: 7, max: 15 }, equipmentTags: ['vester', 'ball', 'kjegler'],
-      description: 'Hold ballen i laget med overtall (f.eks. 4v2 med jokere). Trener pasningsspill under press, orientering og bevegelse for å bli spillbar.',
-      setup: 'Avgrens et område (12x12 til 20x20m). Del inn i to lag pluss 1-2 jokere som alltid er med ballførende lag.',
-      steps: [
-        'Laget med ball holder den så lenge som mulig.',
-        'Jokerne spiller med det ballførende laget (overtall).',
-        'Forsvarerne vinner ball = bytt!',
-        'Tell pasninger i strekk — hvem klarer 10?'
-      ],
-      coaching: [
-        'Gjør deg spillbar: avstand og vinkel til ballfører',
-        'Jokere: beveg deg, ikke stå stille!',
-        'Se opp før du får ballen — orienter deg',
-        'Forsvar: press sammen, steng midten'
-      ],
-      variations: [
-        'Uten jokere for lik kamp',
-        'Score ved å spille ballen fra side til side'
-      ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
-        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
-        {type:'player',x:110,y:22,team:'a',label:''},
-        {type:'player',x:188,y:70,team:'a',label:''},
-        {type:'player',x:188,y:110,team:'a',label:''},
-        {type:'player',x:110,y:148,team:'a',label:''},
-        {type:'player',x:32,y:80,team:'a',label:''},{type:'ball',x:40,y:76},
-        {type:'player',x:98,y:80,team:'b',label:'F'},
-        {type:'player',x:128,y:80,team:'b',label:'F'},
-        {type:'arrow',from:[32,80],to:[108,28],style:'pass'},
-        {type:'arrow',from:[98,80],to:[108,38],style:'run'}
-      ]}
-    },
-    {
       key: 'game_activity', label: 'Fri spillaktivitet', defaultMin: 18, category: 'smalagsspill',
       ages: ['6-7','8-9','10-12','13-16'], players: '6-20',
       equipment: 'Mål, baller, vester',
@@ -520,46 +480,6 @@ window.EXERCISES_DATA = [
     // ═══════════════════════════════
     // 🆕 TIER 1: NYE ØVELSER (egenprodusert innhold)
     // ═══════════════════════════════
-
-    // --- Ballsisten (leik med ball, 6-7 fokus) ---
-    {
-      key: 'ball_tag', label: 'Ballsisten (fri)', defaultMin: 8, category: 'oppvarming',
-      ages: ['6-7', '8-9'], players: '6-20',
-      equipment: '1 ball per spiller, kjegler til bane',
-      nffCategory: 'sjef_over_ballen', themes: ['dribling_bevegelse', 'leik_stafett'], nffPhases: ['noytral'],
-      learningGoals: ['Hold ballen i hånden under press', 'Retningsforandring for å unngå fangere', 'Bruk kroppen til å skjerme ballen'],
-      intensity: 'high', hasOpposition: false,
-      playerCount: { min: 6, max: 20 }, equipmentTags: ['ball', 'kjegler'],
-      description: 'Sistenlek der alle har egen ball. Fangeren løper med ball i hånden samtidig som den prøver å ta de andre. Kombinerer ballkontroll med bevegelse og romforståelse.',
-      setup: 'Avgrens et område (15x15 til 20x20m). Alle spillere har egen ball. Velg 1-2 fangere (vester).',
-      steps: [
-        'Alle løper med ball i hånden innenfor området.',
-        'Fangerne (med vest) prøver å ta de andre ved å berøre dem.',
-        'Blir du tatt, stopp og stuss ballen 5 ganger på stedet. Så er du fri igjen.',
-        'Bytt fangere hvert 2. minutt.'
-      ],
-      coaching: [
-        'Hold ballen trygt i hånden — ikke slipp den',
-        'Løft blikket! Se hvor fangerne er',
-        'Bruk retningsforandring for å stikke unna',
-        'Fangere: ikke bare jag — avskjær!'
-      ],
-      variations: [
-        'Tatt = bli fanger selv (siste spiller igjen vinner)',
-        'Fangere uten ball — tar de andre ved å berøre dem med hånden'
-      ],
-      diagram: { width:220, height:160, field:'small', elements:[
-        {type:'cone',x:20,y:20},{type:'cone',x:200,y:20},
-        {type:'cone',x:20,y:140},{type:'cone',x:200,y:140},
-        {type:'player',x:60,y:50,team:'b',label:'S'},
-        {type:'player',x:155,y:100,team:'b',label:'S'},
-        {type:'player',x:90,y:110,team:'a',label:''},{type:'ball',x:98,y:106},
-        {type:'player',x:140,y:40,team:'a',label:''},
-        {type:'player',x:50,y:90,team:'a',label:''},
-        {type:'arrow',from:[90,110],to:[52,90],style:'run'},
-        {type:'arrow',from:[155,100],to:[130,70],style:'run'}
-      ]}
-    },
 
     // --- Press på ballfører (forsvarsspill) ---
     {
@@ -720,46 +640,6 @@ window.EXERCISES_DATA = [
         {type:'arrow',from:[85,90],to:[118,138],style:'run'},
         {type:'arrow',from:[54,90],to:[113,133],style:'pass'},
         {type:'arrow',from:[118,138],to:[113,183],style:'shot'}
-      ]}
-    },
-
-    // --- Avslutning med medspiller ---
-    {
-      key: 'finish_assist', label: 'Avslutning med medspiller', defaultMin: 12, category: 'avslutning',
-      ages: ['8-9', '10-12', '13-16'], players: '6-14',
-      equipment: 'Mål med keeper, baller, kjegler',
-      nffCategory: 'scoringstrening', themes: ['kast_teknikk', 'samarbeidsspill', 'finter'], nffPhases: ['angrep_avslutning'],
-      learningGoals: ['Tverrpasning eller tilbakelegg til medspiller i skuddposisjon', 'Avslutt på direkten eller med færrest mulig touch', 'Beveg deg inn i scoringsposisjon med riktig timing'],
-      suggestedGroupSize: 2, intensity: 'high', hasOpposition: false,
-      playerCount: { min: 6, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
-      description: 'Avslutningsøvelse der to spillere samarbeider om å score. Øver på tverrballer, tilbakelegg og direkte avslutning — mer realistisk enn å skyte alene.',
-      setup: 'Spillere i par. Kø sentralt og på høyre/venstre side, 20m fra mål. Keeper i mål.',
-      steps: [
-        'Spiller A fører ball langs siden mot mållinja.',
-        'Spiller B løper inn i boksen fra sentralt.',
-        'A slår tverrball eller tilbakelegg til B.',
-        'B avslutter på mål — helst på direkten.',
-        'Bytt sider og roller. Varier mellom høyre og venstre.'
-      ],
-      coaching: [
-        'Kantspiller: løft blikket, finn medspillerens løp',
-        'Avslutter: timing! Ikke stå stille — løp inn i ballen',
-        'Avslutt raskt, keeper skal ikke rekke å flytte seg',
-        'Plassering i det ledige hjørnet, ikke rett på keeper'
-      ],
-      variations: [
-        'Legg til en forsvarer som prøver å blokkere tverrballen',
-        'Varier: tilbakelegg fra mållinja, tverrpass fra 9m, gjennombrudd sentralt'
-      ],
-      diagram: { width:240, height:200, field:'handball_half', elements:[
-        {type:'player',x:80,y:88,team:'a',label:'B'},{type:'ball',x:88,y:84},
-        {type:'player',x:50,y:75,team:'a',label:'K'},
-        {type:'player',x:120,y:138,team:'a',label:'L'},
-        {type:'player',x:95,y:118,team:'b',label:'F'},
-        {type:'keeper',x:120,y:175},
-        {type:'arrow',from:[80,88],to:[52,80],style:'pass'},
-        {type:'arrow',from:[50,75],to:[50,145],style:'run'},
-        {type:'arrow',from:[50,145],to:[100,183],style:'shot'}
       ]}
     },
 

@@ -65,8 +65,8 @@
     'juggle': 'custom',
     'competitions': 'custom',
     'overload': '2v1',
-    'possession_joker': 'possession',
-    'possession_even': 'possession',
+    'possession_joker': 'ssg_theme',
+    'possession_even': 'ssg',
     'surprise': 'ssg',
   };
 
@@ -2954,16 +2954,16 @@ function serializeWorkoutFromState() {
   const SUGGESTIONS = [
     // 60 min
     [
-      { key: 'tag', min: 8 },
-      { key: 'pass_pair', min: 10 },
+      { key: 'chain_tag', min: 8 },
+      { key: 'pass_run', min: 10 },
       { key: '1v1', min: 10 },
       { key: 'drink', min: 2 },
       { key: 'ssg', min: 20 },
       { key: 'shot', min: 10 }
     ],
-    // 75 min (inkl parallel keepertrening)
+    // 75 min
     [
-      { key: 'ball_sisten', min: 8 },
+      { key: 'chain_tag', min: 8 },
       { key: 'pass_pair', min: 10 },
       { key: 'drink', min: 2 },
       { parallel: true, a: { key: '2v1', min: 12 }, b: { key: 'keeper', min: 12 } },
@@ -2975,8 +2975,8 @@ function serializeWorkoutFromState() {
     // 90 min
     [
       { key: 'tag', min: 10 },
-      { key: 'pass_pair', min: 10 },
-      { key: 'pass_move', min: 10 },
+      { key: 'pass_run', min: 10 },
+      { key: 'dribbling', min: 10 },
       { key: 'drink', min: 2 },
       { key: 'kontring', min: 12 },
       { key: '3v2', min: 12 },

@@ -147,7 +147,7 @@ window.NFF_DATA = {
         { key: 'pass_pair', min: 10 },
         { key: 'pass_move', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'possession', min: 12 },
+        { key: 'pass_run', min: 12 },
         { key: 'ssg_theme', min: 14 },
         { key: 'shot', min: 4 }
       ]},
@@ -165,7 +165,6 @@ window.NFF_DATA = {
         { key: 'pass_pair', min: 10 },
         { key: 'shot', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'finish_assist', min: 10 },
         { key: '2v1', min: 10 },
         { key: 'ssg', min: 21 },
         { key: 'shot_race', min: 4 }
@@ -205,7 +204,7 @@ window.NFF_DATA = {
         { key: 'wall_pass', min: 10 },
         { key: 'drink', min: 2 },
         { key: '3v2', min: 12 },
-        { key: 'finish_assist', min: 10 },
+        { key: 'jump_shot', min: 10 },
         { key: 'ssg_theme', min: 28 },
         { key: 'shot', min: 5 },
         { key: 'drink', min: 2 },
@@ -251,13 +250,13 @@ window.NFF_DATA = {
         { key: 'kontring', min: 12 },
         { key: 'transition', min: 15 },
         { key: 'ssg_theme', min: 20 },
-        { key: 'finish_assist', min: 6 }
+        { key: 'shot_race', min: 6 }
       ]},
       { title: 'Angrep og avslutning (90 min)', theme: 'kast_teknikk', duration: 90, blocks: [
         { key: 'pass_pair', min: 10 },
         { key: 'pass_move', min: 10 },
         { key: 'drink', min: 2 },
-        { key: 'finish_assist', min: 12 },
+        { key: 'jump_shot', min: 12 },
         { key: '3v2', min: 12 },
         { key: 'ssg_theme', min: 28 },
         { key: 'shot_race', min: 8 },
