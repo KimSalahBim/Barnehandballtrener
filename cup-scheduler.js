@@ -13,26 +13,27 @@
   //  NFF REGELVERK — aldersklasse -> spillformat
   // =========================================================================
   const NFF_RULES = {
-    '6':  { playFormat: '3v3',   matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 3,  maxPlayers: 6,  noPlayoffs: true,  noRanking: true  },
-    '7':  { playFormat: '3v3',   matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 3,  maxPlayers: 6,  noPlayoffs: true,  noRanking: true  },
-    '8':  { playFormat: '5v5',   matchMinutes: 50, halfCount: 2, halfMinutes: 25, minPlayers: 5,  maxPlayers: 10, noPlayoffs: true,  noRanking: true  },
-    '9':  { playFormat: '5v5',   matchMinutes: 50, halfCount: 2, halfMinutes: 25, minPlayers: 5,  maxPlayers: 10, noPlayoffs: true,  noRanking: true  },
-    '10': { playFormat: '7v7',   matchMinutes: 60, halfCount: 2, halfMinutes: 30, minPlayers: 7,  maxPlayers: 14, noPlayoffs: true,  noRanking: true  },
-    '11': { playFormat: '7v7',   matchMinutes: 60, halfCount: 2, halfMinutes: 30, minPlayers: 7,  maxPlayers: 14, noPlayoffs: true,  noRanking: true  },
-    '12': { playFormat: '9v9',   matchMinutes: 70, halfCount: 2, halfMinutes: 35, minPlayers: 9,  maxPlayers: 16, noPlayoffs: true,  noRanking: true  },
-    '13': { playFormat: '9v9',   matchMinutes: 70, halfCount: 2, halfMinutes: 35, minPlayers: 9,  maxPlayers: 16, noPlayoffs: true,  noRanking: true  },
-    '14': { playFormat: '11v11', matchMinutes: 70, halfCount: 2, halfMinutes: 35, minPlayers: 11, maxPlayers: 18, noPlayoffs: false, noRanking: false },
-    '15': { playFormat: '11v11', matchMinutes: 80, halfCount: 2, halfMinutes: 40, minPlayers: 11, maxPlayers: 18, noPlayoffs: false, noRanking: false },
-    '16': { playFormat: '11v11', matchMinutes: 80, halfCount: 2, halfMinutes: 40, minPlayers: 11, maxPlayers: 22, noPlayoffs: false, noRanking: false },
+    '6':  { playFormat: '4v4',  matchMinutes: 20, halfCount: 2, halfMinutes: 10, minPlayers: 4,  maxPlayers: 8,  noPlayoffs: true,  noRanking: true  },
+    '7':  { playFormat: '4v4',  matchMinutes: 20, halfCount: 2, halfMinutes: 10, minPlayers: 4,  maxPlayers: 8,  noPlayoffs: true,  noRanking: true  },
+    '8':  { playFormat: '5v5',  matchMinutes: 25, halfCount: 2, halfMinutes: 12, minPlayers: 5,  maxPlayers: 10, noPlayoffs: true,  noRanking: true  },
+    '9':  { playFormat: '5v5',  matchMinutes: 25, halfCount: 2, halfMinutes: 12, minPlayers: 5,  maxPlayers: 10, noPlayoffs: true,  noRanking: true  },
+    '10': { playFormat: '6v6',  matchMinutes: 30, halfCount: 2, halfMinutes: 15, minPlayers: 6,  maxPlayers: 12, noPlayoffs: true,  noRanking: true  },
+    '11': { playFormat: '6v6',  matchMinutes: 30, halfCount: 2, halfMinutes: 15, minPlayers: 6,  maxPlayers: 12, noPlayoffs: true,  noRanking: true  },
+    '12': { playFormat: '7v7',  matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 7,  maxPlayers: 14, noPlayoffs: true,  noRanking: true  },
+    '13': { playFormat: '7v7',  matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 7,  maxPlayers: 16, noPlayoffs: false, noRanking: false },
+    '14': { playFormat: '7v7',  matchMinutes: 40, halfCount: 2, halfMinutes: 20, minPlayers: 7,  maxPlayers: 16, noPlayoffs: false, noRanking: false },
+    '15': { playFormat: '7v7',  matchMinutes: 60, halfCount: 2, halfMinutes: 30, minPlayers: 7,  maxPlayers: 16, noPlayoffs: false, noRanking: false },
+    '16': { playFormat: '7v7',  matchMinutes: 60, halfCount: 2, halfMinutes: 30, minPlayers: 7,  maxPlayers: 16, noPlayoffs: false, noRanking: false },
   };
 
-  // Cup-tilpassede kamptider (kortere enn serie for aa faa plass til mange kamper)
+  // Cup-tilpassede kamptider (kortere enn serie for å få plass til mange kamper)
   const CUP_MATCH_MINUTES = {
-    '6': 16, '7': 16,           // 2x8 min
-    '8': 20, '9': 20, '10': 20, // 2x10 min
-    '11': 25, '12': 25,         // 2x12.5 min (runder opp til 25)
-    '13': 40, '14': 50,         // 2x20 / 2x25
-    '15': 50, '16': 60,
+    '6': 16,  '7': 16,           // 2x8 min
+    '8': 20,  '9': 20,           // 2x10 min
+    '10': 24, '11': 24,          // 2x12 min
+    '12': 30, '13': 30,          // 2x15 min
+    '14': 40, '15': 40,          // 2x20 min
+    '16': 40,
   };
 
   /**
