@@ -130,7 +130,7 @@ window.EXERCISES_DATA = [
       ages: ['6-7','8-9','10-12','13-16'], players: '4-14',
       equipment: 'Mål (stort eller småmål), baller, kjegler',
       nffCategory: 'scoringstrening', themes: ['kast_teknikk'], nffPhases: ['angrep_avslutning'],
-      learningGoals: ['Plassering foran kraft: sikte lavt i hjørnene', 'Støttefot peker mot mål', 'Følg opp skuddet, vær klar for retur'],
+      learningGoals: ['Plassering foran kraft: sikte i hjørnene', 'Stemfot peker mot mål — sats og kast', 'Følg opp kastet, vær klar for retur'],
       intensity: 'medium', hasOpposition: false,
       playerCount: { min: 4, max: 14 }, equipmentTags: ['maal', 'ball', 'kjegler'],
       description: 'Avslutninger fra ulike posisjoner. Fokus på plassering framfor kraft. Alle barn elsker å skyte på mål — la dem gjøre det mye!',
