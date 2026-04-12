@@ -821,30 +821,30 @@
 
   
     <!-- Team Contact Modal -->
-    <div id="teamContactModal" class="modal" style="display: none;">
+    <div id="teamContactModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="teamContactModalTitle">
       <div class="modal-content">
-        <span class="modal-close" onclick="closeTeamContactForm()">&times;</span>
-        <h2>Team-lisens forespørsel</h2>
+        <button class="modal-close" type="button" onclick="closeTeamContactForm()" aria-label="Lukk">&times;</button>
+        <h2 id="teamContactModalTitle">Team-lisens forespørsel</h2>
         <form id="teamContactForm" class="contact-form">
           <div class="form-group">
-            <label>Navn *</label>
-            <input type="text" name="name" required>
+            <label for="tcf-name">Navn *</label>
+            <input id="tcf-name" type="text" name="name" required>
           </div>
           <div class="form-group">
-            <label>E-post *</label>
-            <input type="email" name="email" required>
+            <label for="tcf-email">E-post *</label>
+            <input id="tcf-email" type="email" name="email" required>
           </div>
           <div class="form-group">
-            <label>Telefon</label>
-            <input type="tel" name="phone">
+            <label for="tcf-phone">Telefon</label>
+            <input id="tcf-phone" type="tel" name="phone">
           </div>
           <div class="form-group">
-            <label>Antall trenere *</label>
-            <input type="number" name="quantity" min="3" max="9" required>
+            <label for="tcf-quantity">Antall trenere *</label>
+            <input id="tcf-quantity" type="number" name="quantity" min="3" max="9" required>
           </div>
           <div class="form-group">
-            <label>Melding</label>
-            <textarea name="message" rows="4"></textarea>
+            <label for="tcf-message">Melding</label>
+            <textarea id="tcf-message" name="message" rows="4"></textarea>
           </div>
           <button type="submit" class="btn-submit">Send forespørsel</button>
         </form>
@@ -1491,7 +1491,7 @@
 </div>
 
 <!-- Notification -->
-<div id="notification" class="notification" style="display:none;"></div>
+<div id="notification" class="notification" style="display:none;" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- Footer (legal links) -->
 <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.9em; border-top: 1px solid #eee; margin-top: 40px;">

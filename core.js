@@ -1429,6 +1429,95 @@
   // make available globally (auth-ui.js uses it)
   window.showNotification = window.showNotification || showNotification;
 
+  // ------------------------------
+  // Modal a11y: focus trap, Escape, restore focus (subscription + contact modals)
+  // ------------------------------
+  (function initBfModalA11y() {
+    const _state = new WeakMap();
+
+    function getFocusableElements(root) {
+      if (!root) return [];
+      const sel = [
+        'a[href]',
+        'button:not([disabled])',
+        'textarea:not([disabled])',
+        'input:not([disabled]):not([type="hidden"])',
+        'select:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])'
+      ].join(', ');
+      return Array.prototype.slice.call(root.querySelectorAll(sel)).filter(function (el) {
+        try {
+          return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+        } catch (e) {
+          return false;
+        }
+      });
+    }
+
+    function activate(modalEl, opts) {
+      if (!modalEl) return;
+      deactivate(modalEl);
+      var lastFocus = document.activeElement;
+      var focusRoot = opts && opts.focusRootSelector
+        ? modalEl.querySelector(opts.focusRootSelector)
+        : modalEl;
+      var root = focusRoot || modalEl;
+      var focusables = getFocusableElements(root);
+      var onEscape = opts && opts.onEscape;
+
+      function onKeydown(e) {
+        if (e.key === 'Escape' && typeof onEscape === 'function') {
+          e.preventDefault();
+          e.stopPropagation();
+          onEscape();
+          return;
+        }
+        if (e.key !== 'Tab' || focusables.length === 0) return;
+
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        var active = document.activeElement;
+        if (e.shiftKey) {
+          if (active === first || !root.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (active === last || !root.contains(active)) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+
+      modalEl.addEventListener('keydown', onKeydown, true);
+      _state.set(modalEl, { lastFocus: lastFocus, onKeydown: onKeydown });
+
+      requestAnimationFrame(function () {
+        try {
+          if (focusables[0]) focusables[0].focus();
+        } catch (_) {}
+      });
+    }
+
+    function deactivate(modalEl) {
+      if (!modalEl) return;
+      var s = _state.get(modalEl);
+      if (!s) return;
+      modalEl.removeEventListener('keydown', s.onKeydown, true);
+      _state.delete(modalEl);
+      try {
+        if (s.lastFocus && typeof s.lastFocus.focus === 'function') s.lastFocus.focus();
+      } catch (_) {}
+    }
+
+    window.bfModalA11y = {
+      activate: activate,
+      deactivate: deactivate,
+      getFocusableElements: getFocusableElements
+    };
+  })();
+
   function escapeHtml(str) {
     return String(str ?? '')
       .replace(/&/g, '&amp;')

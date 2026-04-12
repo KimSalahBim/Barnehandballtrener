@@ -716,11 +716,20 @@ if (cancelBtn && !cancelBtn.__bound) {
       }, { capture: true });
     }
 
+    if (window.bfModalA11y && typeof window.bfModalA11y.activate === "function") {
+      window.bfModalA11y.activate(modal, {
+        focusRootSelector: ".bf-modal__panel",
+        onEscape: closeSubscriptionModal,
+      });
+    }
   }
 
   function closeSubscriptionModal() {
     const modal = document.getElementById("subscriptionModal");
     if (!modal) return;
+    if (window.bfModalA11y && typeof window.bfModalA11y.deactivate === "function") {
+      window.bfModalA11y.deactivate(modal);
+    }
     modal.style.display = "none";
     modal.classList.add("hidden");
   }

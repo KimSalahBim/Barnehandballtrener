@@ -576,15 +576,24 @@ function openModal(modalEl) {
   if (!modalEl) return;
   modalEl.classList.add('modal-visible');
   document.body.classList.add('modal-open');
-  // focus first input for accessibility/usability
-  const first = modalEl.querySelector('input, textarea, button');
-  if (first) {
-    setTimeout(() => { try { first.focus(); } catch (_) {} }, 0);
+  if (window.bfModalA11y && typeof window.bfModalA11y.activate === 'function') {
+    window.bfModalA11y.activate(modalEl, {
+      focusRootSelector: '.modal-content',
+      onEscape: function () { closeModal(modalEl); },
+    });
+  } else {
+    const first = modalEl.querySelector('input, textarea, button');
+    if (first) {
+      setTimeout(() => { try { first.focus(); } catch (_) {} }, 0);
+    }
   }
 }
 
 function closeModal(modalEl) {
   if (!modalEl) return;
+  if (window.bfModalA11y && typeof window.bfModalA11y.deactivate === 'function') {
+    window.bfModalA11y.deactivate(modalEl);
+  }
   modalEl.classList.remove('modal-visible');
   // If no other visible modals, unlock body scroll
   const anyOpen = document.querySelector('.modal.modal-visible');
