@@ -1145,19 +1145,20 @@
         </div>
 
         <!-- Keeper -->
-        <div class="settings-card" style="margin-top:8px; padding:12px 14px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div class="settings-card" style="margin-top:8px; padding:14px 16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
             <div>
-              <div style="font-weight:700; font-size:14px;">Keepere</div>
-              <div id="kdKeeperHint" class="small-text" style="opacity:0.8; font-size:11px; line-height:1.2;">Velg hvem som står i mål og hvor lenge.</div>
+              <div style="font-weight:700; font-size:14px;">🧤 Keepere</div>
+              <div class="small-text" style="opacity:0.8; font-size:11px; line-height:1.3;">Velg hvem som står i mål og hvor lenge.</div>
             </div>
-            <div class="kd-counter">
-              <button type="button" class="kd-counter-btn" id="kdKeeperMinus">−</button>
-              <span id="kdKeeperCountDisplay">1</span>
-              <button type="button" class="kd-counter-btn" id="kdKeeperPlus">+</button>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button id="kdKeeperMinus" type="button" class="btn-secondary" style="width:36px; height:36px; padding:0; font-size:18px; line-height:1; border-radius:50%;">−</button>
+              <span id="kdKeeperCountDisplay" style="font-size:18px; font-weight:700; min-width:20px; text-align:center;">1</span>
+              <button id="kdKeeperPlus" type="button" class="btn-secondary" style="width:36px; height:36px; padding:0; font-size:18px; line-height:1; border-radius:50%;">+</button>
             </div>
           </div>
-          <!-- Existing select and checkbox kept hidden for JS compatibility -->
+
+          <!-- Hidden select kept for JS compatibility -->
           <select id="kdKeeperCount" style="display:none;">
             <option value="0">0</option>
             <option value="1" selected>1</option>
@@ -1165,36 +1166,35 @@
             <option value="3">3</option>
             <option value="4">4</option>
           </select>
-          <input id="kdManualKeeper" type="checkbox" style="display:none;" checked>
+          <input id="kdManualKeeper" type="checkbox" checked style="display:none;">
 
-          <div id="kdKeeperPanel">
-            <div style="display:flex; flex-direction:column; gap:7px;">
-              <div class="kd-keeper-row" data-row="1" style="display:flex;">
-                <div class="kd-keeper-avatar">🧤</div>
-                <select id="kdKeeper1" class="kd-keeper-select"></select>
-                <input id="kdKeeperMin1" type="number" class="kd-keeper-min-input" value="0" min="0">
-                <span class="kd-keeper-min-label">min</span>
-              </div>
-              <div class="kd-keeper-row" data-row="2" style="display:none;">
-                <div class="kd-keeper-avatar">🧤</div>
-                <select id="kdKeeper2" class="kd-keeper-select"></select>
-                <input id="kdKeeperMin2" type="number" class="kd-keeper-min-input" value="0" min="0">
-                <span class="kd-keeper-min-label">min</span>
-              </div>
-              <div class="kd-keeper-row" data-row="3" style="display:none;">
-                <div class="kd-keeper-avatar">🧤</div>
-                <select id="kdKeeper3" class="kd-keeper-select"></select>
-                <input id="kdKeeperMin3" type="number" class="kd-keeper-min-input" value="0" min="0">
-                <span class="kd-keeper-min-label">min</span>
-              </div>
-              <div class="kd-keeper-row" data-row="4" style="display:none;">
-                <div class="kd-keeper-avatar">🧤</div>
-                <select id="kdKeeper4" class="kd-keeper-select"></select>
-                <input id="kdKeeperMin4" type="number" class="kd-keeper-min-input" value="0" min="0">
-                <span class="kd-keeper-min-label">min</span>
-              </div>
+          <div id="kdKeeperSummary" class="small-text" style="opacity:0.85; margin-bottom:10px;">–</div>
+
+          <div class="kd-keeper-rows" style="display:flex; flex-direction:column; gap:10px;">
+            <div class="kd-keeper-row" data-row="1" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:20px;">🧤</span>
+              <select id="kdKeeper1" class="input kd-keeper-select" style="flex:1; min-width:0; width:100%; font-size:16px; min-height:44px;"></select>
+              <input id="kdKeeperMin1" type="number" class="input kd-keeper-min-input" value="0" min="0" style="width:80px; font-size:16px;">
+              <span class="small-text kd-keeper-min-label" style="opacity:0.8;">min</span>
             </div>
-            <div id="kdKeeperSummary" class="small-text" style="margin-top:6px; text-align:right; opacity:0.7;">–</div>
+            <div class="kd-keeper-row" data-row="2" style="display:none; gap:10px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:20px;">🧤</span>
+              <select id="kdKeeper2" class="input kd-keeper-select" style="flex:1; min-width:0; width:100%; font-size:16px; min-height:44px;"></select>
+              <input id="kdKeeperMin2" type="number" class="input kd-keeper-min-input" value="0" min="0" style="width:80px; font-size:16px;">
+              <span class="small-text kd-keeper-min-label" style="opacity:0.8;">min</span>
+            </div>
+            <div class="kd-keeper-row" data-row="3" style="display:none; gap:10px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:20px;">🧤</span>
+              <select id="kdKeeper3" class="input kd-keeper-select" style="flex:1; min-width:0; width:100%; font-size:16px; min-height:44px;"></select>
+              <input id="kdKeeperMin3" type="number" class="input kd-keeper-min-input" value="0" min="0" style="width:80px; font-size:16px;">
+              <span class="small-text kd-keeper-min-label" style="opacity:0.8;">min</span>
+            </div>
+            <div class="kd-keeper-row" data-row="4" style="display:none; gap:10px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:20px;">🧤</span>
+              <select id="kdKeeper4" class="input kd-keeper-select" style="flex:1; min-width:0; width:100%; font-size:16px; min-height:44px;"></select>
+              <input id="kdKeeperMin4" type="number" class="input kd-keeper-min-input" value="0" min="0" style="width:80px; font-size:16px;">
+              <span class="small-text kd-keeper-min-label" style="opacity:0.8;">min</span>
+            </div>
           </div>
         </div>
 

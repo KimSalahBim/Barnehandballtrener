@@ -348,6 +348,38 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       updateKeeperSummary();
     });
 
+    // Counter buttons for keeper count
+    const keeperMinusBtn = $('kdKeeperMinus');
+    const keeperPlusBtn = $('kdKeeperPlus');
+    const keeperDisplay = $('kdKeeperCountDisplay');
+
+    function syncKeeperCounter() {
+      const val = parseInt(keeperCountEl?.value || '1', 10);
+      if (keeperDisplay) keeperDisplay.textContent = val;
+      if (keeperMinusBtn) keeperMinusBtn.disabled = val <= 0;
+      if (keeperPlusBtn) keeperPlusBtn.disabled = val >= 4;
+    }
+
+    if (keeperMinusBtn) keeperMinusBtn.addEventListener('click', () => {
+      const cur = parseInt(keeperCountEl?.value || '1', 10);
+      if (cur > 0 && keeperCountEl) {
+        keeperCountEl.value = String(cur - 1);
+        keeperCountEl.dispatchEvent(new Event('change'));
+        syncKeeperCounter();
+      }
+    });
+
+    if (keeperPlusBtn) keeperPlusBtn.addEventListener('click', () => {
+      const cur = parseInt(keeperCountEl?.value || '1', 10);
+      if (cur < 4 && keeperCountEl) {
+        keeperCountEl.value = String(cur + 1);
+        keeperCountEl.dispatchEvent(new Event('change'));
+        syncKeeperCounter();
+      }
+    });
+
+    syncKeeperCounter();
+
     for (let i = 1; i <= 4; i++) {
       const sel = $(`kdKeeper${i}`);
       const min = $(`kdKeeperMin${i}`);
@@ -474,23 +506,6 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       }
     }
 
-    // ── Helper: update keeper counter display ──
-    function updateKeeperCounter(delta) {
-      var kcEl = $('kdKeeperCount');
-      var display = $('kdKeeperCountDisplay');
-      var current = clamp(parseInt(kcEl ? kcEl.value : '1', 10), 0, 4);
-      var next = clamp(current + delta, 1, 4);
-      if (kcEl) kcEl.value = String(next);
-      if (display) display.textContent = String(next);
-      var minusBtn = $('kdKeeperMinus');
-      var plusBtn = $('kdKeeperPlus');
-      if (minusBtn) minusBtn.disabled = (next <= 1);
-      if (plusBtn) plusBtn.disabled = (next >= 4);
-      refreshKeeperUI();
-      autoFillKeeperMinutes();
-      updateKeeperSummary();
-    }
-
     // ── Format pills ──
     var formatPillsEl = document.getElementById('kdFormatPills');
     if (formatPillsEl) {
@@ -544,11 +559,6 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       });
     }
 
-    // ── Keeper counter buttons ──
-    var keeperMinusBtn = $('kdKeeperMinus');
-    var keeperPlusBtn = $('kdKeeperPlus');
-    if (keeperMinusBtn) keeperMinusBtn.addEventListener('click', function() { updateKeeperCounter(-1); });
-    if (keeperPlusBtn) keeperPlusBtn.addEventListener('click', function() { updateKeeperCounter(1); });
   }
 
   // ------------------------------
@@ -630,47 +640,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   }
 
   function refreshKeeperUI() {
-    const format = parseInt($('kdFormat')?.value, 10) || 7;
-
-    const manualEl = $('kdManualKeeper');
-    const keeperCard = manualEl?.closest('.settings-card');
-    const panel = $('kdKeeperPanel');
-
-    if (format === 3 || format === 4) {
-      if (keeperCard) keeperCard.style.display = 'none';
-      if (panel) panel.style.display = 'none';
-      return;
-    } else {
-      // Show the card, hide just the toggle (checkbox + its label if safe)
-      if (keeperCard) keeperCard.style.display = '';
-      if (manualEl) {
-        manualEl.style.display = 'none';
-        // Hide the label wrapping the toggle, but ONLY if it doesn't also contain the keeper panel
-        const lbl = manualEl.closest('label');
-        if (lbl && panel && !lbl.contains(panel)) {
-          lbl.style.display = 'none';
-        } else if (lbl && !panel) {
-          lbl.style.display = 'none';
-        }
-      }
-      if ($('kdKeeperHint')) $('kdKeeperHint').textContent = 'Velg hvem som st\u00e5r i m\u00e5l og hvor lenge.';
-    }
-
-    // Always show keeper panel for non-3-er formats
-    if (panel) panel.style.display = 'block';
-
-    // Enforce minimum 1 keeper
     const kcEl = $('kdKeeperCount');
-    if (kcEl && parseInt(kcEl.value, 10) < 1) {
-      kcEl.value = '1';
-      const disp = $('kdKeeperCountDisplay');
-      if (disp) disp.textContent = '1';
-      const minusBtn = $('kdKeeperMinus');
-      const plusBtn = $('kdKeeperPlus');
-      if (minusBtn) minusBtn.disabled = true;
-      if (plusBtn) plusBtn.disabled = false;
-      autoFillKeeperMinutes();
-    }
 
     // Fall back to all players if no one is marked present yet
     const present = getPresentPlayers();
@@ -696,7 +666,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       }
     }
 
-    const kc = clamp(parseInt(kcEl?.value, 10) || 1, 1, 4);
+    const kc = clamp(parseInt(kcEl?.value, 10) || 0, 0, 4);
     for (let i = 1; i <= 4; i++) {
       const row = document.querySelector(`.kd-keeper-row[data-row="${i}"]`);
       if (row) row.style.display = (i <= kc) ? 'flex' : 'none';
