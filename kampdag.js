@@ -1093,12 +1093,16 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   // Drag & drop handlers
   // ------------------------------
 
+  function currentFormat() {
+    return parseInt($('kdFormat')?.value, 10) || 7;
+  }
+
   function initSlotDragStart(segIdx, slotKey, isBench, benchPid, startX, startY) {
     const slots = getActiveSlots();
     if (!slots) return;
     if (!isBench) {
       const sl = slots.find(s => s.key === slotKey);
-      if (sl && sl.zone === 'K') return;
+      if (sl && sl.zone === 'K' && currentFormat() !== 4) return;
     }
     const sm = getSlotMap(segIdx);
     const pid = isBench ? benchPid : sm.slots[slotKey];
@@ -1152,7 +1156,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         if (tsk) {
           // Drop on field slot
           const ts = slots.find(s => s.key === tsk);
-          if (ts && ts.zone !== 'K' && tsk !== kdDragState.slotKey) {
+          if (ts && (ts.zone !== 'K' || currentFormat() === 4) && tsk !== kdDragState.slotKey) {
             if (kdDragState.isBench) {
               swapBenchToField(kdDragState.segIdx, kdDragState.playerId, tsk);
             } else {
@@ -1187,7 +1191,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     for (const el of allSlotEls) {
       const sk = el.dataset.slotkey;
       const s = slots.find(s => s.key === sk);
-      if (!s || s.zone === 'K' || sk === kdDragState.slotKey) continue;
+      if (!s || (s.zone === 'K' && currentFormat() !== 4) || sk === kdDragState.slotKey) continue;
       const rect = el.getBoundingClientRect();
       // Center of the visual bubble (accounting for translate -50% -50%)
       const cx = rect.left + rect.width / 2;
