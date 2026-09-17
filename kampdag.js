@@ -640,6 +640,15 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
   }
 
   function refreshKeeperUI() {
+    const format = parseInt($('kdFormat')?.value, 10) || 7;
+    const keeperCard = $('kdManualKeeper')?.closest('.settings-card');
+
+    if (format === 3 || format === 4) {
+      if (keeperCard) keeperCard.style.display = 'none';
+      return;
+    }
+    if (keeperCard) keeperCard.style.display = '';
+
     const kcEl = $('kdKeeperCount');
 
     // Fall back to all players if no one is marked present yet
@@ -691,10 +700,13 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
     const format = parseInt($('kdFormat')?.value, 10) || 7;
     const T = clamp(parseInt($('kdMinutes')?.value, 10) || 48, 10, 200);
 
-    if (format === 3 || format === 4) {
-      summary.textContent = format === 4
-        ? '4-er h\u00e5ndball: l\u00f8pende keeperrotasjon. Alle b\u00f8r pr\u00f8ve keeperposisjonen.'
-        : '3-er: ingen keeper.';
+    if (format === 3) {
+      summary.textContent = '3-er: ingen keeper.';
+      return;
+    }
+
+    if (format === 4) {
+      summary.textContent = '4-er: keeperposisjon roteres automatisk mellom alle spillere.';
       return;
     }
 
@@ -2220,6 +2232,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         const sm0 = getSlotMap(0);
         const ov0 = hasSlotOverrides(0);
         const kn0 = first.keeperId ? escapeHtml(idToName[first.keeperId] || first.keeperId) : '';
+        let rotatingKeeperLabel0 = '';
+        if (format === 4 && first.lineup && first.lineup.length) {
+          const rotId = first.lineup[0];
+          rotatingKeeperLabel0 = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
+        }
+        const keeperLabel0 = kn0 || rotatingKeeperLabel0;
 
         const slotsHtml0 = slots.map(slot => {
           const pid = sm0.slots[slot.key];
@@ -2250,6 +2268,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
                   ${ov0 ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                  ${keeperLabel0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${keeperLabel0}</span>` : ''}
                   ${ov0 && best.segments.length > 1 ? `<button class="kd-copy-btn" data-action="kdcopy" data-seg="0">Kopier til alle</button>` : ''}
                   ${ov0 ? `<button class="kd-reset-btn" data-action="kdreset" data-seg="0">\u21ba</button>` : ''}
                   
@@ -2278,6 +2297,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
           const nextSeg = best.segments[idx + 1];
           const periodEnd = nextSeg ? nextSeg.start : T;
           const kn = seg.keeperId ? escapeHtml(idToName[seg.keeperId] || seg.keeperId) : '';
+          let rotatingKeeperLabel = '';
+          if (format === 4 && seg.lineup && seg.lineup.length) {
+            const rotId = seg.lineup[idx % seg.lineup.length];
+            rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
+          }
+          const keeperLabel = kn || rotatingKeeperLabel;
           const isLast = idx === best.segments.length - 1;
           const ov = hasSlotOverrides(idx);
           const prevLineup = new Set(best.segments[idx - 1].lineup);
@@ -2318,6 +2343,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
                 ${ov ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
               </div>
               <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                ${keeperLabel ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${keeperLabel}</span>` : ''}
                 ${ov && !isLast ? `<button class="kd-copy-btn" data-action="kdcopy" data-seg="${idx}">Kopier til alle</button>` : ''}
                 ${ov ? `<button class="kd-reset-btn" data-action="kdreset" data-seg="${idx}">\u21ba</button>` : ''}
                 
@@ -2392,7 +2418,13 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       if (planEl) {
         const events = buildEvents(best.segments);
         const planCards = events.map((ev, idx) => {
-          const keeperName = ev.keeperId ? (idToName[ev.keeperId] || ev.keeperId) : null;
+          const keeperName = ev.keeperId ? escapeHtml(idToName[ev.keeperId] || ev.keeperId) : '';
+          let rotatingKeeperLabel = '';
+          if (format === 4 && ev.lineup && ev.lineup.length) {
+            const rotId = ev.lineup[idx % ev.lineup.length];
+            rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
+          }
+          const keeperLabel = keeperName || rotatingKeeperLabel;
           const ins = ev.ins.map(id => `<div class="small-text">Inn: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const outs = ev.outs.map(id => `<div class="small-text">Ut: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const empty = (!ev.ins.length && !ev.outs.length) ? `<div class="small-text" style="opacity:0.8;">Start (ingen bytter)</div>` : '';
@@ -2400,7 +2432,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
             <div class="group-card" style="margin-bottom:12px;">
               <div class="group-header" style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="group-name">Minutt ${ev.minute}</div>
-                ${keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">Keeper: ${escapeHtml(keeperName)}</div>` : ''}
+                ${keeperLabel ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">${keeperLabel}</div>` : ''}
               </div>
               <div class="group-players" style="gap:6px;">${empty}${ins}${outs}</div>
             </div>`;
@@ -2435,7 +2467,8 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         minute: seg.start,
         ins,
         outs,
-        keeperId: seg.keeperId || null
+        keeperId: seg.keeperId || null,
+        lineup: seg.lineup.slice()
       });
 
       prev = cur;
@@ -2700,6 +2733,12 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const nextSeg = best.segments[idx+1];
       const periodEnd = nextSeg ? nextSeg.start : T;
       const keeperName = seg.keeperId ? escapeHtml(idToName[seg.keeperId]||seg.keeperId) : '';
+      let rotatingKeeperLabel = '';
+      if (format === 4 && seg.lineup && seg.lineup.length) {
+        const rotId = seg.lineup[idx % seg.lineup.length];
+        rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
+      }
+      const keeperLabel = keeperName || rotatingKeeperLabel;
       const isFirst = idx === 0;
       const prevLineup = !isFirst ? new Set(best.segments[idx-1].lineup) : new Set();
       const newIds = isFirst ? new Set() : new Set(seg.lineup.filter(id => !prevLineup.has(id)));
@@ -2732,7 +2771,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         outIds.forEach(id => { swaps += `<div class="sw"><span class="sw-out">\u2190</span><span style="color:#94a3b8;">${escapeHtml(idToName[id]||id)}</span></div>`; });
         swaps += '</div>';
       }
-      return `${(idx > 0 && idx % 3 === 0) ? '<div class="mob-break"></div>' : ''}<div class="card"><div class="card-head"><span class="card-title">${isFirst ? 'Start ' : ''}${seg.start}\u2013${periodEnd} min${ov ? ' \u270f\ufe0f' : ''}</span></div><div class="card-body">${body}${swaps}</div></div>`;
+      return `${(idx > 0 && idx % 3 === 0) ? '<div class="mob-break"></div>' : ''}<div class="card"><div class="card-head"><span class="card-title">${isFirst ? 'Start ' : ''}${seg.start}\u2013${periodEnd} min${ov ? ' \u270f\ufe0f' : ''}</span>${keeperLabel ? `<span class="card-keeper">${keeperLabel}</span>` : ''}</div><div class="card-body">${body}${swaps}</div></div>`;
     }).join('');
     const html = `<!doctype html>
 <html lang="nb">
