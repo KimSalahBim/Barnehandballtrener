@@ -67,8 +67,47 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
   // Drag & drop slot override state
   let kdSlotOverrides = {};     // { segIdx: { slots: {slotKey: playerId}, bench: [playerId] } }
+  let kdRotatingKeepers = {};   // { segIdx: playerId } — overrides for 4-er keeper badge
   let kdDragState = null;
   const KD_DRAG_THRESHOLD = 8;
+
+  function getRotatingKeeper(seg, idx) {
+    if (kdRotatingKeepers[idx] !== undefined) return kdRotatingKeepers[idx];
+    if (!seg.lineup || !seg.lineup.length) return null;
+    return seg.lineup[idx % seg.lineup.length];
+  }
+
+  function renderRotatingKeeperBadge(container, segIdx, pid, idToName) {
+    const badge = container?.querySelector(`.kd-rotating-keeper-badge[data-seg="${segIdx}"]`);
+    if (!badge) return;
+    badge.textContent = '\ud83e\udde4 ' + (idToName[pid] || pid);
+  }
+
+  function attachRotatingKeeperHandlers(container, best, idToName) {
+    if (!container) return;
+
+    if (container.__kdRotatingKeeperHandler) {
+      container.removeEventListener('click', container.__kdRotatingKeeperHandler);
+    }
+
+    const handler = (e) => {
+      const btn = e.target.closest('.kd-rotating-keeper-btn');
+      if (!btn || !container.contains(btn)) return;
+
+      const segIdx = parseInt(btn.dataset.seg, 10);
+      const seg = best.segments[segIdx];
+      if (!seg || !seg.lineup.length) return;
+
+      const current = getRotatingKeeper(seg, segIdx);
+      const currentPos = seg.lineup.indexOf(current);
+      const nextId = seg.lineup[(currentPos + 1) % seg.lineup.length];
+      kdRotatingKeepers[segIdx] = nextId;
+      renderRotatingKeeperBadge(container, segIdx, nextId, idToName);
+    };
+
+    container.__kdRotatingKeeperHandler = handler;
+    container.addEventListener('click', handler);
+  }
 
   // Formation state
   let kdFormationOn = true;
@@ -2102,6 +2141,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
 
     // Clear any previous drag & drop overrides
     kdSlotOverrides = {};
+    kdRotatingKeepers = {};
 
     renderKampdagOutput(present, best, P, T);
 
@@ -2232,12 +2272,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         const sm0 = getSlotMap(0);
         const ov0 = hasSlotOverrides(0);
         const kn0 = first.keeperId ? escapeHtml(idToName[first.keeperId] || first.keeperId) : '';
-        let rotatingKeeperLabel0 = '';
-        if (format === 4 && first.lineup && first.lineup.length) {
-          const rotId = first.lineup[0];
-          rotatingKeeperLabel0 = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
-        }
-        const keeperLabel0 = kn0 || rotatingKeeperLabel0;
+        const rotatingKeeper0 = getRotatingKeeper(first, 0);
 
         const slotsHtml0 = slots.map(slot => {
           const pid = sm0.slots[slot.key];
@@ -2268,7 +2303,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
                   ${ov0 ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                  ${keeperLabel0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${keeperLabel0}</span>` : ''}
+                  ${format === 4 && rotatingKeeper0 ? `<button class="kd-rotating-keeper-btn" data-seg="0" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="0">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper0] || rotatingKeeper0)}</span></button>` : (kn0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn0}</span>` : '')}
                   ${ov0 && best.segments.length > 1 ? `<button class="kd-copy-btn" data-action="kdcopy" data-seg="0">Kopier til alle</button>` : ''}
                   ${ov0 ? `<button class="kd-reset-btn" data-action="kdreset" data-seg="0">\u21ba</button>` : ''}
                   
@@ -2297,12 +2332,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
           const nextSeg = best.segments[idx + 1];
           const periodEnd = nextSeg ? nextSeg.start : T;
           const kn = seg.keeperId ? escapeHtml(idToName[seg.keeperId] || seg.keeperId) : '';
-          let rotatingKeeperLabel = '';
-          if (format === 4 && seg.lineup && seg.lineup.length) {
-            const rotId = seg.lineup[idx % seg.lineup.length];
-            rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
-          }
-          const keeperLabel = kn || rotatingKeeperLabel;
+          const rotatingKeeper = getRotatingKeeper(seg, idx);
           const isLast = idx === best.segments.length - 1;
           const ov = hasSlotOverrides(idx);
           const prevLineup = new Set(best.segments[idx - 1].lineup);
@@ -2343,7 +2373,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
                 ${ov ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
               </div>
               <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                ${keeperLabel ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${keeperLabel}</span>` : ''}
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (kn ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn}</span>` : '')}
                 ${ov && !isLast ? `<button class="kd-copy-btn" data-action="kdcopy" data-seg="${idx}">Kopier til alle</button>` : ''}
                 ${ov ? `<button class="kd-reset-btn" data-action="kdreset" data-seg="${idx}">\u21ba</button>` : ''}
                 
@@ -2419,12 +2449,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         const events = buildEvents(best.segments);
         const planCards = events.map((ev, idx) => {
           const keeperName = ev.keeperId ? escapeHtml(idToName[ev.keeperId] || ev.keeperId) : '';
-          let rotatingKeeperLabel = '';
-          if (format === 4 && ev.lineup && ev.lineup.length) {
-            const rotId = ev.lineup[idx % ev.lineup.length];
-            rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
-          }
-          const keeperLabel = keeperName || rotatingKeeperLabel;
+          const rotatingKeeper = getRotatingKeeper(ev, idx);
           const ins = ev.ins.map(id => `<div class="small-text">Inn: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const outs = ev.outs.map(id => `<div class="small-text">Ut: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const empty = (!ev.ins.length && !ev.outs.length) ? `<div class="small-text" style="opacity:0.8;">Start (ingen bytter)</div>` : '';
@@ -2432,7 +2457,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
             <div class="group-card" style="margin-bottom:12px;">
               <div class="group-header" style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="group-name">Minutt ${ev.minute}</div>
-                ${keeperLabel ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">${keeperLabel}</div>` : ''}
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">${keeperName}</div>` : '')}
               </div>
               <div class="group-players" style="gap:6px;">${empty}${ins}${outs}</div>
             </div>`;
@@ -2443,6 +2468,9 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         planEl.innerHTML = `<div class="results-container"><h3>Bytteplan</h3>${planCards || '<div class="small-text" style="opacity:0.8;">\u2014</div>'}</div>`;
       }
     }
+
+    attachRotatingKeeperHandlers(lineupEl, best, idToName);
+    attachRotatingKeeperHandlers(planEl, best, idToName);
 
     lastPlanText = buildPlanText(best, presentPlayers, P, T);
   }
@@ -2733,12 +2761,8 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const nextSeg = best.segments[idx+1];
       const periodEnd = nextSeg ? nextSeg.start : T;
       const keeperName = seg.keeperId ? escapeHtml(idToName[seg.keeperId]||seg.keeperId) : '';
-      let rotatingKeeperLabel = '';
-      if (format === 4 && seg.lineup && seg.lineup.length) {
-        const rotId = seg.lineup[idx % seg.lineup.length];
-        rotatingKeeperLabel = rotId ? '\ud83e\udde4 ' + escapeHtml(idToName[rotId] || rotId) : '';
-      }
-      const keeperLabel = keeperName || rotatingKeeperLabel;
+      const rotatingKeeper = getRotatingKeeper(seg, idx);
+      const keeperLabel = keeperName || (rotatingKeeper ? '\ud83e\udde4 ' + escapeHtml(idToName[rotatingKeeper] || rotatingKeeper) : '');
       const isFirst = idx === 0;
       const prevLineup = !isFirst ? new Set(best.segments[idx-1].lineup) : new Set();
       const newIds = isFirst ? new Set() : new Set(seg.lineup.filter(id => !prevLineup.has(id)));
