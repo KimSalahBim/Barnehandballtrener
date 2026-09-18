@@ -12,6 +12,17 @@
   const LS_SUB_KEY = "bf_sub_status";
   const LS_SUB_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
+  // Client-generated soft-fail markers. Everything else is a real API response.
+  const CLIENT_FAIL_REASONS = new Set(['no_session', 'status_error']);
+  function isRealApiStatus(status) {
+    if (!status) return false;
+    if (CLIENT_FAIL_REASONS.has(status.reason)) return false;
+    // 'stripe_unavailable' is a real response, but its access fields are not
+    // trustworthy enough to persist or to act on by revoking access.
+    if (status.reason === 'stripe_unavailable') return false;
+    return true;
+  }
+
   function persistStatusToStorage(status, userId) {
     if (!userId || !status) return;
     try {
@@ -54,7 +65,7 @@
         if (authSvc?._mainShown && authSvc?.currentUser) {
           clearStatusCache();
           subscriptionService.checkSubscription({ forceFresh: true }).then((status) => {
-            if (status && !status.reason) {
+            if (isRealApiStatus(status)) {
               const hasAccess = !!(status.active || status.trial || status.lifetime);
               if (!hasAccess) {
                 console.warn(`${LOG_PREFIX} ⚠️ Subscription lapsed (bfcache restore) — showing pricing`);
@@ -92,7 +103,7 @@
     statusCache.status = status;
     statusCache.userId = userId;
     statusCache.expires = Date.now() + ttlMs;
-    if (status && !status.reason && userId) {
+    if (isRealApiStatus(status) && userId) {
       persistStatusToStorage(status, userId);
     }
   }
