@@ -295,22 +295,44 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
         const ageNum = parseInt(String(ageClass).replace(/[^0-9]/g, ''), 10);
         const nffMap = {
           6:  { format: '4', minutes: 20 },
-          7:  { format: '4', minutes: 20 },
-          8:  { format: '5', minutes: 25 },
-          9:  { format: '5', minutes: 25 },
-          10: { format: '6', minutes: 25 },
-          11: { format: '6', minutes: 25 },
-          12: { format: '7', minutes: 40 },
-          13: { format: '7', minutes: 40 }
+          7:  { format: '4', minutes: 30 },
+          8:  { format: '4', minutes: 30 },
+          9:  { format: '5', minutes: 30 },
+          10: { format: '5', minutes: 30 },
+          11: { format: '6', minutes: 40 },
+          12: { format: '6', minutes: 40 },
+          13: { format: '7', minutes: 50 },
+          14: { format: '7', minutes: 50 },
+          15: { format: '7', minutes: 50 },
+          16: { format: '7', minutes: 50 }
         };
         const nff = nffMap[ageNum];
         if (nff) {
           const formatEl = $('kdFormat');
           const minutesEl = $('kdMinutes');
           if (formatEl && minutesEl) {
-            // Only override if user hasn't changed defaults
+            // 1) Set format and let BOTH existing change listeners run, so 4-er hides
+            //    the formation card and the keeper UI / formation grid refresh.
+            //    That also writes the format default into kdMinutes.
             formatEl.value = nff.format;
+            formatEl.dispatchEvent(new Event('change'));
+
+            // 2) Override with the age-specific duration (4-er is 20 min at age 6 but
+            //    30 min at 7-8), then fire 'input' so the same four updates run as when
+            //    a coach edits the field by hand.
             minutesEl.value = nff.minutes;
+            minutesEl.dispatchEvent(new Event('input'));
+
+            // 3) Sync both pill groups so the visible UI matches the hidden inputs.
+            var fpEl = document.getElementById('kdFormatPills');
+            if (fpEl) fpEl.querySelectorAll('.kd-pill').forEach(function (b) {
+              b.classList.toggle('kd-pill-active', b.dataset.format === String(nff.format));
+            });
+            var dpEl = document.getElementById('kdDurPills');
+            if (dpEl) dpEl.querySelectorAll('.kd-dur-pill').forEach(function (b) {
+              b.classList.toggle('kd-pill-active', parseInt(b.dataset.min, 10) === nff.minutes);
+            });
+
             if (window.__BF_IS_DEBUG_HOST) console.log('[Kampdag] Pre-set from onboarding:', ageClass, '->', nff.format + 'er', nff.minutes + 'min');
           }
         }
@@ -343,7 +365,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       // Auto-set match duration based on format (Norwegian youth handball defaults)
       if (minutesEl) {
         const fmt = parseInt(formatEl.value, 10) || 7;
-        const defaultMinutes = { 4: 20, 5: 25, 6: 25, 7: 40 };
+        const defaultMinutes = { 4: 20, 5: 30, 6: 40, 7: 50 };
         if (defaultMinutes[fmt]) {
           minutesEl.value = defaultMinutes[fmt];
           // Programmatic value change doesn't fire 'input' event,
@@ -562,7 +584,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
           formatEl2.dispatchEvent(new Event('change'));
         }
         // Set handball-correct duration and update pill UI
-        var durMap = { '4': 20, '5': 25, '6': 25, '7': 40 };
+        var durMap = { '4': 20, '5': 30, '6': 40, '7': 50 };
         var autoMin = durMap[fmt];
         if (autoMin) activateDurPill(autoMin);
         // Trigger same downstream updates as existing change handler
