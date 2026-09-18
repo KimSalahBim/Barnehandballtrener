@@ -13,18 +13,21 @@
   // ══════════════════════════════════════════════════════════════
   var NHF_RULES = {
     6:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
-    7:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
-    8:  { format: 4, minutes: 20, label: '4-er, 2\u00d710 min' },
+    7:  { format: 4, minutes: 30, label: '4-er, 2\u00d715 min' },
+    8:  { format: 4, minutes: 30, label: '4-er, 2\u00d715 min' },
     9:  { format: 5, minutes: 30, label: '5-er, 2\u00d715 min' },
     10: { format: 5, minutes: 30, label: '5-er, 2\u00d715 min' },
     11: { format: 6, minutes: 40, label: '6-er, 2\u00d720 min' },
     12: { format: 6, minutes: 40, label: '6-er, 2\u00d720 min' },
-    13: { format: 7, minutes: 40, label: '7-er, 2\u00d720 min' }
+    13: { format: 7, minutes: 50, label: '7-er, 2\u00d725 min' },
+    14: { format: 7, minutes: 50, label: '7-er, 2\u00d725 min' },
+    15: { format: 7, minutes: 50, label: '7-er, 2\u00d725 min' },
+    16: { format: 7, minutes: 50, label: '7-er, 2\u00d725 min' }
   };
 
   var AGE_OPTIONS = [
-    'G6','G7','G8','G9','G10','G11','G12','G13',
-    'J6','J7','J8','J9','J10','J11','J12','J13'
+    'G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16',
+    'J6','J7','J8','J9','J10','J11','J12','J13','J14','J15','J16'
   ];
 
   // Example names for the "skip player input" path
@@ -55,7 +58,7 @@
   function parseAge(cls) {
     if (!cls) return null;
     var n = parseInt(String(cls).replace(/[^0-9]/g, ''));
-    return (n >= 6 && n <= 13) ? n : null;
+    return (n >= 6 && n <= 16) ? n : null;
   }
 
   function getRule(cls) {
@@ -522,12 +525,15 @@
   //  STEP 1: Team name + age class (both required)
   // ══════════════════════════════════════════════════════════════
   function renderStep1() {
-    var gutterOpts = AGE_OPTIONS.slice(0, 8).map(function (c) {
-      return '<option value="' + c + '"' + (data.ageClass === c ? ' selected' : '') + '>' + c + '</option>';
-    }).join('');
-    var jenteOpts = AGE_OPTIONS.slice(8).map(function (c) {
-      return '<option value="' + c + '"' + (data.ageClass === c ? ' selected' : '') + '>' + c + '</option>';
-    }).join('');
+    function ageOptsFor(prefix) {
+      return AGE_OPTIONS.filter(function (c) {
+        return c.charAt(0) === prefix;
+      }).map(function (c) {
+        return '<option value="' + c + '"' + (data.ageClass === c ? ' selected' : '') + '>' + c + '</option>';
+      }).join('');
+    }
+    var gutterOpts = ageOptsFor('G');
+    var jenteOpts = ageOptsFor('J');
 
     // Re-run: pre-fill team name from current team, show as context
     var currentTeamName = '';
@@ -554,7 +560,7 @@
       '<div class="ob-card">' +
         progressHTML(1) +
         '<div class="ob-header">' +
-          '<div class="ob-emoji">\u26BD</div>' +
+          '<div class="ob-emoji">\uD83E\uDD3E</div>' +
           '<h2 class="ob-title" id="obTitle">' + titleText + '</h2>' +
           '<p class="ob-subtitle">' + subtitleText + '</p>' +
         '</div>' +
@@ -895,7 +901,7 @@
         '<div class="ob-body ob-body-step3"><div class="ob-step-inner">' +
           exampleNotice +
           '<div class="ob-demo-wrap">' +
-            '<div class="ob-demo-header">\u26BD Bytteplan \u00B7 ' + plan.format + 'er \u00B7 ' + plan.totalMinutes + ' min</div>' +
+            '<div class="ob-demo-header">\uD83E\uDD3E Bytteplan \u00B7 ' + plan.format + 'er \u00B7 ' + plan.totalMinutes + ' min</div>' +
             periodsHtml +
             '<div class="ob-demo-footer">' + fairnessText + '</div>' +
           '</div>' +
@@ -953,7 +959,7 @@
         } else if (data.usedExamples) {
           msg = data.teamName + ' er opprettet! Legg til spillerne dine i spillerlisten.';
         } else {
-          msg = data.teamName + ' er klart! G\u00e5 til Kampdag for \u00e5 lage din f\u00f8rste bytteplan \u26BD';
+          msg = data.teamName + ' er klart! G\u00e5 til Kampdag for \u00e5 lage din f\u00f8rste bytteplan \uD83E\uDD3E';
           shouldSwitchToKampdag = data.playerNames.length >= 3;
         }
 
@@ -979,6 +985,15 @@
                 minEl.dispatchEvent(new Event('input', { bubbles: true }));
                 // ↑ overrides with correct NHF age-specific minutes + updates keeper allocation
               }
+              // Sync the visible pill buttons so they match the hidden inputs.
+              var obFpEl = document.getElementById('kdFormatPills');
+              if (obFpEl) obFpEl.querySelectorAll('.kd-pill').forEach(function (b) {
+                b.classList.toggle('kd-pill-active', b.dataset.format === String(rule.format));
+              });
+              var obDpEl = document.getElementById('kdDurPills');
+              if (obDpEl) obDpEl.querySelectorAll('.kd-dur-pill').forEach(function (b) {
+                b.classList.toggle('kd-pill-active', parseInt(b.dataset.min, 10) === rule.minutes);
+              });
             }
           }
           if (typeof window.showNotification === 'function') {
