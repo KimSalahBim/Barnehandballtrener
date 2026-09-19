@@ -226,6 +226,37 @@
     return NHF_AGE_RULES[age] || (age >= 15 ? { format: 7, minutes: 50, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true, label: '7-er, 2\u00d725 min' } : null);
   }
 
+  function defaultTrainingMinutes() {
+    var nhf = window.NFF_DATA;
+    if (nhf && typeof nhf.defaultTrainingMinutes === 'function') {
+      return nhf.defaultTrainingMinutes(currentSeason && currentSeason.age_class);
+    }
+    var age = currentSeason ? parseAgeFromClass(currentSeason.age_class) : null;
+    return (!age || age <= 9) ? 60 : 90;
+  }
+
+  function defaultEventMinutes(type, format) {
+    if (type === 'training') return defaultTrainingMinutes();
+    return defaultMatchMinutes(format || (currentSeason ? currentSeason.format : 7));
+  }
+
+  function workoutAgeGroupFromSeason() {
+    var nhf = window.NFF_DATA;
+    if (nhf && typeof nhf.workoutAgeGroupFromAgeClass === 'function') {
+      return nhf.workoutAgeGroupFromAgeClass(currentSeason && currentSeason.age_class);
+    }
+    var parsedAge = currentSeason ? parseAgeFromClass(currentSeason.age_class) : null;
+    if (parsedAge == null) return null;
+    if (parsedAge <= 8) return '6-7';
+    if (parsedAge <= 10) return '8-9';
+    if (parsedAge <= 12) return '10-12';
+    return '13-16';
+  }
+
+  function defaultShareWorkout() {
+    return !!( _lagsideSettings && _lagsideSettings.default_share_workout );
+  }
+
   function getSubTeamNames(season) {
     if (!season) return [];
     var count = season.sub_team_count || 1;
@@ -284,7 +315,7 @@
     }
     if (seasonName) title = seasonName + ': ' + title;
 
-    var duration = ev.duration_minutes || defaultMatchMinutes(ev.format || (currentSeason ? currentSeason.format : 7));
+    var duration = ev.duration_minutes || defaultEventMinutes(ev.type, ev.format || (currentSeason ? currentSeason.format : 7));
     var startDate = new Date(ev.start_time);
     var endDate = new Date(startDate.getTime() + duration * 60000);
 
@@ -875,7 +906,7 @@
         type: data.type,
         title: (data.title || '').trim() || null,
         start_time: data.start_time,
-        duration_minutes: parseInt(data.duration_minutes) || defaultMatchMinutes(currentSeason ? currentSeason.format : 7),
+        duration_minutes: parseInt(data.duration_minutes) || defaultEventMinutes(data.type, currentSeason ? currentSeason.format : 7),
         location: (data.location || '').trim() || null,
         opponent: (data.opponent || '').trim() || null,
         is_home: (data.type === 'match' || data.type === 'cup_match') ? (data.is_home !== false) : null,
@@ -883,6 +914,11 @@
         notes: (data.notes || '').trim() || null,
         sub_team: data.sub_team ? parseInt(data.sub_team) : null
       };
+      if (data.type === 'training' && data.share_workout != null) {
+        row.share_workout = !!data.share_workout;
+      } else if (data.type === 'training' && defaultShareWorkout()) {
+        row.share_workout = true;
+      }
       var res = await sb.from('events').insert(row).select().single();
       if (res.error) throw res.error;
       notify(typeLabel(data.type) + ' lagt til!', 'success');
@@ -1140,7 +1176,7 @@
         title: data.title || (DAY_NAMES[data.day_of_week] + 'strening'),
         day_of_week: data.day_of_week,
         start_time: data.start_time,
-        duration_minutes: data.duration_minutes || 90,
+        duration_minutes: data.duration_minutes || defaultTrainingMinutes(),
         location: data.location || null,
         start_date: data.start_date,
         end_date: data.end_date
@@ -1168,9 +1204,10 @@
           type: 'training',
           title: title,
           start_time: dt.toISOString(),
-          duration_minutes: data.duration_minutes || 90,
+          duration_minutes: data.duration_minutes || defaultTrainingMinutes(),
           location: data.location || null,
-          series_id: seriesId
+          series_id: seriesId,
+          share_workout: defaultShareWorkout()
         };
       });
 
@@ -4081,18 +4118,14 @@
   //  TRAINING PLAN STATISTICS (from workouts table)
   // =========================================================================
 
-  var _woThemeLabels = {
-    'foering_dribling': { label: 'F\u00f8ring og dribling', icon: '\uD83C\uDFC3', color: '#2e8b57' },
-    'vendinger_mottak': { label: 'Vendinger og mottak', icon: '\uD83D\uDD04', color: '#0ea5e9' },
-    'pasning_samspill': { label: 'Pasning og samspill', icon: '\uD83E\uDD1D', color: '#8b5cf6' },
-    'avslutning': { label: 'Avslutning', icon: '\uD83C\uDFAF', color: '#e74c3c' },
-    '1v1_duell': { label: '1 mot 1', icon: '\u26a1', color: '#f59e0b' },
-    'samarbeidsspill': { label: 'Samarbeidsspill', icon: '\uD83D\uDC65', color: '#06b6d4' },
-    'forsvarsspill': { label: 'Forsvarsspill', icon: '\uD83D\uDEE1\ufe0f', color: '#64748b' },
-    'omstilling': { label: 'Omstilling', icon: '\uD83D\uDD01', color: '#ec4899' },
-    'spilloppbygging': { label: 'Spilloppbygging', icon: '\uD83D\uDCD0', color: '#1a82c4' },
-    'keeper': { label: 'Keeper', icon: '\uD83E\uDDE4', color: '#eab308' }
-  };
+  function _woThemeMeta(themeId) {
+    var nhf = window.NFF_DATA;
+    if (nhf && typeof nhf.themeMeta === 'function') {
+      var meta = nhf.themeMeta(themeId);
+      if (meta) return { id: nhf.normalizeThemeId(themeId), label: meta.label, icon: meta.icon, color: '#1a82c4' };
+    }
+    return themeId ? { id: themeId, label: themeId, icon: '\uD83C\uDFBD', color: '#64748b' } : null;
+  }
 
   function renderTrainingPlanStats() {
     if (!_woSeasonWorkouts || _woSeasonWorkouts.length === 0) {
@@ -4112,7 +4145,9 @@
       totalMinutes += (w.duration_minutes || 0);
 
       if (w.theme) {
-        themeCounts[w.theme] = (themeCounts[w.theme] || 0) + 1;
+        var tid = (window.NFF_DATA && window.NFF_DATA.normalizeThemeId)
+          ? window.NFF_DATA.normalizeThemeId(w.theme) : w.theme;
+        themeCounts[tid] = (themeCounts[tid] || 0) + 1;
       }
 
       if (w.workout_date) {
@@ -4121,15 +4156,10 @@
       }
     }
 
-    // Find available themes for this age group
-    var ageGroup = (currentSeason && currentSeason.age_class) ? parseAgeFromClass(currentSeason.age_class) : null;
-    var allThemes = Object.keys(_woThemeLabels);
-    // For younger ages, fewer themes are relevant
-    if (ageGroup && ageGroup <= 7) {
-      allThemes = ['foering_dribling', 'avslutning', '1v1_duell'];
-    } else if (ageGroup && ageGroup <= 9) {
-      allThemes = ['foering_dribling', 'vendinger_mottak', 'pasning_samspill', 'avslutning', '1v1_duell', 'samarbeidsspill', 'forsvarsspill'];
-    }
+    var woAge = workoutAgeGroupFromSeason() || '8-9';
+    var allThemes = (window.NFF_DATA && window.NFF_DATA.themesForAgeGroup)
+      ? window.NFF_DATA.themesForAgeGroup(woAge).slice()
+      : ['kast_teknikk', 'mottak_pasning', 'leik_stafett', 'keeper'];
 
     // Build theme bars
     var maxCount = 0;
@@ -4156,7 +4186,7 @@
 
     for (var ti = 0; ti < allThemes.length; ti++) {
       var themeId = allThemes[ti];
-      var meta = _woThemeLabels[themeId];
+      var meta = _woThemeMeta(themeId);
       if (!meta) continue;
       var count = themeCounts[themeId] || 0;
       var pct = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
@@ -4180,7 +4210,7 @@
     var gaps = [];
     for (var gi = 0; gi < allThemes.length; gi++) {
       if (!themeCounts[allThemes[gi]]) {
-        var gm = _woThemeLabels[allThemes[gi]];
+        var gm = _woThemeMeta(allThemes[gi]);
         if (gm) gaps.push(gm.icon + ' ' + gm.label);
       }
     }
@@ -5061,7 +5091,7 @@
             '</div>' +
             '<div class="form-group" style="flex:1;">' +
               '<label for="snSeriesDuration">Varighet (min)</label>' +
-              '<input type="number" id="snSeriesDuration" value="90" min="15" max="180" step="15">' +
+              '<input type="number" id="snSeriesDuration" value="' + defaultTrainingMinutes() + '" min="15" max="180" step="15">' +
             '</div>' +
           '</div>' +
           '<div class="form-group">' +
@@ -5164,7 +5194,7 @@
 
       var titleVal = ($('snSeriesTitle').value || '').trim() || (DAY_NAMES[selectedDay] + 'strening');
       var timeVal = $('snSeriesTime').value || '17:00';
-      var durationVal = parseInt($('snSeriesDuration').value) || 90;
+      var durationVal = parseInt($('snSeriesDuration').value) || defaultTrainingMinutes();
       var locationVal = ($('snSeriesLocation').value || '').trim();
 
       var btn = $('snConfirmSeries');
@@ -6201,7 +6231,7 @@
             '</div>' +
             '<div class="form-group">' +
               '<label for="snDuration">Varighet (min)</label>' +
-              '<input type="number" id="snDuration" min="10" max="180" value="' + (ev.duration_minutes || defaultMatchMinutes(currentSeason ? currentSeason.format : 7)) + '">' +
+              '<input type="number" id="snDuration" min="10" max="180" value="' + (ev.duration_minutes || defaultEventMinutes(type, currentSeason ? currentSeason.format : 7)) + '">' +
             '</div>' +
           '</div>' +
           '<div class="form-group">' +
@@ -6232,7 +6262,7 @@
       if (!isEdit) {
         var durEl = $('snDuration');
         if (durEl) {
-          durEl.value = isM ? defaultMatchMinutes(currentSeason ? currentSeason.format : 7) : 90;
+          durEl.value = isM ? defaultMatchMinutes(currentSeason ? currentSeason.format : 7) : defaultTrainingMinutes();
         }
       }
     });
@@ -6280,7 +6310,7 @@
         type: typeVal,
         title: $('snTitle').value || null,
         start_time: new Date(dateVal + 'T' + timeVal).toISOString(),
-        duration_minutes: parseInt($('snDuration').value) || defaultMatchMinutes(currentSeason ? currentSeason.format : 7),
+        duration_minutes: parseInt($('snDuration').value) || defaultEventMinutes(typeVal, currentSeason ? currentSeason.format : 7),
         location: $('snLocation').value || null,
         opponent: isMatchNow ? ($('snOpponent').value || null) : null,
         is_home: isMatchNow ? isHomeVal : null,
@@ -6354,7 +6384,7 @@
     html += detailRow('Type', typeLabel(ev.type));
     html += detailRow('Dato', formatDateLong(ev.start_time));
     html += detailRow('Klokkeslett', formatTime(ev.start_time));
-    html += detailRow('Varighet', (ev.duration_minutes || defaultMatchMinutes(ev.format || (currentSeason ? currentSeason.format : 7))) + ' min');
+    html += detailRow('Varighet', (ev.duration_minutes || defaultEventMinutes(ev.type, ev.format || (currentSeason ? currentSeason.format : 7))) + ' min');
 
     if (isMatch && ev.opponent) html += detailRow('Motstander', ev.opponent);
     if (isMatch) html += detailRow('Hjemme/Borte', ev.is_home ? 'Hjemme' : 'Borte');
@@ -7551,15 +7581,8 @@
       ? _woSeasonWorkouts.find(function(w) { return w.event_id === ev.id; })
       : null;
 
-    // Map age_class to workout ageGroup
-    var woAge = null;
-    if (currentSeason && currentSeason.age_class) {
-      var parsedAge = parseAgeFromClass(currentSeason.age_class);
-      if (parsedAge >= 6 && parsedAge <= 7) woAge = '6-7';
-      else if (parsedAge >= 8 && parsedAge <= 9) woAge = '8-9';
-      else if (parsedAge >= 10 && parsedAge <= 12) woAge = '10-12';
-      else if (parsedAge >= 13) woAge = '13-16';
-    }
+    // Map age_class to workout ageGroup (NHF 4-er / 5-er / 6-er)
+    var woAge = workoutAgeGroupFromSeason();
 
     window.sesongWorkout.init(container, embeddedWorkoutPlayers, {
       minutes: ev.duration_minutes || 60,

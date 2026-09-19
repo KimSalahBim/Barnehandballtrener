@@ -1,5 +1,7 @@
-// nff-data.js — NHF-konstanter og maler for barnehåndball
-// Brukes av workout.js, sesong-workout.js via window.NFF_DATA
+// nff-data.js — NHF-kontrakt og maler for barnehåndball
+// Kilder: handball.no retningslinjer, utviklingstrappa.no, Region Sør øktplaner (60 min / stasjoner).
+// Øvelsesnøkler og gamle aldersnøkler (6-7, 8-9, …) beholdes så lagrede økter ikke knekker.
+// Brukes av workout.js, sesong-workout.js, season.js via window.NFF_DATA
 
 window.NFF_DATA = {
 
@@ -12,14 +14,16 @@ window.NFF_DATA = {
     { id: 'keeper',           label: '🧤 Målvakt' },
   ],
 
+  // Bro mot NHF sine fire like deler (ikke NFF-fotballprosentene).
+  // Id-er er uendret pga. lagrede blokker; etikettene er NHF-språk.
   NFF_CATEGORIES: [
-    { id: 'sjef_over_ballen',  label: '🤾 Ballmestring',        short: 'Ball',    color: '#2e8b57',
+    { id: 'sjef_over_ballen',  label: '🤾 Individuelle balløvelser', short: 'Ball',  color: '#2e8b57',
       label1316: '🤾 Ballmestring', short1316: 'Ball' },
-    { id: 'spille_med_og_mot', label: '⚔️ Spill med og mot',    short: 'Øvelse',  color: '#e67e22',
+    { id: 'spille_med_og_mot', label: '⚔️ Valg og motspill',         short: 'Valg',  color: '#e67e22',
       label1316: '⚔️ Situasjonsøving', short1316: 'Situasjon' },
-    { id: 'smalagsspill',      label: '🏟️ Smålagsspill',        short: 'Spill',   color: '#3498db',
+    { id: 'smalagsspill',      label: '🏟️ Småspill',                 short: 'Spill', color: '#3498db',
       label1316: '🏟️ Spill', short1316: 'Spill' },
-    { id: 'scoringstrening',   label: '🎯 Kast og skudd',       short: 'Kast',    color: '#e74c3c',
+    { id: 'scoringstrening',   label: '🎯 Kast og mottak',           short: 'Kast',  color: '#e74c3c',
       label1316: '🎯 Avslutning', short1316: 'Avslutning' },
   ],
 
@@ -27,9 +31,9 @@ window.NFF_DATA = {
     { id: 'kast_teknikk',       label: 'Kastteknikk',            phase: 'angrep',  icon: '🎯' },
     { id: 'mottak_pasning',     label: 'Mottak og pasning',      phase: 'angrep',  icon: '🤝' },
     { id: 'dribling_bevegelse', label: 'Dribling og bevegelse',  phase: 'angrep',  icon: '🏃' },
-    { id: 'finter',             label: 'Finter og avløp',        phase: 'angrep',  icon: '💨' },
-    { id: '1v1_duell',          label: '1 mot 1',                phase: 'begge',   icon: '⚡' },
-    { id: 'samarbeidsspill',    label: 'Samarbeid og kombinasjon',phase: 'angrep', icon: '👥' },
+    { id: 'finter',             label: 'Finter',                 phase: 'angrep',  icon: '💨' },
+    { id: '1v1_duell',          label: 'Duellspill',             phase: 'begge',   icon: '⚡' },
+    { id: 'samarbeidsspill',    label: 'Samspill',               phase: 'angrep',  icon: '👥' },
     { id: 'forsvarsspill',      label: 'Forsvarsspill',          phase: 'forsvar', icon: '🛡️' },
     { id: 'kontring_retur',     label: 'Kontring og retur',      phase: 'begge',   icon: '🔁' },
     { id: 'linjespill',         label: 'Linjespill og innspill', phase: 'angrep',  icon: '📐' },
@@ -40,15 +44,37 @@ window.NFF_DATA = {
   NFF_THEMES_BY_AGE: {
     '6-7':  ['kast_teknikk', 'mottak_pasning', 'dribling_bevegelse', 'leik_stafett', 'keeper'],
     '8-9':  ['kast_teknikk', 'mottak_pasning', 'dribling_bevegelse', 'finter', '1v1_duell', 'samarbeidsspill', 'leik_stafett', 'keeper'],
+    '6-9':  ['kast_teknikk', 'mottak_pasning', 'dribling_bevegelse', 'finter', '1v1_duell', 'leik_stafett', 'keeper'],
     '10-12': ['kast_teknikk', 'mottak_pasning', 'finter', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'kontring_retur', 'linjespill', 'keeper'],
     '13-16': ['kast_teknikk', 'mottak_pasning', 'finter', '1v1_duell', 'samarbeidsspill', 'forsvarsspill', 'kontring_retur', 'linjespill', 'keeper'],
   },
 
+  // Tyngdepunkt per alder — ikke eneste tillatte tema. Avløp ligger i finter/samspill.
+  THEME_FOCUS_BY_AGE: {
+    '6-7':   ['kast_teknikk', 'mottak_pasning'],
+    '8-9':   ['finter', '1v1_duell'],
+    '6-9':   ['kast_teknikk', 'mottak_pasning', 'finter', '1v1_duell'],
+    '10-12': ['kontring_retur', 'forsvarsspill', 'linjespill', 'samarbeidsspill'],
+    '13-16': ['forsvarsspill', 'linjespill', 'samarbeidsspill', 'kontring_retur', 'kast_teknikk']
+  },
+
+  // NHF: jevne deler — ikke NFF 40/10/40/10. Halltid er vanligvis 60 min for barn.
   NFF_TIME_DISTRIBUTION: {
-    '6-7':   { sjef_over_ballen: 40, spille_med_og_mot: 5,  smalagsspill: 45, scoringstrening: 10 },
-    '8-9':   { sjef_over_ballen: 25, spille_med_og_mot: 15, smalagsspill: 45, scoringstrening: 15 },
-    '10-12': { sjef_over_ballen: 15, spille_med_og_mot: 25, smalagsspill: 45, scoringstrening: 15 },
-    '13-16': { sjef_over_ballen: 10, spille_med_og_mot: 35, smalagsspill: 40, scoringstrening: 15 },
+    '6-7':   { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
+    '8-9':   { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
+    '6-9':   { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
+    '10-12': { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
+    '13-16': { sjef_over_ballen: 20, spille_med_og_mot: 30, smalagsspill: 30, scoringstrening: 20 },
+  },
+
+  // Fotball-tema-id-er som fortsatt kan ligge i gamle sesongstatistikk-rader
+  THEME_ID_ALIASES: {
+    foering_dribling: 'dribling_bevegelse',
+    vendinger_mottak: 'mottak_pasning',
+    pasning_samspill: 'mottak_pasning',
+    avslutning: 'kast_teknikk',
+    omstilling: 'kontring_retur',
+    spilloppbygging: 'samarbeidsspill'
   },
 
   NFF_LEARNING_GOALS: {
@@ -268,3 +294,65 @@ window.NFF_DATA = {
   }
 
 };
+
+(function attachNhfHelpers(data) {
+  data.parseAgeFromClass = function (ageClass) {
+    if (!ageClass) return null;
+    var n = parseInt(String(ageClass).replace(/[^0-9]/g, ''), 10);
+    return (n >= 6 && n <= 19) ? n : null;
+  };
+
+  // Utviklingstrappa 6–9 / 10–12, mappet til eksisterende økt-nøkler.
+  // 6–8 = 4-er (lek), 9–10 = 5-er, 11–12 = 6-er.
+  data.workoutAgeGroupFromAge = function (age) {
+    if (age == null || isNaN(age)) return '8-9';
+    if (age <= 8) return '6-7';
+    if (age <= 10) return '8-9';
+    if (age <= 12) return '10-12';
+    return '13-16';
+  };
+
+  data.workoutAgeGroupFromAgeClass = function (ageClass) {
+    return data.workoutAgeGroupFromAge(data.parseAgeFromClass(ageClass));
+  };
+
+  // 6–9: 60 min (Region Sør / NHF-skole). Fra 10 år: 90 min (vanlig klubbhalltid).
+  data.defaultMinutesForAgeGroup = function (ageGroup) {
+    return (ageGroup === '10-12' || ageGroup === '13-16') ? 90 : 60;
+  };
+
+  data.defaultTrainingMinutes = function (ageClass) {
+    var age = data.parseAgeFromClass(ageClass);
+    if (!age || age <= 9) return 60;
+    return 90;
+  };
+
+  data.focusThemesForAgeGroup = function (ageGroup) {
+    var map = data.THEME_FOCUS_BY_AGE || {};
+    return map[ageGroup] || [];
+  };
+
+  data.isFocusTheme = function (ageGroup, themeId) {
+    var id = data.normalizeThemeId(themeId);
+    return data.focusThemesForAgeGroup(ageGroup).indexOf(id) >= 0;
+  };
+
+  data.normalizeThemeId = function (themeId) {
+    if (!themeId) return themeId;
+    return data.THEME_ID_ALIASES[themeId] || themeId;
+  };
+
+  data.themeMeta = function (themeId) {
+    var id = data.normalizeThemeId(themeId);
+    var themes = data.NFF_THEMES || [];
+    for (var i = 0; i < themes.length; i++) {
+      if (themes[i].id === id) return themes[i];
+    }
+    return null;
+  };
+
+  data.themesForAgeGroup = function (ageGroup) {
+    var map = data.NFF_THEMES_BY_AGE || {};
+    return map[ageGroup] || map['8-9'] || [];
+  };
+})(window.NFF_DATA);

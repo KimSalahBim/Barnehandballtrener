@@ -93,7 +93,7 @@
       exerciseKey:       raw.exerciseKey || 'tag',
       customName:        String(raw.customName || ''),
       minutes:           clampInt(raw.minutes, 0, 300, 10),
-      groupCount:        clampInt(raw.groupCount, 1, 20, 2),
+      groupCount:        clampInt(raw.groupCount, 2, 6, 2),
       groupMode:         raw.groupMode || 'even',
       comment:           String(raw.comment || ''),
       _groupCountManual: !!raw._groupCountManual,
@@ -236,7 +236,9 @@
   }
 
   function buildThemePill() {
-    var themeMeta = _swMeta.theme ? sh().NFF_THEME_BY_ID[_swMeta.theme] : null;
+    var themeMeta = _swMeta.theme
+      ? (sh().resolveTheme ? sh().resolveTheme(_swMeta.theme) : sh().NFF_THEME_BY_ID[_swMeta.theme])
+      : null;
     if (!themeMeta) return '';
     return '<span class="sw-meta-theme">' +
       esc(themeMeta.icon) + ' ' + esc(themeMeta.label) +
@@ -331,17 +333,26 @@
     var themes     = (shared.NFF_THEMES_BY_AGE || {})[age] || [];
     var NFF_THEME_BY_ID = shared.NFF_THEME_BY_ID || {};
     var templates  = (shared.NFF_TEMPLATES || {})[age] || [];
+    var nhf        = window.NFF_DATA || {};
+    var focusIds   = (typeof nhf.focusThemesForAgeGroup === 'function')
+      ? nhf.focusThemesForAgeGroup(age) : [];
+    var orderedThemes = themes.filter(function (id) { return focusIds.indexOf(id) >= 0; })
+      .concat(themes.filter(function (id) { return focusIds.indexOf(id) < 0; }));
 
     // ── Tema-pills ──────────────────────────────────────────
     var temaHtml = '<div class="wo-gen-label">Øktens tema</div>' +
       '<div class="wo-gen-themes">';
-    for (var i = 0; i < themes.length; i++) {
-      var t   = NFF_THEME_BY_ID[themes[i]];
+    for (var i = 0; i < orderedThemes.length; i++) {
+      var t   = NFF_THEME_BY_ID[orderedThemes[i]];
       if (!t) continue;
-      var sel = _swMeta.theme === themes[i] ? ' wo-gen-pill-sel' : '';
-      temaHtml += '<button type="button" class="wo-gen-pill' + sel + '"' +
-        ' data-swTheme="' + esc(themes[i]) + '">' +
-        esc(t.icon) + ' ' + esc(t.label) + '</button>';
+      var sel = _swMeta.theme === orderedThemes[i] ? ' wo-gen-pill-sel' : '';
+      var focus = focusIds.indexOf(orderedThemes[i]) >= 0;
+      temaHtml += '<button type="button" class="wo-gen-pill' + sel +
+        (focus ? ' wo-gen-pill-focus' : '') + '"' +
+        ' data-swTheme="' + esc(orderedThemes[i]) + '">' +
+        esc(t.icon) + ' ' + esc(t.label) +
+        (focus ? '<span class="wo-gen-focus-tag">fokus</span>' : '') +
+        '</button>';
     }
     temaHtml += '</div>';
 
@@ -585,7 +596,7 @@
     var hasInfo    = meta && meta.description && meta.steps;
     var showCust   = ex.exerciseKey === 'custom';
     var mode       = ex.groupMode || 'even';
-    var groupCount = clampInt(ex.groupCount, 1, 20, 2);
+    var groupCount = clampInt(ex.groupCount, 2, 6, 2);
     var hasPl      = _swSelected.size > 0;
     var sgHint     = (meta && meta.suggestedGroupSize)
       ? '<span style="color:#2e8b57;">ℹ️ ' + meta.suggestedGroupSize + ' per gruppe</span>' : '';
@@ -622,7 +633,7 @@
           '<label class="wo-label">Grupper</label>' +
           '<div class="wo-inline">' +
             '<input id="' + idp + '_groups" class="input wo-input" type="number"' +
-              ' min="1" max="20" value="' + groupCount + '" style="max-width:90px;">' +
+              ' min="2" max="6" value="' + groupCount + '" style="max-width:90px;">' +
             '<select id="' + idp + '_mode" class="input wo-input">' +
               '<option value="none"' + (mode === 'none' ? ' selected' : '') + '>Ingen inndeling</option>' +
               '<option value="even"' + (mode === 'even' ? ' selected' : '') + '>Jevne grupper</option>' +
@@ -698,12 +709,12 @@
     }
 
     var groupMode  = ex.groupMode || 'even';
-    var groupCount = clampInt(ex.groupCount, 1, 20, 2);
+    var groupCount = clampInt(ex.groupCount, 2, 6, 2);
 
     // Auto-størrelse fra suggestedGroupSize
     var meta = sh().EX_BY_KEY.get(ex.exerciseKey);
     if (meta && meta.suggestedGroupSize >= 2 && !ex._groupCountManual) {
-      var auto = Math.max(1, Math.ceil(participants.length / meta.suggestedGroupSize));
+      var auto = Math.max(2, Math.min(6, Math.ceil(participants.length / meta.suggestedGroupSize)));
       groupCount = auto;
       ex.groupCount = auto;
       var gi = document.getElementById(idp + '_groups');
@@ -984,7 +995,7 @@
     var groupsInput = q(idp + '_groups');
     if (groupsInput) {
       groupsInput.addEventListener('input', function() {
-        ex.groupCount        = clampInt(groupsInput.value, 1, 20, 2);
+        ex.groupCount        = clampInt(groupsInput.value, 2, 6, 2);
         ex._groupCountManual = true;
         _swGroupsCache.delete(b.id + ':' + track);
         scheduleSave();
@@ -1351,7 +1362,7 @@
     if (bal && bal.totalMinutes > 0) {
       balHtml = '<div style="margin-top:12px;">' +
         '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;' +
-          'font-weight:500;margin-bottom:6px;">NFF-fordeling</div>' +
+          'font-weight:500;margin-bottom:6px;">Innhold i \u00f8kta</div>' +
         '<div style="display:flex;gap:4px;height:22px;">';
       for (var ci = 0; ci < shared.NFF_CATEGORIES.length; ci++) {
         var cat = shared.NFF_CATEGORIES[ci];
@@ -1366,7 +1377,9 @@
       balHtml += '</div></div>';
     }
 
-    var themeMeta = _swMeta.theme ? shared.NFF_THEME_BY_ID[_swMeta.theme] : null;
+    var themeMeta = _swMeta.theme
+      ? (shared.resolveTheme ? shared.resolveTheme(_swMeta.theme) : shared.NFF_THEME_BY_ID[_swMeta.theme])
+      : null;
     var themeHtml = themeMeta
       ? '<div style="margin-top:3px;font-size:13px;opacity:0.9;">Tema: <strong>' +
         esc(themeMeta.label) + '</strong></div>' : '';

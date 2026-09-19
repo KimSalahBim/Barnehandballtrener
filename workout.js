@@ -118,12 +118,20 @@
   const NFF_TIME_DISTRIBUTION = _nff.NFF_TIME_DISTRIBUTION || {};
   const NFF_LEARNING_GOALS = _nff.NFF_LEARNING_GOALS || {};
 
+  function resolveThemeId(themeId) {
+    return (typeof _nff.normalizeThemeId === 'function') ? _nff.normalizeThemeId(themeId) : themeId;
+  }
+  function resolveTheme(themeId) {
+    if (!themeId) return null;
+    return NFF_THEME_BY_ID[resolveThemeId(themeId)] || null;
+  }
+
   /**
    * Hent læringsmomenter for et gitt tema og aldersgruppe.
    * Fallback til nærmeste eldre aldersgruppe hvis ingen spesifikk finnes.
    */
   function getLearningGoals(themeId, ageGroup) {
-    const themeGoals = NFF_LEARNING_GOALS[themeId];
+    const themeGoals = NFF_LEARNING_GOALS[resolveThemeId(themeId)];
     if (!themeGoals) return [];
     if (themeGoals[ageGroup]) return themeGoals[ageGroup];
     // Fallback: prøv eldre aldersgrupper
@@ -1263,7 +1271,7 @@
       exerciseKey: 'tag',
       customName: '',
       minutes: 10,
-      groupCount: 1,
+      groupCount: 2,
       groupMode: 'even', // even | diff | none
       comment: ''
     };
@@ -1319,7 +1327,7 @@
     const balance = calculateNffBalance(state.blocks, state.ageGroup || '8-9');
 
     // Theme pill
-    const themeMeta = state.theme ? NFF_THEME_BY_ID[state.theme] : null;
+    const themeMeta = resolveTheme(state.theme);
     const themePill = themeMeta
       ? '<span class="wo-meta-theme">' +
           escapeHtml(themeMeta.icon) + ' ' + escapeHtml(themeMeta.label) +
@@ -1475,7 +1483,7 @@
     const idp = `wo_${blockId}_${track}`;
     const showCustom = ex.exerciseKey === 'custom';
     const mode = ex.groupMode || 'even';
-    const groupCount = clampInt(ex.groupCount, 1, 20, 2);
+    const groupCount = clampInt(ex.groupCount, 2, 6, 2);
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     const hasInfo = meta && meta.description && meta.steps;
 
@@ -1514,7 +1522,7 @@
           <div class="wo-field wo-groups-settings">
             <label class="wo-label">Grupper</label>
             <div class="wo-inline">
-              <input id="${idp}_groups" class="input wo-input" type="number" min="1" max="20" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
+              <input id="${idp}_groups" class="input wo-input" type="number" min="2" max="6" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
               <select id="${idp}_mode" class="input wo-input">
                 <option value="none" ${mode === 'none' ? 'selected' : ''}>Ingen inndeling</option>
                 <option value="even" ${mode === 'even' ? 'selected' : ''}>Jevne grupper</option>
@@ -1994,7 +2002,7 @@
 
     if (groups) {
       groups.addEventListener('input', () => {
-        ex.groupCount = clampInt(groups.value, 1, 20, 2);
+        ex.groupCount = clampInt(groups.value, 2, 6, 2);
         ex._groupCountManual = true; // user explicitly set group count
         // grupper stale
         state.groupsCache.delete(`${bid}:${track}`);
@@ -2122,12 +2130,12 @@
     }
 
     const groupMode = String(ex.groupMode || 'even');
-    let groupCount = clampInt(ex.groupCount, 1, 20, 2);
+    let groupCount = clampInt(ex.groupCount, 2, 6, 2);
 
     // Auto-calculate group count from suggestedGroupSize if available
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     if (meta && meta.suggestedGroupSize && meta.suggestedGroupSize >= 2) {
-      const autoCount = Math.max(1, Math.ceil(participants.length / meta.suggestedGroupSize));
+      const autoCount = Math.max(2, Math.min(6, Math.ceil(participants.length / meta.suggestedGroupSize)));
       // Only auto-set if user hasn't manually overridden (groupCount still at default 2)
       // or if groupCount * suggestedGroupSize is way off from participant count
       if (!ex._groupCountManual) {
@@ -2573,7 +2581,7 @@ function normalizeImportedExercise(ex) {
   out.minutes = clampInt(out.minutes, 0, 300, d.minutes);
 
   // Group settings
-  out.groupCount = clampInt(out.groupCount, 1, 6, d.groupCount);
+  out.groupCount = clampInt(out.groupCount, 2, 6, d.groupCount);
   out.groupMode = (out.groupMode === 'diff' || out.groupMode === 'even') ? out.groupMode : d.groupMode;
 
   // Exercise key — migrate old keys first
@@ -3009,17 +3017,24 @@ function serializeWorkoutFromState() {
 
     el.style.display = 'block';
 
-    // Get available themes for selected age
+    // Get available themes for selected age (fokus først)
     const availableThemes = NFF_THEMES_BY_AGE[_gen.selectedAge] || NFF_THEMES_BY_AGE['8-9'];
+    const focusIds = (typeof _nff.focusThemesForAgeGroup === 'function')
+      ? _nff.focusThemesForAgeGroup(_gen.selectedAge) : [];
+    const orderedThemes = availableThemes.filter(id => focusIds.indexOf(id) >= 0)
+      .concat(availableThemes.filter(id => focusIds.indexOf(id) < 0));
 
     // Theme pills
     let themesHtml = '<div class="wo-gen-label">\u00d8ktens tema</div><div class="wo-gen-themes">';
-    for (const themeId of availableThemes) {
+    for (const themeId of orderedThemes) {
       const t = NFF_THEME_BY_ID[themeId];
       if (!t) continue;
       const sel = _gen.selectedTheme === themeId ? ' wo-gen-pill-sel' : '';
-      themesHtml += '<button type="button" class="wo-gen-pill' + sel + '" data-theme="' + themeId + '">' +
-        escapeHtml(t.icon) + ' ' + escapeHtml(t.label) + '</button>';
+      const focus = focusIds.indexOf(themeId) >= 0;
+      themesHtml += '<button type="button" class="wo-gen-pill' + sel + (focus ? ' wo-gen-pill-focus' : '') + '" data-theme="' + themeId + '">' +
+        escapeHtml(t.icon) + ' ' + escapeHtml(t.label) +
+        (focus ? '<span class="wo-gen-focus-tag">fokus</span>' : '') +
+        '</button>';
     }
     themesHtml += '</div>';
 
@@ -3087,6 +3102,9 @@ function serializeWorkoutFromState() {
       btn.addEventListener('click', () => {
         _gen.selectedAge = btn.dataset.age;
         _gen.selectedTheme = null; // reset theme since available themes change
+        _gen.selectedDuration = (typeof _nff.defaultMinutesForAgeGroup === 'function')
+          ? _nff.defaultMinutesForAgeGroup(_gen.selectedAge)
+          : ((_gen.selectedAge === '10-12' || _gen.selectedAge === '13-16') ? 90 : 60);
         renderGenererFlow();
       });
     });
@@ -3530,7 +3548,7 @@ function serializeWorkoutFromState() {
         <div class="h-sub">${date ? `Dato: ${escapeHtml(date)} \u00b7 ` : ''}Total tid: ${total} min${state.ageGroup ? ` \u00b7 ${escapeHtml(state.ageGroup)} \u00e5r` : ''}</div>
         ${(() => {
           if (!state.theme) return '';
-          const tm = NFF_THEME_BY_ID[state.theme];
+          const tm = resolveTheme(state.theme);
           if (!tm) return '';
           let s = '<div class="h-sub" style="margin-top:4px;">Tema: <strong>' + escapeHtml(tm.label) + '</strong></div>';
           const goals = getLearningGoals(state.theme, state.ageGroup || '8-9');
@@ -3568,7 +3586,7 @@ function serializeWorkoutFromState() {
       const bal = calculateNffBalance(state.blocks, state.ageGroup || '8-9');
       if (bal.totalMinutes <= 0) return '';
       let s = '<div class="card" style="margin-top:12px;padding:12px 16px;">';
-      s += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;margin-bottom:8px;">NFF-fordeling</div>';
+      s += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;margin-bottom:8px;">Innhold i \u00f8kta</div>';
       s += '<div style="display:flex;gap:6px;height:28px;">';
       for (const cat of NFF_CATEGORIES) {
         const b = bal.balance[cat.id];
@@ -4131,6 +4149,8 @@ function serializeWorkoutFromState() {
     NFF_TIME_DISTRIBUTION: NFF_TIME_DISTRIBUTION,
     NFF_LEARNING_GOALS: NFF_LEARNING_GOALS,
     NFF_TEMPLATES: NFF_TEMPLATES,
+    resolveTheme: resolveTheme,
+    resolveThemeId: resolveThemeId,
     renderDrillSVG: renderDrillSVG,
     catLabel: catLabel,
     catShort: catShort,

@@ -92,11 +92,11 @@ async function getDataOwner(teamId) {
 
 var EX_MAP = {
     drink:{n:'Drikkepause',c:'pause'},
-    custom:{n:'Egendefinert',c:''},
-    tag:{n:'Sisten',c:'sjef_over_ballen'},
-    pass_pair:{n:'Kast to og to',c:'sjef_over_ballen'},
+    custom:{n:'Skriv inn selv',c:''},
+    tag:{n:'Lek / Sisten',c:'sjef_over_ballen'},
+    pass_pair:{n:'Pasning parvis',c:'sjef_over_ballen'},
     pass_move:{n:'Kast og bevegelse',c:'sjef_over_ballen'},
-    shot:{n:'Kast på mål',c:'scoringstrening'},
+    shot:{n:'Skudd på mål',c:'scoringstrening'},
     shot_race:{n:'Skuddstafett',c:'scoringstrening'},
     '1v1':{n:'1 mot 1',c:'spille_med_og_mot'},
     '2v1':{n:'2 mot 1',c:'spille_med_og_mot'},
@@ -104,7 +104,7 @@ var EX_MAP = {
     ssg:{n:'Smålagsspill',c:'smalagsspill'},
     game_activity:{n:'Fri spillaktivitet',c:'smalagsspill'},
     keeper:{n:'Keepertrening',c:'sjef_over_ballen'},
-    defend_press:{n:'Forsvarstrening',c:'spille_med_og_mot'},
+    defend_press:{n:'Press på ballfører',c:'spille_med_og_mot'},
     ssg_theme:{n:'Spill med betingelser',c:'smalagsspill'},
     transition:{n:'Omstillingsspill',c:'smalagsspill'},
     wall_pass:{n:'Veggspill',c:'spille_med_og_mot'},
@@ -113,7 +113,7 @@ var EX_MAP = {
     ball_sisten:{n:'Ballsisten',c:'sjef_over_ballen'},
     kongen_haugen:{n:'Kongen på haugen',c:'smalagsspill'},
     kastlek_halvdeler:{n:'Kastlek på to halvdeler',c:'sjef_over_ballen'},
-    ball_luften:{n:'Kast ballen i luften',c:'sjef_over_ballen'},
+    ball_luften:{n:'Kast ballen opp i luften',c:'sjef_over_ballen'},
     kast_vegg:{n:'Kast mot vegg',c:'sjef_over_ballen'},
     kanonball:{n:'Dansk kanonball',c:'smalagsspill'},
     kontring:{n:'Kontring to og to',c:'scoringstrening'},
@@ -129,14 +129,21 @@ var THEME_MAP = {
     kast_teknikk: 'Kastteknikk',
     mottak_pasning: 'Mottak og pasning',
     dribling_bevegelse: 'Dribling og bevegelse',
-    finter: 'Finter og avløp',
-    '1v1_duell': '1 mot 1',
-    samarbeidsspill: 'Samarbeidsspill',
+    finter: 'Finter',
+    '1v1_duell': 'Duellspill',
+    samarbeidsspill: 'Samspill',
     forsvarsspill: 'Forsvarsspill',
     kontring_retur: 'Kontring og retur',
-    linjespill: 'Linjespill',
+    linjespill: 'Linjespill og innspill',
     keeper: 'Målvakt',
     leik_stafett: 'Lek og stafett',
+    // Gamle fotball-id-er som kan ligge i lagrede økter
+    foering_dribling: 'Dribling og bevegelse',
+    vendinger_mottak: 'Mottak og pasning',
+    pasning_samspill: 'Mottak og pasning',
+    avslutning: 'Kastteknikk',
+    omstilling: 'Kontring og retur',
+    spilloppbygging: 'Samspill'
   };
 
 // ========================================
@@ -493,8 +500,8 @@ async function handleRead(req, res) {
     var ageMatch = season.age_class.match(/(\d+)/);
     var age = ageMatch ? parseInt(ageMatch[1], 10) : null;
     if (age) {
-      var dur = age <= 7 ? 60 : (age <= 9 ? 75 : 90);
-      var lbl = age <= 7 ? '6-7 år' : (age <= 9 ? '8-9 år' : (age <= 12 ? '10-12 år' : '13-16 år'));
+      var dur = age <= 9 ? 60 : 90;
+      var lbl = age <= 8 ? '6-7 år' : (age <= 10 ? '8-9 år' : (age <= 12 ? '10-12 år' : '13-16 år'));
       nff = { age_class: lbl, duration: dur, description: 'NHF anbefaler variert trening med vekt på ballmestring, kast og bevegelse for ' + lbl + '.' };
     }
   }

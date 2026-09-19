@@ -942,6 +942,20 @@
   color: #fff;
 }
 
+.wo-gen-pill-focus:not(.wo-gen-pill-sel) {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.wo-gen-focus-tag {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
 .wo-gen-pill-sel:hover {
   background: var(--primary);
   filter: brightness(1.1);
