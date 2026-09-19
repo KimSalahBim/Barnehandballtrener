@@ -66,8 +66,47 @@
 
   // Drag & drop slot override state
   let kdSlotOverrides = {};     // { segIdx: { slots: {slotKey: playerId}, bench: [playerId] } }
+  let kdRotatingKeepers = {};   // { segIdx: playerId } — overrides for 4-er keeper badge
   let kdDragState = null;
   const KD_DRAG_THRESHOLD = 8;
+
+  function getRotatingKeeper(seg, idx) {
+    if (kdRotatingKeepers[idx] !== undefined) return kdRotatingKeepers[idx];
+    if (!seg.lineup || !seg.lineup.length) return null;
+    return seg.lineup[idx % seg.lineup.length];
+  }
+
+  function renderRotatingKeeperBadge(container, segIdx, pid, idToName) {
+    const badge = container?.querySelector(`.kd-rotating-keeper-badge[data-seg="${segIdx}"]`);
+    if (!badge) return;
+    badge.textContent = '\ud83e\udde4 ' + (idToName[pid] || pid);
+  }
+
+  function attachRotatingKeeperHandlers(container, best, idToName) {
+    if (!container) return;
+
+    if (container.__kdRotatingKeeperHandler) {
+      container.removeEventListener('click', container.__kdRotatingKeeperHandler);
+    }
+
+    const handler = (e) => {
+      const btn = e.target.closest('.kd-rotating-keeper-btn');
+      if (!btn || !container.contains(btn)) return;
+
+      const segIdx = parseInt(btn.dataset.seg, 10);
+      const seg = best.segments[segIdx];
+      if (!seg || !seg.lineup.length) return;
+
+      const current = getRotatingKeeper(seg, segIdx);
+      const currentPos = seg.lineup.indexOf(current);
+      const nextId = seg.lineup[(currentPos + 1) % seg.lineup.length];
+      kdRotatingKeepers[segIdx] = nextId;
+      renderRotatingKeeperBadge(container, segIdx, nextId, idToName);
+    };
+
+    container.__kdRotatingKeeperHandler = handler;
+    container.addEventListener('click', handler);
+  }
 
   // Formation state
   let kdFormationOn = true;
@@ -191,7 +230,7 @@
       // Auto-set match duration based on format (Norwegian youth handball defaults)
       if (minutesEl) {
         const fmt = parseInt(formatEl.value, 10) || 7;
-        const defaultMinutes = { 4: 20, 5: 30, 6: 40, 7: 40 };
+        const defaultMinutes = { 4: 20, 5: 30, 6: 40, 7: 50 };
         if (defaultMinutes[fmt]) {
           minutesEl.value = defaultMinutes[fmt];
           // Programmatic value change doesn't fire 'input' event,
@@ -501,7 +540,7 @@
   function makeKeeperOptions(presentPlayers) {
     const header = `<option value="">Velg spiller</option>`;
     const items = presentPlayers.map(p => {
-      const icon = p.goalie ? '\ud83e\udde4' : '\u26bd';
+      const icon = p.goalie ? '\ud83e\udde4' : '\uD83E\uDD3E';
       return `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} ${icon}</option>`;
     }).join('');
     return header + items;
@@ -902,7 +941,8 @@
     if (!slots) return;
     if (!isBench) {
       const sl = slots.find(s => s.key === slotKey);
-      if (sl && sl.zone === 'K') return;
+      const dragFormat = parseInt($('skdFormat')?.value, 10) || 7;
+      if (sl && sl.zone === 'K' && dragFormat !== 4) return;
     }
     const sm = getSlotMap(segIdx);
     const pid = isBench ? benchPid : sm.slots[slotKey];
@@ -956,7 +996,8 @@
         if (tsk) {
           // Drop on field slot
           const ts = slots.find(s => s.key === tsk);
-          if (ts && ts.zone !== 'K' && tsk !== kdDragState.slotKey) {
+          const dropFormat = parseInt($('skdFormat')?.value, 10) || 7;
+          if (ts && (ts.zone !== 'K' || dropFormat === 4) && tsk !== kdDragState.slotKey) {
             if (kdDragState.isBench) {
               swapBenchToField(kdDragState.segIdx, kdDragState.playerId, tsk);
             } else {
@@ -987,11 +1028,12 @@
     // This avoids transform: translate(-50%, -50%) offset issues on mobile
     let best = null;
     let bestDist = 60; // max pixel distance to count as hit
+    const targetFormat = parseInt($('skdFormat')?.value, 10) || 7;
     const allSlotEls = document.querySelectorAll(`.kd-pos-slot[data-seg="${kdDragState.segIdx}"]`);
     for (const el of allSlotEls) {
       const sk = el.dataset.slotkey;
       const s = slots.find(s => s.key === sk);
-      if (!s || s.zone === 'K' || sk === kdDragState.slotKey) continue;
+      if (!s || (s.zone === 'K' && targetFormat !== 4) || sk === kdDragState.slotKey) continue;
       const rect = el.getBoundingClientRect();
       // Center of the visual bubble (accounting for translate -50% -50%)
       const cx = rect.left + rect.width / 2;
@@ -1945,6 +1987,7 @@
 
     // Clear any previous drag & drop overrides
     kdSlotOverrides = {};
+    kdRotatingKeepers = {};
 
     renderKampdagOutput(present, best, P, T);
 
@@ -2086,6 +2129,7 @@
         const sm0 = getSlotMap(0);
         const ov0 = hasSlotOverrides(0);
         const kn0 = first.keeperId ? escapeHtml(idToName[first.keeperId] || first.keeperId) : '';
+        const rotatingKeeper0 = getRotatingKeeper(first, 0);
 
         const slotsHtml0 = slots.map(slot => {
           const pid = sm0.slots[slot.key];
@@ -2116,6 +2160,7 @@
                   ${ov0 ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                  ${format === 4 && rotatingKeeper0 ? `<button class="kd-rotating-keeper-btn" data-seg="0" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="0">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper0] || rotatingKeeper0)}</span></button>` : (kn0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn0}</span>` : '')}
                   ${ov0 && best.segments.length > 1 ? `<button class="kd-copy-btn" data-action="skdcopy" data-seg="0">Kopier til alle</button>` : ''}
                   ${ov0 ? `<button class="kd-reset-btn" data-action="skdreset" data-seg="0">\u21ba</button>` : ''}
                   
@@ -2144,6 +2189,7 @@
           const nextSeg = best.segments[idx + 1];
           const periodEnd = nextSeg ? nextSeg.start : T;
           const kn = seg.keeperId ? escapeHtml(idToName[seg.keeperId] || seg.keeperId) : '';
+          const rotatingKeeper = getRotatingKeeper(seg, idx);
           const isLast = idx === best.segments.length - 1;
           const ov = hasSlotOverrides(idx);
           const prevLineup = new Set(best.segments[idx - 1].lineup);
@@ -2184,6 +2230,7 @@
                 ${ov ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
               </div>
               <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (kn ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn}</span>` : '')}
                 ${ov && !isLast ? `<button class="kd-copy-btn" data-action="skdcopy" data-seg="${idx}">Kopier til alle</button>` : ''}
                 ${ov ? `<button class="kd-reset-btn" data-action="skdreset" data-seg="${idx}">\u21ba</button>` : ''}
                 
@@ -2226,7 +2273,7 @@
       `).join('');
 
       if (lineupEl) {
-        const startList = startIds.map(id => `<div class="group-player"><span class="player-icon">\u26bd</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
+        const startList = startIds.map(id => `<div class="group-player"><span class="player-icon">\uD83E\uDD3E</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
         const benchList = benchIds.map(id => `<div class="group-player"><span class="player-icon">\u26aa</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
         lineupEl.innerHTML = `
           <div class="results-container">
@@ -2259,6 +2306,7 @@
         const events = buildEvents(best.segments);
         const planCards = events.map((ev, idx) => {
           const keeperName = ev.keeperId ? (idToName[ev.keeperId] || ev.keeperId) : null;
+          const rotatingKeeper = getRotatingKeeper(ev, idx);
           const ins = ev.ins.map(id => `<div class="small-text">Inn: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const outs = ev.outs.map(id => `<div class="small-text">Ut: <b>${escapeHtml(idToName[id] || id)}</b></div>`).join('');
           const empty = (!ev.ins.length && !ev.outs.length) ? `<div class="small-text" style="opacity:0.8;">Start (ingen bytter)</div>` : '';
@@ -2266,7 +2314,7 @@
             <div class="group-card" style="margin-bottom:12px;">
               <div class="group-header" style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="group-name">Minutt ${ev.minute}</div>
-                ${keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">Keeper: ${escapeHtml(keeperName)}</div>` : ''}
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">Keeper: ${escapeHtml(keeperName)}</div>` : '')}
               </div>
               <div class="group-players" style="gap:6px;">${empty}${ins}${outs}</div>
             </div>`;
@@ -2277,6 +2325,9 @@
         planEl.innerHTML = `<div class="results-container"><h3>Bytteplan</h3>${planCards || '<div class="small-text" style="opacity:0.8;">\u2014</div>'}</div>`;
       }
     }
+
+    attachRotatingKeeperHandlers(lineupEl, best, idToName);
+    attachRotatingKeeperHandlers(planEl, best, idToName);
 
     lastPlanText = buildPlanText(best, presentPlayers, P, T);
   }
@@ -2301,7 +2352,8 @@
         minute: seg.start,
         ins,
         outs,
-        keeperId: seg.keeperId || null
+        keeperId: seg.keeperId || null,
+        lineup: seg.lineup.slice()
       });
 
       prev = cur;
@@ -2517,7 +2569,7 @@
       const benchIds = present.map(p => p.id).filter(id => !startIds.includes(id));
       startSection = `
         <div class="section-title">Startoppstilling</div>
-        <div class="start-list">${startIds.map(id => `<span class="chip">\u26bd ${escapeHtml(idToName[id]||id)}</span>`).join('')}</div>
+        <div class="start-list">${startIds.map(id => `<span class="chip">\uD83E\uDD3E ${escapeHtml(idToName[id]||id)}</span>`).join('')}</div>
         <div class="bench">Benk: ${benchIds.map(id => escapeHtml(idToName[id]||id)).join(' \u00b7 ') || '\u2014'}</div>`;
     }
 

@@ -120,7 +120,7 @@
       var rule = getNhfRule(currentSeason.age_class);
       if (rule) return rule.minutes;
     }
-    return { 4: 20, 5: 30, 6: 40, 7: 40 }[format] || 40;
+    return { 4: 20, 5: 30, 6: 40, 7: 50 }[format] || 50;
   }
 
   function escapeHtml(str) {
@@ -132,8 +132,8 @@
       .replace(/'/g, '&#039;');
   }
 
-  // Format: '7er', '5er' etc.
-  function formatLabel(n) { return n + 'er'; }
+  // Format: '7-er', '5-er' etc.
+  function formatLabel(n) { return n + '-er'; }
 
   // Norwegian date formatting
   function formatDate(dateStr) {
@@ -191,7 +191,7 @@
     return type;
   }
   function typeIcon(type) {
-    if (type === 'match' || type === 'cup_match') return '\u26BD';
+    if (type === 'match' || type === 'cup_match') return '\uD83E\uDD3E';
     if (type === 'training') return '\uD83C\uDFBD';
     return '\uD83D\uDCC5';
   }
@@ -202,14 +202,14 @@
   // NHF aldersklasse → format, varighet, barnehåndball-status
   var NHF_AGE_RULES = {
     6:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
-    7:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
-    8:  { format: 4, minutes: 20, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d710 min' },
+    7:  { format: 4, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d715 min' },
+    8:  { format: 4, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '4-er, 2\u00d715 min' },
     9:  { format: 5, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '5-er, 2\u00d715 min' },
     10: { format: 5, minutes: 30, barnehåndball: true,  keeperRotation: true,  bytteRestriksjon: false, label: '5-er, 2\u00d715 min' },
     11: { format: 6, minutes: 40, barnehåndball: true,  keeperRotation: false, bytteRestriksjon: true,  label: '6-er, 2\u00d720 min' },
     12: { format: 6, minutes: 40, barnehåndball: true,  keeperRotation: false, bytteRestriksjon: true,  label: '6-er, 2\u00d720 min' },
-    13: { format: 7, minutes: 40, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d720 min' },
-    14: { format: 7, minutes: 40, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d720 min' }
+    13: { format: 7, minutes: 50, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d725 min' },
+    14: { format: 7, minutes: 50, barnehåndball: false, keeperRotation: false, bytteRestriksjon: true,  label: '7-er, 2\u00d725 min' }
   };
 
   // Parse age from age_class string: 'G10' → 10, 'J7' → 7
@@ -2169,10 +2169,10 @@
             '<select id="snAgeClass">' +
               '<option value="">Velg \u00e5rsklasse\u2026</option>' +
               '<optgroup label="Gutter">' +
-                '<option value="G6">G6 (6 \u00e5r)</option><option value="G7">G7</option><option value="G8">G8</option><option value="G9">G9</option><option value="G10">G10</option><option value="G11">G11</option><option value="G12">G12</option><option value="G13">G13</option>' +
+                '<option value="G6">G6 (6 \u00e5r)</option><option value="G7">G7</option><option value="G8">G8</option><option value="G9">G9</option><option value="G10">G10</option><option value="G11">G11</option><option value="G12">G12</option><option value="G13">G13</option><option value="G14">G14</option><option value="G15">G15</option><option value="G16">G16</option>' +
               '</optgroup>' +
               '<optgroup label="Jenter">' +
-                '<option value="J6">J6 (6 \u00e5r)</option><option value="J7">J7</option><option value="J8">J8</option><option value="J9">J9</option><option value="J10">J10</option><option value="J11">J11</option><option value="J12">J12</option><option value="J13">J13</option>' +
+                '<option value="J6">J6 (6 \u00e5r)</option><option value="J7">J7</option><option value="J8">J8</option><option value="J9">J9</option><option value="J10">J10</option><option value="J11">J11</option><option value="J12">J12</option><option value="J13">J13</option><option value="J14">J14</option><option value="J15">J15</option><option value="J16">J16</option>' +
               '</optgroup>' +
             '</select>' +
             '<div class="sn-hint" id="snAgeHint" style="display:none;"></div>' +
@@ -2251,7 +2251,7 @@
         $('snSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
-          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF anbefaler: ' + rule.label +
+          hint.innerHTML = '<i class="fas fa-shield-halved" style="margin-right:4px;color:var(--primary);"></i>NHF anbefaler: ' + rule.label +
             (rule.barnehåndball ? ' <span style="color:var(--text-400);">\u00B7 Barneh\u00e5ndball-regler gjelder</span>' : '');
         }
       } else if (hint) {
@@ -2376,6 +2376,9 @@
                 '<option value="G11"' + (s.age_class === 'G11' ? ' selected' : '') + '>G11</option>' +
                 '<option value="G12"' + (s.age_class === 'G12' ? ' selected' : '') + '>G12</option>' +
                 '<option value="G13"' + (s.age_class === 'G13' ? ' selected' : '') + '>G13</option>' +
+                '<option value="G14"' + (s.age_class === 'G14' ? ' selected' : '') + '>G14</option>' +
+                '<option value="G15"' + (s.age_class === 'G15' ? ' selected' : '') + '>G15</option>' +
+                '<option value="G16"' + (s.age_class === 'G16' ? ' selected' : '') + '>G16</option>' +
               '</optgroup>' +
               '<optgroup label="Jenter">' +
                 '<option value="J6"' + (s.age_class === 'J6' ? ' selected' : '') + '>J6</option>' +
@@ -2386,10 +2389,13 @@
                 '<option value="J11"' + (s.age_class === 'J11' ? ' selected' : '') + '>J11</option>' +
                 '<option value="J12"' + (s.age_class === 'J12' ? ' selected' : '') + '>J12</option>' +
                 '<option value="J13"' + (s.age_class === 'J13' ? ' selected' : '') + '>J13</option>' +
+                '<option value="J14"' + (s.age_class === 'J14' ? ' selected' : '') + '>J14</option>' +
+                '<option value="J15"' + (s.age_class === 'J15' ? ' selected' : '') + '>J15</option>' +
+                '<option value="J16"' + (s.age_class === 'J16' ? ' selected' : '') + '>J16</option>' +
               '</optgroup>' +
             '</select>' +
             '<div class="sn-hint" id="snEditAgeHint" style="' + (s.age_class ? '' : 'display:none;') + '">' +
-              (function() { var r = getNhfRule(s.age_class); return r ? '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + r.label + (r.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '') : ''; })() +
+              (function() { var r = getNhfRule(s.age_class); return r ? '<i class="fas fa-shield-halved" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + r.label + (r.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '') : ''; })() +
             '</div>' +
           '</div>' +
           '<div class="form-group">' +
@@ -2468,7 +2474,7 @@
         $('snEditSeasonFormat').value = String(rule.format);
         if (hint) {
           hint.style.display = 'block';
-          hint.innerHTML = '<i class="fas fa-futbol" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + rule.label +
+          hint.innerHTML = '<i class="fas fa-shield-halved" style="margin-right:4px;color:var(--primary);"></i>NHF: ' + rule.label +
             (rule.barnehåndball ? ' \u00B7 Barneh\u00e5ndball-regler' : '');
         }
       } else if (hint) {
@@ -3118,7 +3124,7 @@
     var html =
       '<div class="settings-card" style="padding-top:12px;">' +
         '<div class="sn-actions">' +
-          '<button class="btn-primary" id="snAddMatch"><i class="fas fa-futbol" style="margin-right:5px;"></i>Legg til kamp</button>' +
+          '<button class="btn-primary" id="snAddMatch"><i class="fas fa-shield-halved" style="margin-right:5px;"></i>Legg til kamp</button>' +
           '<button class="btn-secondary" id="snAddTraining"><i class="fas fa-dumbbell" style="margin-right:5px;"></i>Legg til trening</button>' +
         '</div>' +
         '<div style="margin-top:8px; display:flex; gap:8px;">' +
@@ -3843,6 +3849,11 @@
   }
 
   function renderNffDisclaimer() {
+    var rule = (currentSeason && currentSeason.age_class) ? getNhfRule(currentSeason.age_class) : null;
+    var isBarnehandball = !!(rule && rule.barnehåndball);
+    var sourceText = isBarnehandball
+      ? 'Kilde: NHF Barneh\u00e5ndballens retningslinjer \u2013 Aktivitet 6\u201312 \u00e5r'
+      : 'Kilde: NHF sine retningslinjer om rettferdig spilletid for barn og unge';
     return '<div class="sn-nff-overlay" id="snNffOverlay">' +
       '<div class="sn-nff-modal">' +
         '<h3>\uD83E\uDD3E Statistikk \u2013 viktig informasjon</h3>' +
@@ -3854,7 +3865,7 @@
           '<li>Statistikken skal <b>ikke</b> brukes til \u00e5 rangere enkeltspillere opp mot hverandre</li>' +
           '<li>Form\u00e5let er \u00e5 sikre lik spilletid og god h\u00e5ndballutvikling for alle</li>' +
         '</ul>' +
-        '<div class="sn-nff-source">Kilde: NHF Barneh\u00e5ndballens retningslinjer \u2013 Aktivitet 6\u201312 \u00e5r</div>' +
+        '<div class="sn-nff-source">' + sourceText + '</div>' +
         '<button class="sn-nff-accept" id="snNffAccept">\u2713 Jeg har lest og forst\u00e5tt</button>' +
       '</div>' +
     '</div>';
@@ -4690,7 +4701,7 @@
         var pgm = playerGoalMap[ev.id];
         if (pgm) {
           var parts = [];
-          if (pgm.goals > 0) parts.push('\u26BD' + (pgm.goals > 1 ? '\u00d7' + pgm.goals : ''));
+          if (pgm.goals > 0) parts.push('\uD83E\uDD45' + (pgm.goals > 1 ? '\u00d7' + pgm.goals : ''));
           if (pgm.assists > 0) parts.push('<span style="font-weight:500; color:var(--primary, #1a82c4);">A</span>' + (pgm.assists > 1 ? '\u00d7' + pgm.assists : ''));
           if (parts.length > 0) goalBadge = '<div style="font-size:12px; white-space:nowrap;">' + parts.join(' ') + '</div>';
         }
@@ -6804,7 +6815,7 @@
 
     html += '<div style="padding:10px 14px;">' +
       '<label style="font-size:13px;font-weight:500;display:block;margin-bottom:4px;">Beskjed til foreldre</label>' +
-      '<textarea id="snParentMessage" rows="2" maxlength="500" placeholder="F.eks. Husk leggskinn, vi trenger kj\u00f8ring..." ' +
+      '<textarea id="snParentMessage" rows="2" maxlength="500" placeholder="F.eks. Husk drikkeflaske, vi trenger kj\u00f8ring..." ' +
       'style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;resize:vertical;">' +
       escapeHtml(ev.parent_message || '') + '</textarea>' +
       '</div>';
@@ -7360,7 +7371,7 @@
     var isAssist = item.type === 'assist';
     var icon = isAssist
       ? '<span style="font-weight:500; color:var(--primary, #1a82c4); font-size:14px; width:20px; text-align:center;">A</span>'
-      : '<span>\u26BD</span>';
+      : '<span>\uD83E\uDD45</span>';
     var actions = '';
     if (showActions) {
       actions =

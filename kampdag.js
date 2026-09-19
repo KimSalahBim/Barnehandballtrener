@@ -2442,7 +2442,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       `).join('');
 
       if (lineupEl) {
-        const startList = startIds.map(id => `<div class="group-player"><span class="player-icon">\u26bd</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
+        const startList = startIds.map(id => `<div class="group-player"><span class="player-icon">\uD83E\uDD3E</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
         const benchList = benchIds.map(id => `<div class="group-player"><span class="player-icon">\u26aa</span><span class="player-name">${escapeHtml(idToName[id] || id)}</span></div>`).join('');
         lineupEl.innerHTML = `
           <div class="results-container">
@@ -2736,7 +2736,7 @@ if (window.__BF_IS_DEBUG_HOST) console.log('KAMPDAG.JS LOADING - BEFORE IIFE');
       const benchIds = present.map(p => p.id).filter(id => !startIds.includes(id));
       startSection = `
         <div class="section-title">Startoppstilling</div>
-        <div class="start-list">${startIds.map(id => `<span class="chip">\u26bd ${escapeHtml(idToName[id]||id)}</span>`).join('')}</div>
+        <div class="start-list">${startIds.map(id => `<span class="chip">\uD83E\uDD3E ${escapeHtml(idToName[id]||id)}</span>`).join('')}</div>
         <div class="bench">Benk: ${benchIds.map(id => escapeHtml(idToName[id]||id)).join(' \u00b7 ') || '\u2014'}</div>`;
     }
 
