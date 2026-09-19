@@ -247,8 +247,8 @@
     }
     var parsedAge = currentSeason ? parseAgeFromClass(currentSeason.age_class) : null;
     if (parsedAge == null) return null;
-    if (parsedAge <= 8) return '6-7';
-    if (parsedAge <= 10) return '8-9';
+    if (parsedAge <= 7) return '6-7';
+    if (parsedAge <= 9) return '8-9';
     if (parsedAge <= 12) return '10-12';
     return '13-16';
   }

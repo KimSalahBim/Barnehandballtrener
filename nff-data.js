@@ -1,5 +1,5 @@
 // nff-data.js — NHF-kontrakt og maler for barnehåndball
-// Kilder: handball.no retningslinjer, utviklingstrappa.no, Region Sør øktplaner (60 min / stasjoner).
+// Kilder: handball.no retningslinjer, Region Sør øktplaner 6–9 år (60 min: 20 oppvarming / 30 stasjoner / 10 avslutning).
 // Øvelsesnøkler og gamle aldersnøkler (6-7, 8-9, …) beholdes så lagrede økter ikke knekker.
 // Brukes av workout.js, sesong-workout.js, season.js via window.NFF_DATA
 
@@ -14,8 +14,8 @@ window.NFF_DATA = {
     { id: 'keeper',           label: '🧤 Målvakt' },
   ],
 
-  // Bro mot NHF sine fire like deler (ikke NFF-fotballprosentene).
-  // Id-er er uendret pga. lagrede blokker; etikettene er NHF-språk.
+  // Fire innholdskategorier for balanse-visningen i øktbyggeren.
+  // Id-er er uendret pga. lagrede blokker; etikettene er håndballspråk.
   NFF_CATEGORIES: [
     { id: 'sjef_over_ballen',  label: '🤾 Individuelle balløvelser', short: 'Ball',  color: '#2e8b57',
       label1316: '🤾 Ballmestring', short1316: 'Ball' },
@@ -58,7 +58,8 @@ window.NFF_DATA = {
     '13-16': ['forsvarsspill', 'linjespill', 'samarbeidsspill', 'kontring_retur', 'kast_teknikk']
   },
 
-  // NHF: jevne deler — ikke NFF 40/10/40/10. Halltid er vanligvis 60 min for barn.
+  // App-standard (IKKE et NHF-tall): jevn fordeling som utgangspunkt for balanse-visningen.
+  // NHF/Region Sør øktplaner for 6–9 år er 60 min delt 20/30/10 (oppvarming/stasjoner/avslutning).
   NFF_TIME_DISTRIBUTION: {
     '6-7':   { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
     '8-9':   { sjef_over_ballen: 25, spille_med_og_mot: 25, smalagsspill: 25, scoringstrening: 25 },
@@ -302,12 +303,12 @@ window.NFF_DATA = {
     return (n >= 6 && n <= 19) ? n : null;
   };
 
-  // Utviklingstrappa 6–9 / 10–12, mappet til eksisterende økt-nøkler.
-  // 6–8 = 4-er (lek), 9–10 = 5-er, 11–12 = 6-er.
+  // Alder → økt-nøkkel. Gruppene følger navnene sine (6-7, 8-9, 10-12, 13-16),
+  // slik at 9/10-skillet for treningsvarighet (60/90 min) faller mellom 8-9 og 10-12.
   data.workoutAgeGroupFromAge = function (age) {
     if (age == null || isNaN(age)) return '8-9';
-    if (age <= 8) return '6-7';
-    if (age <= 10) return '8-9';
+    if (age <= 7) return '6-7';
+    if (age <= 9) return '8-9';
     if (age <= 12) return '10-12';
     return '13-16';
   };
@@ -316,7 +317,7 @@ window.NFF_DATA = {
     return data.workoutAgeGroupFromAge(data.parseAgeFromClass(ageClass));
   };
 
-  // 6–9: 60 min (Region Sør / NHF-skole). Fra 10 år: 90 min (vanlig klubbhalltid).
+  // 6–9: 60 min (Region Sør øktplaner). Fra 10 år: 90 min (vanlig klubbhalltid, trenervalg).
   data.defaultMinutesForAgeGroup = function (ageGroup) {
     return (ageGroup === '10-12' || ageGroup === '13-16') ? 90 : 60;
   };

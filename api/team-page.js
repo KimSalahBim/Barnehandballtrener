@@ -501,7 +501,7 @@ async function handleRead(req, res) {
     var age = ageMatch ? parseInt(ageMatch[1], 10) : null;
     if (age) {
       var dur = age <= 9 ? 60 : 90;
-      var lbl = age <= 8 ? '6-7 år' : (age <= 10 ? '8-9 år' : (age <= 12 ? '10-12 år' : '13-16 år'));
+      var lbl = age <= 7 ? '6-7 år' : (age <= 9 ? '8-9 år' : (age <= 12 ? '10-12 år' : '13-16 år'));
       nff = { age_class: lbl, duration: dur, description: 'NHF anbefaler variert trening med vekt på ballmestring, kast og bevegelse for ' + lbl + '.' };
     }
   }
