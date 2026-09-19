@@ -136,7 +136,8 @@
       return list.map((p) => ({
         id: p.id,
         name: p.name,
-        active: p.active !== false
+        active: p.active !== false,
+        goalie: !!p.goalie
       }));
     }
 
@@ -160,7 +161,8 @@
       return arr.map((p) => ({
         id: p.id,
         name: p.name,
-        active: p.active !== false
+        active: p.active !== false,
+        goalie: !!p.goalie
       }));
     } catch (e) {
       console.error('[Competitions] ❌ Feil ved lesing fra storage:', e);
@@ -260,6 +262,8 @@
     const noPlayers = players.length === 0;
     console.log('[Competitions] noPlayers:', noPlayers);
 
+    const prevForm = captureSetupForm(root);
+
     root.innerHTML = `
       <div class="comp-root">
         ${corruptBanner}
@@ -269,6 +273,8 @@
     `;
 
     bindUI(store, players);
+
+    if (prevForm && ui.view === 'setup') restoreSetupForm(root, prevForm);
   }
 
   function renderNoPlayers() {
@@ -539,7 +545,10 @@
       for (const [pid, pts] of Object.entries(totals)) totalsAgg[pid] = (totalsAgg[pid] || 0) + pts;
     }
 
-    const leaderboard = sortedLeaderboard(totalsAgg, nameMap);
+    const histNames = {};
+    for (const c of filtered) Object.assign(histNames, c.participantNames || {});
+    Object.assign(histNames, nameMap);
+    const leaderboard = sortedLeaderboard(totalsAgg, histNames);
 
     return `
       <div class="comp-card">
@@ -712,7 +721,7 @@
       }
 
       if (action === 'resumeDraft') {
-        const draftId = t.getAttribute('data-comp-draft-id');
+        const draftId = btn.getAttribute('data-comp-draft-id');
         if (draftId) {
           ui.activeCompetitionId = draftId;
           ui.view = 'running';
@@ -723,7 +732,8 @@
       }
 
       if (action === 'resetStore') {
-        safeRemove(STORAGE_KEY());
+        if (!window.confirm('Slette ALLE konkurranser for dette laget?\n\nDette kan ikke angres.')) return;
+        saveStore(defaultStore());
         ui.view = 'setup';
         ui.activeCompetitionId = null;
         ui.detailId = null;
@@ -940,6 +950,35 @@
     if (ui.view === 'setup') {
       setExerciseInputs(5, false);
     }
+  }
+
+  // Preserve setup-form input across re-renders (players:updated / realtime / team:changed)
+  function captureSetupForm(root) {
+    if (!root || !qs('#compExerciseNames', root)) return null;
+    return {
+      checked: qsa('[data-comp-player]', root).filter((el) => el.checked).map((el) => el.getAttribute('data-comp-player')),
+      exNames: qsa('.comp-ex-name', root).map((el) => el.value),
+      count: qs('#compExerciseCount', root)?.value || '',
+      title: qs('#compTitle', root)?.value || '',
+      scoring: qs('input[name="compScoring"]:checked', root)?.value || 'rank'
+    };
+  }
+
+  function restoreSetupForm(root, f) {
+    const checked = new Set(f.checked);
+    qsa('[data-comp-player]', root).forEach((el) => {
+      el.checked = checked.has(el.getAttribute('data-comp-player'));
+    });
+    if (f.exNames.length) {
+      setExerciseInputs(f.exNames.length, false);
+      qsa('.comp-ex-name', root).forEach((el, i) => { el.value = f.exNames[i] || ''; });
+    }
+    const cnt = qs('#compExerciseCount', root);
+    if (cnt && f.count) cnt.value = f.count;
+    const ttl = qs('#compTitle', root);
+    if (ttl) ttl.value = f.title;
+    const sc = qs(`input[name="compScoring"][value="${f.scoring === '321' ? '321' : 'rank'}"]`, root);
+    if (sc) sc.checked = true;
   }
 
   function setExerciseInputs(count, keepExisting) {
