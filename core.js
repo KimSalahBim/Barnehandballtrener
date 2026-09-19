@@ -701,6 +701,9 @@
     state.players = [];
     state.liga = null;
     state.selection.grouping = new Set();
+    state.currentGroups = null;
+    var groupingResultsEl = $('groupingResults');
+    if (groupingResultsEl) groupingResultsEl.innerHTML = '';
     state._localEdited = false;
 
     // 5. Last inn data for nytt lag
@@ -1774,7 +1777,7 @@
     if (sorted.length === 0) {
       container.innerHTML = `
         <div class="empty-state" style="text-align:center; padding:40px 20px; color:var(--text-400, #94a3b8);">
-          <div style="font-size:36px; margin-bottom:12px;">⚽</div>
+          <div style="font-size:36px; margin-bottom:12px;">🤾</div>
           <div style="font-size:15px; font-weight:600; color:var(--text-700, #334155); margin-bottom:6px;">Ingen spillere enn\u00e5</div>
           <div style="font-size:13px; line-height:1.5; max-width:280px; margin:0 auto;">
             Legg til spillerne dine i skjemaet over.\u00a0Kun fornavn anbefales for barnas personvern.
@@ -2831,6 +2834,10 @@
       if (players.length < 2) return showNotification('Velg minst 2 spillere', 'error');
 
       const groupCount = Number($('groupingCount')?.value ?? 2);
+      const effectiveGroups = Math.max(2, Math.min(6, Math.trunc(groupCount) || 2));
+      if (players.length < effectiveGroups) {
+        return showNotification('Velg minst ' + effectiveGroups + ' spillere for ' + effectiveGroups + ' grupper', 'error');
+      }
 
       if (currentMode === 'diff') {
         if (!state.settings.useSkill) {
