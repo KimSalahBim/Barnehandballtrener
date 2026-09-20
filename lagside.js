@@ -15,7 +15,7 @@
   }
 
   var pageData = null;
-  var LAST_SEEN_KEY = 'bf_lagside_seen_' + token;
+  // (no browser storage: see the "new" dot in render())
 
   // ========================================
   // Helpers
@@ -171,20 +171,16 @@
     var d = pageData;
     var html = '';
 
+    // "New" dot: newest announcement is less than 3 days old.
+    // No browser storage (privacy.html 2.10: the team page stores nothing in the browser).
     var hasNewAnnouncement = false;
     if (d.announcements && d.announcements.length > 0) {
-      var lastSeen = null;
-      try { lastSeen = localStorage.getItem(LAST_SEEN_KEY); } catch (_) {}
+      var NEW_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
       var newestDate = d.announcements.reduce(function (max, a) {
         var t = new Date(a.created_at).getTime();
         return t > max ? t : max;
       }, 0);
-      if (!lastSeen || newestDate > new Date(lastSeen).getTime()) {
-        hasNewAnnouncement = true;
-      }
-      setTimeout(function () {
-        try { localStorage.setItem(LAST_SEEN_KEY, new Date().toISOString()); } catch (_) {}
-      }, 3000);
+      hasNewAnnouncement = newestDate > 0 && (Date.now() - newestDate) < NEW_WINDOW_MS;
     }
 
     // Header
@@ -402,7 +398,7 @@
       html += '<div class="ls-logistics">';
 
       html += '<div class="ls-logistics-row">' +
-        '<i class="fa-regular fa-clock"></i><div>' +
+        '<i class="fa-solid fa-clock"></i><div>' +
         '<div class="ls-logistics-primary">' +
         esc(f.day.charAt(0).toUpperCase() + f.day.slice(1)) + ' ' + f.num + '. ' +
         esc(monthNames[f.month]) + ' kl ' + f.time + '</div>' +

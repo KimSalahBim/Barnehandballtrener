@@ -5,10 +5,11 @@
 //   GET                    → read (unauthenticated, token-based)
 //   POST ?action=create    → create team page (authenticated, owner-only)
 //   POST ?action=regenerate → regenerate token (authenticated, owner-only)
-//   POST ?action=attend    → register attendance (unauthenticated, token-based)
+//   POST ?action=attend    → DISABLED (410). The team page collects no data (GDPR decision 15.03.2026)
 //
 // GDPR FILTERING (hardcoded, not configurable):
-// NEVER returned: player skill, positions, absence_reason, minutes_played,
+// NEVER returned: player names, player ids, attendance (per child or counts),
+//   player skill, positions, absence_reason, minutes_played,
 //   match_events (goals/assists), plan_json, grouping data, individual stats.
 //
 // Required env vars:
@@ -337,7 +338,7 @@ async function handleRead(req, res) {
   var token = req.query.token;
   if (!token || !isValidToken(token)) return res.status(400).json({ error: 'Invalid token' });
 
-  var playerId = req.query.player_id || null;
+  // (player_id no longer used: the team page returns no per-child data)
 
   // Look up page
   var { data: page, error: pageErr } = await supabaseAdmin
@@ -370,17 +371,10 @@ async function handleRead(req, res) {
   }
 
   if (!season) {
-    return res.status(200).json({ team: { name: team.name }, season: null, players: [], events: [], training_info: null, nff: null });
+    return res.status(200).json({ team: { name: team.name }, season: null, events: [], training_info: null, nff: null });
   }
 
-  // Players — ONLY id + name
-  var { data: rawPlayers } = await supabaseAdmin
-    .from('season_players').select('player_id, player_name, active')
-    .eq('season_id', season.id).eq('user_id', ownerId).eq('active', true);
-
-  var players = (rawPlayers || []).map(function (p) {
-    return { id: p.player_id, name: p.player_name };
-  }).sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', 'nb'); });
+  // Players: NEVER returned (GDPR decision 15.03.2026, privacy.html 2.10)
 
   // Events: upcoming + last 3 completed
   var { data: upcomingEvents } = await supabaseAdmin
@@ -402,12 +396,13 @@ async function handleRead(req, res) {
     return new Date(a.start_time) - new Date(b.start_time);
   });
 
-  // Attendance — NEVER absence_reason
+  // Attendance: used ONLY server-side for the opt-in participant count (fairness).
+  // Never returned per child or as counts.
   var eventIds = allEvents.map(function (e) { return e.id; });
   var eventAttendance = {};
   if (eventIds.length > 0) {
     var { data: rawAtt } = await supabaseAdmin
-      .from('event_players').select('event_id, player_id, attended, in_squad')
+      .from('event_players').select('event_id, attended')
       .eq('user_id', ownerId).in('event_id', eventIds);
     (rawAtt || []).forEach(function (ep) {
       if (!eventAttendance[ep.event_id]) eventAttendance[ep.event_id] = [];
@@ -452,16 +447,6 @@ async function handleRead(req, res) {
   // Build response
   var events = allEvents.map(function (e) {
     var att = eventAttendance[e.id] || [];
-    var confirmed = 0, declined = 0, unknown = 0, myStatus = null;
-    att.forEach(function (ep) {
-      if (ep.attended === true) confirmed++;
-      else if (ep.attended === false) declined++;
-      else unknown++;
-      if (playerId && ep.player_id === playerId) {
-        myStatus = ep.attended === true ? 'yes' : (ep.attended === false ? 'no' : 'maybe');
-      }
-    });
-    var notResponded = Math.max(0, players.length - confirmed - declined - unknown);
 
     var fairness = null;
     if (e.share_fairness && e.status === 'completed') {
@@ -478,7 +463,6 @@ async function handleRead(req, res) {
       share_comment: e.status === 'completed' ? (e.share_comment || null) : null,
       fairness: fairness,
       workout: (e.share_workout && workoutsByEvent[e.id]) || null,
-      attendance: { confirmed: confirmed, declined: declined, maybe: unknown, not_responded: notResponded, my_status: myStatus },
     };
   });
 
@@ -515,7 +499,7 @@ async function handleRead(req, res) {
   return res.status(200).json({
     team: { name: team.name },
     season: { name: season.name, age_class: season.age_class, format: season.format },
-    players: players, events: events, training_info: trainingInfo, nff: nff,
+    events: events, training_info: trainingInfo, nff: nff,
     announcements: announcements,
     contact_info: pageSettings.contact_info || '',
     defaults: {
@@ -596,7 +580,8 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       if (action === 'create') return await handleCreate(req, res);
       if (action === 'regenerate') return await handleRegenerate(req, res);
-      if (action === 'attend') return await handleAttend(req, res);
+      // Disabled: the team page collects no data (GDPR decision 15.03.2026). handleAttend is not routed.
+      if (action === 'attend') return res.status(410).json({ error: 'Oppmøteregistrering via lagsiden er avviklet' });
       if (action === 'settings') return await handleSettings(req, res);
       return res.status(400).json({ error: 'Unknown action. Use ?action=create|regenerate|attend|settings' });
     }

@@ -3890,7 +3890,7 @@
     var isBarnehandball = !!(rule && rule.barnehåndball);
     var sourceText = isBarnehandball
       ? 'Kilde: NHF Barneh\u00e5ndballens retningslinjer \u2013 Aktivitet 6\u201312 \u00e5r'
-      : 'Kilde: NHF sine retningslinjer om rettferdig spilletid for barn og unge';
+      : ''; // 13+: no verified NHF source document, so no source line
     return '<div class="sn-nff-overlay" id="snNffOverlay">' +
       '<div class="sn-nff-modal">' +
         '<h3>\uD83E\uDD3E Statistikk \u2013 viktig informasjon</h3>' +
@@ -3902,7 +3902,7 @@
           '<li>Statistikken skal <b>ikke</b> brukes til \u00e5 rangere enkeltspillere opp mot hverandre</li>' +
           '<li>Form\u00e5let er \u00e5 sikre lik spilletid og god h\u00e5ndballutvikling for alle</li>' +
         '</ul>' +
-        '<div class="sn-nff-source">' + sourceText + '</div>' +
+        (sourceText ? '<div class="sn-nff-source">' + sourceText + '</div>' : '') +
         '<button class="sn-nff-accept" id="snNffAccept">\u2713 Jeg har lest og forst\u00e5tt</button>' +
       '</div>' +
     '</div>';
