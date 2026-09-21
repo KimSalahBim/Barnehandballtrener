@@ -668,8 +668,8 @@
       var r6 = Math.round((height - 16) * 0.38);
       var r9 = Math.round((height - 16) * 0.57);
       s += '<rect x="8" y="8" width="' + (width-16) + '" height="' + (height-16) + '" rx="4" fill="#3dbde8" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>';
-      s += '<path d="M ' + (cx-r6) + ' ' + cy + ' A ' + r6 + ' ' + r6 + ' 0 0 0 ' + (cx+r6) + ' ' + cy + ' Z" fill="rgba(232,131,14,0.35)" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>';
-      s += '<path d="M ' + (cx-r9) + ' ' + cy + ' A ' + r9 + ' ' + r9 + ' 0 0 0 ' + (cx+r9) + ' ' + cy + '" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-dasharray="6,4"/>';
+      s += '<path d="M ' + (cx-r6) + ' ' + cy + ' A ' + r6 + ' ' + r6 + ' 0 0 1 ' + (cx+r6) + ' ' + cy + ' Z" fill="rgba(232,131,14,0.35)" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>';
+      s += '<path d="M ' + (cx-r9) + ' ' + cy + ' A ' + r9 + ' ' + r9 + ' 0 0 1 ' + (cx+r9) + ' ' + cy + '" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-dasharray="6,4"/>';
       s += '<circle cx="' + cx + '" cy="' + (cy - Math.round(r6 * 7/6)) + '" r="3" fill="rgba(255,255,255,0.8)"/>';
       s += '<rect x="' + (cx-22) + '" y="' + (cy-2) + '" width="44" height="8" rx="1" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="1.5"/>';
     } else if (field === 'small' || field === 'quarter') {
@@ -3002,6 +3002,8 @@ function serializeWorkoutFromState() {
     selectedTheme: null,
     selectedDuration: 60,
     selectedAge: '8-9',
+    durationTouched: false,
+    ageTouched: false,
   };
 
   /** Render the generer-flow panel */
@@ -3101,10 +3103,10 @@ function serializeWorkoutFromState() {
     el.querySelectorAll('[data-age]').forEach(btn => {
       btn.addEventListener('click', () => {
         _gen.selectedAge = btn.dataset.age;
+        _gen.ageTouched = true;
         _gen.selectedTheme = null; // reset theme since available themes change
-        _gen.selectedDuration = (typeof _nff.defaultMinutesForAgeGroup === 'function')
-          ? _nff.defaultMinutesForAgeGroup(_gen.selectedAge)
-          : ((_gen.selectedAge === '10-12' || _gen.selectedAge === '13-16') ? 90 : 60);
+        // Standard 60/90 etter alder, men ikke over et valg treneren eller hendelsen har gjort
+        if (!_gen.durationTouched) _gen.selectedDuration = genDefaultMinutes(_gen.selectedAge);
         renderGenererFlow();
       });
     });
@@ -3125,6 +3127,7 @@ function serializeWorkoutFromState() {
     el.querySelectorAll('[data-dur]').forEach(btn => {
       btn.addEventListener('click', () => {
         _gen.selectedDuration = parseInt(btn.dataset.dur, 10);
+        _gen.durationTouched = true;
         renderGenererFlow();
       });
     });
@@ -3141,8 +3144,19 @@ function serializeWorkoutFromState() {
   }
 
   /** Toggle generer-flow panel */
+  function genDefaultMinutes(ageGroup) {
+    return (typeof _nff.defaultMinutesForAgeGroup === 'function')
+      ? _nff.defaultMinutesForAgeGroup(ageGroup)
+      : ((ageGroup === '10-12' || ageGroup === '13-16') ? 90 : 60);
+  }
+
   function toggleGenererFlow() {
     _gen.open = !_gen.open;
+    // Følg øktas aldersgruppe (f.eks. fra Sesong) til treneren selv velger en annen
+    if (_gen.open && state.ageGroup && !_gen.ageTouched && NFF_THEMES_BY_AGE[state.ageGroup]) {
+      _gen.selectedAge = state.ageGroup;
+      if (!_gen.durationTouched) _gen.selectedDuration = genDefaultMinutes(_gen.selectedAge);
+    }
     renderGenererFlow();
 
     // Update CTA button state
@@ -3170,6 +3184,29 @@ function serializeWorkoutFromState() {
     for (const [cat, pct] of Object.entries(dist)) {
       catMinutes[cat] = Math.round((pct / totalPct) * available);
     }
+    // Temaet skal alltid få en reell øvelse: finn kategoriene der temaet har øvelser for alderen,
+    // og gi den første minst 8 min hvis ingen av dem har nok tid (tas fra smålagsspill)
+    if (themeId) {
+      const themedCats = ['sjef_over_ballen', 'spille_med_og_mot', 'scoringstrening', 'smalagsspill'].filter(c =>
+        EXERCISES.some(ex => ex.category !== 'special' && ex.nffCategory === c &&
+          ex.themes && ex.themes.includes(themeId) && (!ex.ages || ex.ages.includes(ageGroup))));
+      if (themedCats.length && themedCats.every(c => (catMinutes[c] || 0) < 5)) {
+        const c = themedCats[0];
+        const need = 8 - (catMinutes[c] || 0);
+        catMinutes[c] = 8;
+        catMinutes.smalagsspill = (catMinutes.smalagsspill || 0) - need;
+      }
+    }
+    // Blokker under 5 min gir ingen reell øvelse: legg tiden til smålagsspill
+    for (const cat of Object.keys(catMinutes)) {
+      if (cat !== 'smalagsspill' && catMinutes[cat] > 0 && catMinutes[cat] < 5) {
+        catMinutes.smalagsspill = (catMinutes.smalagsspill || 0) + catMinutes[cat];
+        catMinutes[cat] = 0;
+      }
+    }
+    // Avrunding kan gi ±1 min: juster smålagsspill så økta blir nøyaktig så lang som valgt
+    const roundedSum = Object.values(catMinutes).reduce((x, y) => x + y, 0);
+    catMinutes.smalagsspill = (catMinutes.smalagsspill || 0) + (available - roundedSum);
 
     // Find exercises for each category, preferring those matching the theme
     function pickExercise(nffCatId, excludeKeys) {
@@ -3194,7 +3231,16 @@ function serializeWorkoutFromState() {
 
     for (const catId of categoryOrder) {
       let remaining = catMinutes[catId] || 0;
-      if (remaining <= 0) continue;
+      if (remaining <= 0) {
+        // Drikkepausen skal med selv om kategorien er tom
+        if (catId === 'spille_med_og_mot') {
+          const drink0 = makeBlock('single');
+          drink0.a.exerciseKey = 'drink';
+          drink0.a.minutes = drinkMin;
+          blocks.push(drink0);
+        }
+        continue;
+      }
 
       // For large allocations, try to pick 2 exercises
       const numExercises = remaining >= 20 ? 2 : 1;
@@ -4109,7 +4155,13 @@ function serializeWorkoutFromState() {
 
     // If duration provided, set up generer-flow defaults
     if (opts.duration) {
+      // Hendelsens faktiske halltid vinner over standarden
       _gen.selectedDuration = opts.duration;
+      _gen.durationTouched = true;
+    }
+    if (opts.ageGroup && NFF_THEMES_BY_AGE[opts.ageGroup]) {
+      _gen.selectedAge = opts.ageGroup;
+      _gen.ageTouched = false;
     }
 
     // Render fresh state

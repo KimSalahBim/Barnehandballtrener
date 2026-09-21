@@ -7585,7 +7585,7 @@
     var woAge = workoutAgeGroupFromSeason();
 
     window.sesongWorkout.init(container, embeddedWorkoutPlayers, {
-      minutes: ev.duration_minutes || 60,
+      minutes: ev.duration_minutes || defaultTrainingMinutes(),
       ageGroup: woAge,
       date: ev.start_time ? ev.start_time.slice(0, 10) : '',
       eventId: ev.id,
