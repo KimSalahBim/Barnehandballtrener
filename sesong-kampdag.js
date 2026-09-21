@@ -70,12 +70,31 @@
   let kdDragState = null;
   const KD_DRAG_THRESHOLD = 8;
 
-  function getRotatingKeeper(seg, idx) {
+  function onCourt4(idx) {
+    const slots = getActiveSlots() || [];
     const sm = getSlotMap(idx);
-    if (sm && sm.slots && sm.slots.GK) return sm.slots.GK;
-    if (kdRotatingKeepers[idx] !== undefined) return kdRotatingKeepers[idx];
-    if (!seg.lineup || !seg.lineup.length) return null;
-    return seg.lineup[idx % seg.lineup.length];
+    return slots.map(sl => sm.slots[sl.key]).filter(Boolean);
+  }
+  function keeper4(idx) {
+    const counts = {};
+    let k = null;
+    for (let i = 0; i <= idx; i++) {
+      const court = onCourt4(i);
+      if (!court.length) { k = null; continue; }
+      const ov = kdRotatingKeepers[i];
+      if (ov && court.includes(ov)) k = ov;
+      else {
+        const seg = lastBest && lastBest.segments[i];
+        const order = (seg && seg.lineup) || [];
+        const rank = id => { const r = order.indexOf(id); return r === -1 ? 999 : r; };
+        const prevK = k; k = court.slice().sort((a, b) => (counts[a] || 0) - (counts[b] || 0) || ((a === prevK) - (b === prevK)) || rank(a) - rank(b) || (a < b ? -1 : 1))[0];
+      }
+      counts[k] = (counts[k] || 0) + 1;
+    }
+    return k;
+  }
+  function getRotatingKeeper(seg, idx) {
+    return keeper4(idx);
   }
 
   function renderRotatingKeeperBadge(container, segIdx, pid, idToName) {
@@ -96,15 +115,11 @@
       if (!btn || !container.contains(btn)) return;
 
       const segIdx = parseInt(btn.dataset.seg, 10);
-      const seg = best.segments[segIdx];
-      if (!seg || !seg.lineup.length) return;
 
-      const current = getRotatingKeeper(seg, segIdx);
-      const currentPos = seg.lineup.indexOf(current);
-      const nextId = seg.lineup[(currentPos + 1) % seg.lineup.length];
-      const sm = getSlotMap(segIdx);
-      const nextSlot = Object.keys(sm.slots || {}).find(k => sm.slots[k] === nextId);
-      if (nextSlot && nextSlot !== 'GK') swapFieldSlots(segIdx, 'GK', nextSlot);
+      const current = keeper4(segIdx);
+      const court = onCourt4(segIdx);
+      if (!court.length) return;
+      const nextId = court[(court.indexOf(current) + 1) % court.length];
       kdRotatingKeepers[segIdx] = nextId;
       if (lastBest) renderKampdagOutput(lastPresent, lastBest, lastP, lastT);
       else renderRotatingKeeperBadge(container, segIdx, nextId, idToName);
@@ -140,7 +155,7 @@
 
   // Formation presets per format
   const FORMATIONS = {
-    4: { '4-er': [1,0,2] },
+    4: { '4-er': [2,0,2] },
     5: { '2-2': [2,0,2], '1-2-1': [1,1,2] },
     6: { '3-2': [3,0,2], '2-2-1': [2,1,2] },
     7: { '3-2-1': [3,1,2], '4-2': [4,0,2] },
@@ -149,12 +164,12 @@
   // Slot layouts for visual pitch rendering (drag & drop)
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
-    // ── 4-er: 3 outfield (keeper rotates — shown in own goal on the interactive court) ──
+    // ── 4-er: 2 wings + 2 backs. No keeper slot: the keeper is a per-period role on one player (keeper4) ──
     '4-er': [
-      { key:'VK',  label:'VK', zone:'A', x:12, y:30 },
-      { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
-      { key:'HK',  label:'HK', zone:'A', x:88, y:30 },
-      { key:'GK',  label:'K',  zone:'K', x:50, y:88 },
+      { key:'VK',  label:'VK', zone:'A', x:10, y:30 },
+      { key:'VB',  label:'VB', zone:'F', x:32, y:50 },
+      { key:'HB',  label:'HB', zone:'F', x:68, y:50 },
+      { key:'HK',  label:'HK', zone:'A', x:90, y:30 },
     ],
     // ── 5-er ──────────────────────────────────────────────────
     '2-2': [
@@ -850,6 +865,7 @@
     ensureSlotOverride(si);
     const m = kdSlotOverrides[si];
     const fieldPid = m.slots[fieldSlot];
+    if ((parseInt($('skdFormat')?.value, 10) || 7) === 4 && fieldPid && fieldPid === keeper4(si)) kdRotatingKeepers[si] = benchPid;
     m.slots[fieldSlot] = benchPid;
     const bi = m.bench.indexOf(benchPid);
     if (bi !== -1) m.bench.splice(bi, 1);
@@ -863,6 +879,7 @@
 
   function resetAllSlotOverrides() {
     kdSlotOverrides = {};
+    kdRotatingKeepers = {};
     renderKampdagOutput(lastPresent, lastBest, lastP, lastT);
   }
 
@@ -895,6 +912,7 @@
         }
       }
       tgt.bench = lastPresent.filter(p => !lastBest.segments[ti].lineup.includes(p.id)).map(p => p.id);
+    if ((parseInt($('skdFormat')?.value, 10) || 7) === 4) { const kk = keeper4(si); if (kk && Object.values(tgt.slots).includes(kk)) kdRotatingKeepers[si + 1] = kk; }
     }
     renderKampdagOutput(lastPresent, lastBest, lastP, lastT);
   }
@@ -2143,12 +2161,13 @@
           const name = pid ? idToName[pid] : '?';
           const isK = slot.zone === 'K';
           const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
-          const cls = (bubbleCls[slot.zone] || '') + (prefW ? ' kd-pref-warn' : '');
+          const k4 = format === 4 && pid && pid === keeper4(0);
+          const cls = (bubbleCls[slot.zone] || '') + (prefW ? ' kd-pref-warn' : '') + (k4 ? ' kd-bb-keeper4' : '');
           const hasAv0 = pid && idToAvatar[pid];
           return `<div class="kd-pos-slot" data-seg="0" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.zone === 'K' ? 92 : slot.y}%;">
             <span class="kd-pos-label">${slot.label}</span>
             <div class="kd-pos-bubble ${cls}" data-seg="0" data-slot="${slot.key}"${hasAv0 ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
-              ${hasAv0 ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
+              ${hasAv0 ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label + (k4 ? ' \ud83e\udde4' : '')) + '</span>'}
             </div>${hasAv0 ? '<span class="kd-av-name" style="position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;pointer-events:none;">' + escapeHtml(name) + '</span>' : ''}</div>`;
         }).join('');
 
@@ -2167,7 +2186,7 @@
                   ${ov0 ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                  ${format === 4 && rotatingKeeper0 ? `<button class="kd-rotating-keeper-btn" data-seg="0" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="0">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper0] || rotatingKeeper0)}</span></button>` : (kn0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn0}</span>` : '')}
+                  ${format === 4 && rotatingKeeper0 ? `<button class="kd-rotating-keeper-btn" data-seg="0" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="0">\ud83e\udde4 Keeper i forsvar: ${escapeHtml(idToName[rotatingKeeper0] || rotatingKeeper0)}</span></button>` : (kn0 ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn0}</span>` : '')}
                   ${ov0 && best.segments.length > 1 ? `<button class="kd-copy-btn" data-action="skdcopy" data-seg="0">Kopier til alle</button>` : ''}
                   ${ov0 ? `<button class="kd-reset-btn" data-action="skdreset" data-seg="0">\u21ba</button>` : ''}
                   
@@ -2176,6 +2195,7 @@
               <div class="kd-pitch-wrap ${slotSizeCls}">
                 <div class="kd-pitch-field">${pitchSVG}${slotsHtml0}</div>
               </div>
+              ${format === 4 ? '<div class="kd-keeper4-help" style="font-size:12px;color:#94a3b8;margin:6px 4px 2px;">\ud83e\udde4 Lilla = keeper i forsvar. N\u00e5r laget vinner ballen, er keeperen med i angrep. Trykk p\u00e5 merket \u00f8verst for \u00e5 bytte keeper.</div>' : ''}
               <div class="kd-bench-area"><span class="kd-bench-label">Benk:</span>${benchHtml0 || '<span style="color:#64748b;font-size:10px;">Ingen</span>'}</div>
             </div>
 
@@ -2209,12 +2229,13 @@
             const isK = slot.zone === 'K';
             const isNew = pid && newIds.has(pid);
             const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
-            const cls = (bubbleCls[slot.zone] || '') + (isNew ? ' kd-is-new' : '') + (prefW ? ' kd-pref-warn' : '');
+            const k4 = format === 4 && pid && pid === keeper4(idx);
+            const cls = (bubbleCls[slot.zone] || '') + (isNew ? ' kd-is-new' : '') + (prefW ? ' kd-pref-warn' : '') + (k4 ? ' kd-bb-keeper4' : '');
             const hasAv = pid && idToAvatar[pid];
             return `<div class="kd-pos-slot" data-seg="${idx}" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.zone === 'K' ? 92 : slot.y}%;">
               <span class="kd-pos-label">${slot.label}</span>
               <div class="kd-pos-bubble ${cls}" data-seg="${idx}" data-slot="${slot.key}"${hasAv ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
-                ${hasAv ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
+                ${hasAv ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label + (k4 ? ' \ud83e\udde4' : '')) + '</span>'}
               </div>${hasAv ? '<span class="kd-av-name" style="position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;pointer-events:none;">' + escapeHtml(name) + '</span>' : ''}</div>`;
           }).join('');
 
@@ -2237,7 +2258,7 @@
                 ${ov ? '<span class="kd-override-badge">\u270f\ufe0f Tilpasset</span>' : ''}
               </div>
               <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (kn ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn}</span>` : '')}
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 Keeper i forsvar: ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (kn ? `<span style="background:rgba(168,85,247,0.15);padding:4px 8px;border-radius:999px;font-size:11px;color:#c084fc;font-weight:600;">${kn}</span>` : '')}
                 ${ov && !isLast ? `<button class="kd-copy-btn" data-action="skdcopy" data-seg="${idx}">Kopier til alle</button>` : ''}
                 ${ov ? `<button class="kd-reset-btn" data-action="skdreset" data-seg="${idx}">\u21ba</button>` : ''}
                 
@@ -2321,7 +2342,7 @@
             <div class="group-card" style="margin-bottom:12px;">
               <div class="group-header" style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="group-name">Minutt ${ev.minute}</div>
-                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">Keeper: ${escapeHtml(keeperName)}</div>` : '')}
+                ${format === 4 && rotatingKeeper ? `<button class="kd-rotating-keeper-btn" data-seg="${idx}" title="Trykk for \u00e5 bytte keeper"><span class="kd-rotating-keeper-badge" data-seg="${idx}">\ud83e\udde4 Keeper i forsvar: ${escapeHtml(idToName[rotatingKeeper] || rotatingKeeper)}</span></button>` : (keeperName ? `<div style="background:var(--bg);padding:6px 10px;border-radius:999px;font-size:12px;opacity:0.85;">Keeper: ${escapeHtml(keeperName)}</div>` : '')}
               </div>
               <div class="group-players" style="gap:6px;">${empty}${ins}${outs}</div>
             </div>`;
@@ -2563,7 +2584,7 @@
       const dots0 = slots.map(s => {
         const pid = sm0.slots[s.key];
         const nm = pid ? escapeHtml(idToName[pid] || pid) : '?';
-        return `<div style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:2;"><div style="width:${startB}px;height:${startB}px;border-radius:50%;background:${bbg[s.zone]};border:1.5px solid ${bbd[s.zone]};display:flex;align-items:center;justify-content:center;"><span style="font-size:${startBfont}px;font-weight:500;color:${bc[s.zone]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${startBmax}px;">${nm}</span></div></div>`;
+        return `<div style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:2;"><div style="width:${startB}px;height:${startB}px;border-radius:50%;background:${bbg[(format===4&&pid&&pid===keeper4(0))?"K":s.zone]};border:1.5px solid ${bbd[(format===4&&pid&&pid===keeper4(0))?"K":s.zone]};display:flex;align-items:center;justify-content:center;"><span style="font-size:${startBfont}px;font-weight:500;color:${bc[s.zone]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${startBmax}px;">${nm}</span></div></div>`;
       }).join('');
       const benchNames0 = sm0.bench.map(pid => escapeHtml(idToName[pid] || pid)).join(' \u00b7 ') || '\u2014';
       startSection = `
@@ -2642,7 +2663,7 @@
           const pid = sm.slots[s.key]; const nm = pid ? escapeHtml(idToName[pid]||pid) : '?';
           const isNew = pid && newIds.has(pid);
           const outline = isNew ? 'box-shadow:0 0 0 2px #fbbf24;' : '';
-          return `<div style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:2;"><div style="width:${bytteB}px;height:${bytteB}px;border-radius:50%;background:${bbg[s.zone]};border:1.5px solid ${bbd[s.zone]};display:flex;align-items:center;justify-content:center;${outline}"><span style="font-size:${bytteBfont}px;font-weight:500;color:${bc[s.zone]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${bytteBmax}px;">${nm}</span></div></div>`;
+          return `<div style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:2;"><div style="width:${bytteB}px;height:${bytteB}px;border-radius:50%;background:${bbg[(format===4&&pid&&pid===keeper4(idx))?"K":s.zone]};border:1.5px solid ${bbd[(format===4&&pid&&pid===keeper4(idx))?"K":s.zone]};display:flex;align-items:center;justify-content:center;${outline}"><span style="font-size:${bytteBfont}px;font-weight:500;color:${bc[s.zone]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${bytteBmax}px;">${nm}</span></div></div>`;
         }).join('');
         body = `<div class="cpitch" style="position:relative;width:100%;height:${bytteH}px;background:linear-gradient(180deg,#1a5c1a,#145214);overflow:hidden;border-radius:6px;"><div style="position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(255,255,255,0.1);"></div>${dots}</div>`;
         const benchNames = sm.bench.map(pid => escapeHtml(idToName[pid]||pid)).join(', ') || '\u2014';
