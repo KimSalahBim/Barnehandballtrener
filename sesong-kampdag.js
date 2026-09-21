@@ -71,6 +71,8 @@
   const KD_DRAG_THRESHOLD = 8;
 
   function getRotatingKeeper(seg, idx) {
+    const sm = getSlotMap(idx);
+    if (sm && sm.slots && sm.slots.GK) return sm.slots.GK;
     if (kdRotatingKeepers[idx] !== undefined) return kdRotatingKeepers[idx];
     if (!seg.lineup || !seg.lineup.length) return null;
     return seg.lineup[idx % seg.lineup.length];
@@ -100,8 +102,12 @@
       const current = getRotatingKeeper(seg, segIdx);
       const currentPos = seg.lineup.indexOf(current);
       const nextId = seg.lineup[(currentPos + 1) % seg.lineup.length];
+      const sm = getSlotMap(segIdx);
+      const nextSlot = Object.keys(sm.slots || {}).find(k => sm.slots[k] === nextId);
+      if (nextSlot && nextSlot !== 'GK') swapFieldSlots(segIdx, 'GK', nextSlot);
       kdRotatingKeepers[segIdx] = nextId;
-      renderRotatingKeeperBadge(container, segIdx, nextId, idToName);
+      if (lastBest) renderKampdagOutput(lastPresent, lastBest, lastP, lastT);
+      else renderRotatingKeeperBadge(container, segIdx, nextId, idToName);
     };
 
     container.__kdRotatingKeeperHandler = handler;
@@ -143,7 +149,7 @@
   // Slot layouts for visual pitch rendering (drag & drop)
   // Each slot has: key (unique), label (display), zone (F/M/A/K), x/y (% position)
   const SLOT_LAYOUTS = {
-    // ── 4-er: 3 outfield (keeper rotates — shown in own half) ──
+    // ── 4-er: 3 outfield (keeper rotates — shown in own goal on the interactive court) ──
     '4-er': [
       { key:'VK',  label:'VK', zone:'A', x:12, y:30 },
       { key:'MB',  label:'MB', zone:'F', x:50, y:46 },
@@ -2118,8 +2124,9 @@
               stroke-width="2" stroke-dasharray="15 9" opacity="0.9"/>
         <line x1="190" y1="150" x2="210" y2="150" stroke="white" stroke-width="3"/>
         <line x1="0" y1="410" x2="400" y2="410" stroke="white" stroke-width="2.5"/>
-        <path d="M 170 410 A 30 30 0 0 1 230 410" fill="none" stroke="white" stroke-width="2"/>
-        <circle cx="200" cy="410" r="4" fill="white"/>
+        <path d="M 130 500 A 70 70 0 0 1 270 500 Z" fill="#e8830e" opacity="0.85"/>
+        <path d="M 130 500 A 70 70 0 0 1 270 500" fill="none" stroke="white" stroke-width="2.5"/>
+        <polyline points="170,500 170,492 230,492 230,500" fill="none" stroke="white" stroke-width="2.5"/>
       </svg>`;
 
       const bubbleCls = { F: 'kd-bb-f', M: 'kd-bb-m', A: 'kd-bb-a', K: 'kd-bb-k' };
@@ -2138,7 +2145,7 @@
           const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
           const cls = (bubbleCls[slot.zone] || '') + (prefW ? ' kd-pref-warn' : '');
           const hasAv0 = pid && idToAvatar[pid];
-          return `<div class="kd-pos-slot" data-seg="0" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.y}%;">
+          return `<div class="kd-pos-slot" data-seg="0" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.zone === 'K' ? 92 : slot.y}%;">
             <span class="kd-pos-label">${slot.label}</span>
             <div class="kd-pos-bubble ${cls}" data-seg="0" data-slot="${slot.key}"${hasAv0 ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
               ${hasAv0 ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
@@ -2204,7 +2211,7 @@
             const prefW = pid && !isK && isSlotOutOfPref(pid, slot.key);
             const cls = (bubbleCls[slot.zone] || '') + (isNew ? ' kd-is-new' : '') + (prefW ? ' kd-pref-warn' : '');
             const hasAv = pid && idToAvatar[pid];
-            return `<div class="kd-pos-slot" data-seg="${idx}" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.y}%;">
+            return `<div class="kd-pos-slot" data-seg="${idx}" data-slotkey="${slot.key}" style="left:${slot.x}%;top:${slot.zone === 'K' ? 92 : slot.y}%;">
               <span class="kd-pos-label">${slot.label}</span>
               <div class="kd-pos-bubble ${cls}" data-seg="${idx}" data-slot="${slot.key}"${hasAv ? ' style="background-image:url(/avatars/' + idToAvatar[pid] + ');background-size:cover;background-position:center;border-color:rgba(255,255,255,0.6);"' : ''}>
                 ${hasAv ? '' : '<span class="kd-p-name">' + escapeHtml(name) + '</span><span class="kd-p-hint">' + (isK ? '\ud83e\udde4' : slot.label) + '</span>'}
