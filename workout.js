@@ -173,29 +173,19 @@
     const actual = { sjef_over_ballen: 0, spille_med_og_mot: 0, smalagsspill: 0, scoringstrening: 0 };
     let totalMin = 0;
 
-    for (const block of blocks) {
-      const trackA = block.a || block;
-      const meta = EX_BY_KEY.get(trackA.exerciseKey);
-      if (!meta || meta.category === 'special') continue;
+    function addTrack(track) {
+      if (!track) return;
+      const meta = EX_BY_KEY.get(track.exerciseKey);
+      if (!meta || meta.category === 'special') return;
       const cat = meta.nffCategory;
-      const minutes = trackA.minutes || meta.defaultMin || 0;
-      if (cat && actual.hasOwnProperty(cat)) {
-        actual[cat] += minutes;
-      }
+      const minutes = track.minutes || meta.defaultMin || 0;
+      if (cat && actual.hasOwnProperty(cat)) actual[cat] += minutes;
       totalMin += minutes;
+    }
 
-      // Parallell: bruk den lengste varigheten (allerede telt via track A),
-      // men kategoriser B-spor separat om det er en annen kategori
-      if (block.kind === 'parallel' && block.b) {
-        const metaB = EX_BY_KEY.get(block.b.exerciseKey);
-        if (metaB && metaB.nffCategory && metaB.nffCategory !== cat) {
-          // B-spor kjører samtidig, bidrar til kategori men ikke totaltid
-          const minB = block.b.minutes || metaB.defaultMin || 0;
-          if (actual.hasOwnProperty(metaB.nffCategory)) {
-            actual[metaB.nffCategory] += minB;
-          }
-        }
-      }
+    for (const block of blocks) {
+      addTrack(block.a || block);
+      if (block.kind === 'parallel' && block.b) addTrack(block.b);
     }
 
     const recommended = NFF_TIME_DISTRIBUTION[ageGroup] || NFF_TIME_DISTRIBUTION['8-9'];
@@ -223,7 +213,7 @@
     blockId: null,   // which block triggered
     track: null,     // 'a' or 'b'
     onSelect: null,  // callback(exerciseKey)
-    ctxOverride: null, // { ageGroup, blocks } — set by sesong-workout.js via openExercisePicker
+    ctxOverride: null, // { ageGroup, blocks, theme } — set by sesong-workout.js via openExercisePicker
   };
 
   /** Group exercises by NFF category for bottom sheet display */
@@ -2958,41 +2948,6 @@ function serializeWorkoutFromState() {
   const NFF_TEMPLATES = (_nff && _nff.NFF_TEMPLATES) || {};
 
 
-  // Legacy SUGGESTIONS (used as fallback only)
-  const SUGGESTIONS = [
-    // 60 min
-    [
-      { key: 'chain_tag', min: 8 },
-      { key: 'pass_run', min: 10 },
-      { key: '1v1', min: 10 },
-      { key: 'drink', min: 2 },
-      { key: 'ssg', min: 20 },
-      { key: 'shot', min: 10 }
-    ],
-    // 75 min
-    [
-      { key: 'chain_tag', min: 8 },
-      { key: 'pass_pair', min: 10 },
-      { key: 'drink', min: 2 },
-      { parallel: true, a: { key: '2v1', min: 12 }, b: { key: 'keeper', min: 12 } },
-      { key: 'ssg', min: 25 },
-      { key: 'shot_race', min: 8 },
-      { key: 'drink', min: 2 },
-      { key: 'shot', min: 8 }
-    ],
-    // 90 min
-    [
-      { key: 'tag', min: 10 },
-      { key: 'pass_run', min: 10 },
-      { key: 'dribbling', min: 10 },
-      { key: 'drink', min: 2 },
-      { key: 'kontring', min: 12 },
-      { key: '3v2', min: 12 },
-      { key: 'ssg', min: 28 },
-      { key: 'shot', min: 6 }
-    ]
-  ];
-
   // =========================================================
   // "LAG EN TRENINGSØKT FOR MEG" — NFF-aware generator
   // =========================================================
@@ -3062,7 +3017,7 @@ function serializeWorkoutFromState() {
 
     // Duration selector
     let durHtml = '<div class="wo-gen-label">Varighet</div><div class="wo-gen-durations">';
-    for (const dur of [45, 60, 75, 90]) {
+    for (const dur of [45, 60, 90]) {
       const sel = _gen.selectedDuration === dur ? ' wo-gen-pill-sel' : '';
       durHtml += '<button type="button" class="wo-gen-pill' + sel + '" data-dur="' + dur + '">' + dur + ' min</button>';
     }
@@ -3167,10 +3122,10 @@ function serializeWorkoutFromState() {
   }
 
   /**
-   * NFF-aware workout generator.
-   * Builds a complete workout based on theme, duration, and age group.
+   * Pure NFF workout builder. Returns a blocks array, or null if fewer than 2 blocks.
+   * Does not touch `state`.
    */
-  function generateNffWorkout(themeId, durationMin, ageGroup) {
+  function buildNffWorkoutBlocks(themeId, durationMin, ageGroup) {
     const dist = NFF_TIME_DISTRIBUTION[ageGroup] || NFF_TIME_DISTRIBUTION['8-9'];
     const drinkMin = 2;
     const available = durationMin - drinkMin;
@@ -3266,9 +3221,20 @@ function serializeWorkoutFromState() {
       }
     }
 
-    // Fallback: if no blocks generated, use old SUGGESTIONS
-    if (blocks.length < 2) {
-      suggestWorkoutLegacy();
+    if (blocks.length < 2) return null;
+    return blocks;
+  }
+
+  /**
+   * NFF-aware workout generator.
+   * Builds a complete workout based on theme, duration, and age group.
+   */
+  function generateNffWorkout(themeId, durationMin, ageGroup) {
+    const blocks = buildNffWorkoutBlocks(themeId, durationMin, ageGroup);
+    if (!blocks) {
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('Fant ikke nok \u00f8velser for dette valget. Pr\u00f8v et annet tema eller en mal.', 'warning');
+      }
       return;
     }
 
@@ -3287,13 +3253,6 @@ function serializeWorkoutFromState() {
         'success'
       );
     }
-  }
-
-  /** Legacy suggest (fallback from old SUGGESTIONS array) */
-  function suggestWorkoutLegacy() {
-    const idx = Math.floor(Math.random() * SUGGESTIONS.length);
-    const tpl = SUGGESTIONS[idx];
-    loadTemplate({ blocks: tpl.map(s => s.parallel ? s : { key: s.key, min: s.min }), title: 'Forslag' });
   }
 
   /** Load a pre-built template into the editor */
@@ -3330,12 +3289,7 @@ function serializeWorkoutFromState() {
 
   // Keep old name for backward compat (button binding)
   function suggestWorkout() {
-    // If generer-flow is available, toggle it open instead of random generation
-    if ($('woGenererPanel')) {
-      toggleGenererFlow();
-    } else {
-      suggestWorkoutLegacy();
-    }
+    if ($('woGenererPanel')) toggleGenererFlow();
   }
 
   // -------------------------
@@ -4216,6 +4170,8 @@ function serializeWorkoutFromState() {
     displayName: displayName,
     saveWorkoutToDb: _woSaveToDb,
     clampInt: clampInt,
+    buildNffWorkoutBlocks: buildNffWorkoutBlocks,
+    migrateExerciseKey: migrateExerciseKey,
   };
 
 })();

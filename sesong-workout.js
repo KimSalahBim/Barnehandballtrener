@@ -90,7 +90,7 @@
 
   function migrateEx(raw) {
     return {
-      exerciseKey:       raw.exerciseKey || 'tag',
+      exerciseKey:       sh().migrateExerciseKey(raw.exerciseKey || 'tag'),
       customName:        String(raw.customName || ''),
       minutes:           clampInt(raw.minutes, 0, 300, 10),
       groupCount:        clampInt(raw.groupCount, 2, 6, 2),
@@ -224,7 +224,7 @@
         '<button type="button" class="sw-back-btn" id="swBackBtn" title="Tilbake">' +
           '<i class="fas fa-arrow-left"></i></button>' +
         '<div class="sw-header-info">' +
-          '<div class="sw-header-title">' + esc(_swMeta.title || 'Treningøkt') + '</div>' +
+          '<div class="sw-header-title">' + esc(_swMeta.title || 'Treningsøkt') + '</div>' +
           '<div class="sw-header-sub">' +
             (_swMeta.date ? esc(_swMeta.date) + ' &middot; ' : '') +
             '<strong id="swTotalMin">' + totalMin() + '</strong> min ' +
@@ -324,6 +324,66 @@
     '</div>';
   }
 
+  function hasBlocksBeyondDefaultTag() {
+    if (!_swBlocks || _swBlocks.length === 0) return false;
+    if (_swBlocks.length !== 1) return true;
+    var b = _swBlocks[0];
+    return !(b.kind === 'single' && b.a && b.a.exerciseKey === 'tag');
+  }
+
+  function askConfirm(message, onYes) {
+    var old = document.getElementById('swConfirmOverlay');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+    var overlay = document.createElement('div');
+    overlay.id = 'swConfirmOverlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10050;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:14px;padding:18px 16px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.18);">' +
+        '<div style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:16px;">' + esc(message) + '</div>' +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+          '<button type="button" class="btn-secondary" id="swConfirmNo">Avbryt</button>' +
+          '<button type="button" class="btn-primary" id="swConfirmYes">Erstatt</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    function close() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    overlay.querySelector('#swConfirmNo').addEventListener('click', close);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+    overlay.querySelector('#swConfirmYes').addEventListener('click', function() {
+      close();
+      if (typeof onYes === 'function') onYes();
+    });
+  }
+
+  function runSesongGenerate() {
+    var shared = sh();
+    if (!shared || typeof shared.buildNffWorkoutBlocks !== 'function') return;
+    var themeId = _swMeta.theme;
+    if (!themeId) return;
+    var durationMin = _swMeta.duration || 60;
+    var ageGroup = _swMeta.ageGroup || '8-9';
+    var built = shared.buildNffWorkoutBlocks(themeId, durationMin, ageGroup);
+    if (!built) {
+      if (window.showNotification)
+        window.showNotification('Fant ikke nok øvelser for dette valget. Prøv et annet tema eller en mal.', 'warning');
+      return;
+    }
+    _swBlocks = loadBlocks(built);
+    _swGroupsCache.clear();
+    _swParPickB.clear();
+    _swExpandedId = null;
+    _swMeta.theme = themeId;
+    var pb = document.getElementById('swGenPanelBody');
+    if (pb) pb.style.display = 'none';
+    renderBlocks();
+    scheduleSave();
+    var themeMeta = shared.resolveTheme ? shared.resolveTheme(themeId) : (shared.NFF_THEME_BY_ID || {})[themeId];
+    var label = themeMeta ? themeMeta.label : 'Treningsøkt';
+    if (window.showNotification)
+      window.showNotification(label + ' (' + durationMin + ' min) generert – juster fritt', 'success');
+  }
+
   function renderGenPanel() {
     var el = document.getElementById('swGenPanelBody');
     if (!el) return;
@@ -384,7 +444,10 @@
       tplHtml += '</div></div>';
     }
 
-    el.innerHTML = temaHtml + goalsHtml + tplHtml;
+    el.innerHTML = temaHtml + goalsHtml +
+      '<button type="button" class="wo-gen-submit" id="swGenSubmit"' +
+        (_swMeta.theme ? '' : ' disabled') + '>Generer treningsøkt</button>' +
+      tplHtml;
 
     // ── Bindinger ───────────────────────────────────────────
     var themeBtns = el.querySelectorAll('[data-swTheme]');
@@ -398,6 +461,18 @@
           renderGenPanel(); // re-render for sel-state + læringsmål
         });
       })(themeBtns[k]);
+    }
+
+    var genSubmit = el.querySelector('#swGenSubmit');
+    if (genSubmit) {
+      genSubmit.addEventListener('click', function() {
+        if (!_swMeta.theme || genSubmit.disabled) return;
+        if (hasBlocksBeyondDefaultTag()) {
+          askConfirm('Erstatte øvelsene i økta?', function() { runSesongGenerate(); });
+        } else {
+          runSesongGenerate();
+        }
+      });
     }
 
     var tplBtns = el.querySelectorAll('[data-swTpl]');
@@ -957,7 +1032,7 @@
           _swGroupsCache.delete(b.id + ':' + track);
           scheduleSave();
           renderBlocks();
-        }, { ageGroup: _swMeta.ageGroup, blocks: _swBlocks });
+        }, { ageGroup: _swMeta.ageGroup, blocks: _swBlocks, theme: _swMeta.theme });
       });
     }
 
@@ -1486,6 +1561,8 @@
   function destroy() {
     _swActive = false; // [Bug 5] FØR alt annet
     if (_swSaveTimer) { clearTimeout(_swSaveTimer); _swSaveTimer = null; }
+    var overlay = document.getElementById('swConfirmOverlay');
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
     if (_swDirty && _swCallbacks.onSave) {
       _swCallbacks.onSave(buildPayload())
         .then(function(r) { if (r && r.id && !_swDbId) _swDbId = r.id; })
