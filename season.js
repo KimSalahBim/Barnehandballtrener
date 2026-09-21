@@ -6397,6 +6397,16 @@
 
     html += '</div>';
 
+    if (ev.type === 'training') {
+      var hasWorkout = _woEventIds && _woEventIds.has(ev.id);
+      var woLabel = hasWorkout ? 'Rediger trenings\u00f8kt' : 'Planlegg trenings\u00f8kt';
+      var woIcon = hasWorkout ? 'fa-pen' : 'fa-dumbbell';
+      html +=
+        '<button class="btn-primary" id="snOpenWorkout" style="width:100%; margin-top:12px;">' +
+          '<i class="fas ' + woIcon + '" style="margin-right:6px;"></i>' + woLabel +
+        '</button>';
+    }
+
     // Edit/delete
     html +=
       '<div class="sn-detail-actions">' +
@@ -6634,18 +6644,12 @@
           '<button class="btn-primary" id="snSaveAttendance" style="width:100%; margin-top:12px;">' +
             '<i class="fas fa-check" style="margin-right:5px;"></i>Lagre oppm\u00f8te' +
           '</button>';
-        var hasWorkout = _woEventIds && _woEventIds.has(ev.id);
-        var woLabel = hasWorkout ? 'Rediger trenings\u00f8kt' : 'Planlegg trenings\u00f8kt';
-        var woIcon = hasWorkout ? 'fa-pen' : 'fa-dumbbell';
-        html +=
-          '<button class="btn-secondary" id="snOpenWorkout" style="width:100%; margin-top:8px;">' +
-            '<i class="fas ' + woIcon + '" style="margin-right:6px;"></i>' + woLabel +
-          '</button>';
       }
     } else {
       html +=
         '<div style="margin-top:16px; padding:16px; text-align:center; color:var(--text-400); font-size:13px;">' +
-          'Legg til spillere i spillerstallen for \u00e5 registrere ' + (isMatch ? 'tropp' : 'oppm\u00f8te') + '.' +
+          (isMatch ? 'Tropp registreres n\u00e5r laget har spillere.' : 'Oppm\u00f8te registreres n\u00e5r laget har spillere.') +
+          '<button class="btn-secondary" id="snGoToRoster" style="width:100%; margin-top:12px;">Legg til spillere i Stall</button>' +
         '</div>';
     }
 
@@ -6976,32 +6980,39 @@
       });
     }
 
-    // Planlegg treningsøkt (training events)
+    // Planlegg treningsøkt (training events; works with zero players)
     if ($('snOpenWorkout')) {
       $('snOpenWorkout').addEventListener('click', function() {
-        // Gather present player IDs from UI
-        var attItems = root.querySelectorAll('.sn-att-item.present');
-        var presentIds = {};
-        for (var ai = 0; ai < attItems.length; ai++) {
-          presentIds[attItems[ai].getAttribute('data-pid')] = true;
-        }
-
-        // Build player objects for present players
         var presentPlayers = [];
-        for (var pi = 0; pi < seasonPlayers.length; pi++) {
-          if (presentIds[seasonPlayers[pi].player_id]) {
-            presentPlayers.push({
-              id: seasonPlayers[pi].player_id,
-              name: seasonPlayers[pi].name,
-              skill_level: seasonPlayers[pi].skill,
-              goalie: seasonPlayers[pi].goalie
-            });
+        var attItems = root.querySelectorAll('.sn-att-item.present');
+        if (attItems.length > 0) {
+          var presentIds = {};
+          for (var ai = 0; ai < attItems.length; ai++) {
+            presentIds[attItems[ai].getAttribute('data-pid')] = true;
+          }
+          for (var pi = 0; pi < seasonPlayers.length; pi++) {
+            if (presentIds[seasonPlayers[pi].player_id]) {
+              presentPlayers.push({
+                id: seasonPlayers[pi].player_id,
+                name: seasonPlayers[pi].name,
+                skill_level: seasonPlayers[pi].skill,
+                goalie: seasonPlayers[pi].goalie
+              });
+            }
           }
         }
 
         embeddedWorkoutEvent = ev;
         embeddedWorkoutPlayers = presentPlayers;
         snView = 'embedded-workout';
+        render();
+      });
+    }
+
+    if ($('snGoToRoster')) {
+      $('snGoToRoster').addEventListener('click', function() {
+        dashTab = 'roster';
+        snView = 'dashboard';
         render();
       });
     }
