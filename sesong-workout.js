@@ -55,6 +55,19 @@
     return (isNaN(n) || n < min || n > max) ? fb : n;
   }
 
+  function autoExerciseGroupCount(participantCount, suggestedGroupSize) {
+    var n = Number(participantCount) || 0;
+    var size = Math.max(2, Number(suggestedGroupSize) || 2);
+    var maxByTwo = Math.floor(n / 2);
+    var maxGroups = Math.min(12, maxByTwo >= 2 ? maxByTwo : 12);
+    var raw = Math.ceil(n / size);
+    var maxFull = Math.floor(n / size);
+    if (maxFull >= 2) raw = Math.min(raw, maxFull);
+    if (raw < 2) raw = 2;
+    if (raw > maxGroups) raw = maxGroups;
+    return raw;
+  }
+
   function uid() {
     return 'sw_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
   }
@@ -93,7 +106,7 @@
       exerciseKey:       sh().migrateExerciseKey(raw.exerciseKey || 'tag'),
       customName:        String(raw.customName || ''),
       minutes:           clampInt(raw.minutes, 0, 300, 10),
-      groupCount:        clampInt(raw.groupCount, 2, 6, 2),
+      groupCount:        clampInt(raw.groupCount, 2, 12, 2),
       groupMode:         raw.groupMode || 'even',
       comment:           String(raw.comment || ''),
       _groupCountManual: !!raw._groupCountManual,
@@ -671,7 +684,7 @@
     var hasInfo    = meta && meta.description && meta.steps;
     var showCust   = ex.exerciseKey === 'custom';
     var mode       = ex.groupMode || 'even';
-    var groupCount = clampInt(ex.groupCount, 2, 6, 2);
+    var groupCount = clampInt(ex.groupCount, 2, 12, 2);
     var hasPl      = _swSelected.size > 0;
     var sgHint     = (meta && meta.suggestedGroupSize)
       ? '<span style="color:#2e8b57;">ℹ️ ' + meta.suggestedGroupSize + ' per gruppe</span>' : '';
@@ -708,7 +721,7 @@
           '<label class="wo-label">Grupper</label>' +
           '<div class="wo-inline">' +
             '<input id="' + idp + '_groups" class="input wo-input" type="number"' +
-              ' min="2" max="6" value="' + groupCount + '" style="max-width:90px;">' +
+              ' min="2" max="12" value="' + groupCount + '" style="max-width:90px;">' +
             '<select id="' + idp + '_mode" class="input wo-input">' +
               '<option value="none"' + (mode === 'none' ? ' selected' : '') + '>Ingen inndeling</option>' +
               '<option value="even"' + (mode === 'even' ? ' selected' : '') + '>Jevne grupper</option>' +
@@ -784,12 +797,12 @@
     }
 
     var groupMode  = ex.groupMode || 'even';
-    var groupCount = clampInt(ex.groupCount, 2, 6, 2);
+    var groupCount = clampInt(ex.groupCount, 2, 12, 2);
 
     // Auto-størrelse fra suggestedGroupSize
     var meta = sh().EX_BY_KEY.get(ex.exerciseKey);
     if (meta && meta.suggestedGroupSize >= 2 && !ex._groupCountManual) {
-      var auto = Math.max(2, Math.min(6, Math.ceil(participants.length / meta.suggestedGroupSize)));
+      var auto = autoExerciseGroupCount(participants.length, meta.suggestedGroupSize);
       groupCount = auto;
       ex.groupCount = auto;
       var gi = document.getElementById(idp + '_groups');
@@ -1070,7 +1083,7 @@
     var groupsInput = q(idp + '_groups');
     if (groupsInput) {
       groupsInput.addEventListener('input', function() {
-        ex.groupCount        = clampInt(groupsInput.value, 2, 6, 2);
+        ex.groupCount        = clampInt(groupsInput.value, 2, 12, 2);
         ex._groupCountManual = true;
         _swGroupsCache.delete(b.id + ':' + track);
         scheduleSave();

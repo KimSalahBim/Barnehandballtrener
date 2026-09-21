@@ -23,7 +23,7 @@ window.NFF_DATA = {
       label1316: '⚔️ Situasjonsøving', short1316: 'Situasjon' },
     { id: 'smalagsspill',      label: '🏟️ Småspill',                 short: 'Spill', color: '#3498db',
       label1316: '🏟️ Spill', short1316: 'Spill' },
-    { id: 'scoringstrening',   label: '🎯 Kast og mottak',           short: 'Kast',  color: '#e74c3c',
+    { id: 'scoringstrening',   label: '🎯 Skudd og avslutning',      short: 'Skudd', color: '#e74c3c',
       label1316: '🎯 Avslutning', short1316: 'Avslutning' },
   ],
 

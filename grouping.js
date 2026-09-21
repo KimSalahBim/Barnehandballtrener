@@ -42,7 +42,7 @@
   // Jevne grupper: snake-draft for nivå-balanse hvis useSkill=true, ellers tilfeldig.
   // Randomiserer gruppe-tilordning via permutasjon slik at "Gruppe 1" ikke alltid får samme posisjon i draften.
   function makeBalancedGroups(players, groupCount, useSkill) {
-    const n = clampInt(groupCount, 2, 6, 2);
+    const n = clampInt(groupCount, 2, 12, 2);
     const list = useSkill ? sortBySkillWithRandomTies(players) : shuffle(players);
 
     const groups = Array.from({ length: n }, () => []);
@@ -64,7 +64,7 @@
   // Krever useSkill=true for å gi mening.
   // Randomiserer hvilke grupper som får ekstra spiller (ikke alltid de første).
   function makeDifferentiatedGroups(players, groupCount, useSkill) {
-    const n = clampInt(groupCount, 2, 6, 2);
+    const n = clampInt(groupCount, 2, 12, 2);
     if (!useSkill) return null;
 
     const list = sortBySkillWithRandomTies(players);

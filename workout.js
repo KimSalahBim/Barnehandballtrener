@@ -33,6 +33,17 @@
     return Math.max(min, Math.min(max, Math.round(n)));
   }
 
+  function autoExerciseGroupCount(participantCount, suggestedGroupSize) {
+    const n = Number(participantCount) || 0;
+    const size = Math.max(2, Number(suggestedGroupSize) || 2);
+    const maxByTwo = Math.floor(n / 2);
+    const maxGroups = Math.min(12, maxByTwo >= 2 ? maxByTwo : 12);
+    let raw = Math.ceil(n / size);
+    const maxFull = Math.floor(n / size);
+    if (maxFull >= 2) raw = Math.min(raw, maxFull);
+    return clampInt(raw, 2, maxGroups, 2);
+  }
+
   function isUseSkillEnabled() {
     const t = document.getElementById('skillToggle');
     return !!(t && t.checked);
@@ -1473,7 +1484,7 @@
     const idp = `wo_${blockId}_${track}`;
     const showCustom = ex.exerciseKey === 'custom';
     const mode = ex.groupMode || 'even';
-    const groupCount = clampInt(ex.groupCount, 2, 6, 2);
+    const groupCount = clampInt(ex.groupCount, 2, 12, 2);
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     const hasInfo = meta && meta.description && meta.steps;
 
@@ -1512,7 +1523,7 @@
           <div class="wo-field wo-groups-settings">
             <label class="wo-label">Grupper</label>
             <div class="wo-inline">
-              <input id="${idp}_groups" class="input wo-input" type="number" min="2" max="6" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
+              <input id="${idp}_groups" class="input wo-input" type="number" min="2" max="12" value="${escapeHtml(String(groupCount))}" style="max-width:90px;">
               <select id="${idp}_mode" class="input wo-input">
                 <option value="none" ${mode === 'none' ? 'selected' : ''}>Ingen inndeling</option>
                 <option value="even" ${mode === 'even' ? 'selected' : ''}>Jevne grupper</option>
@@ -1992,7 +2003,7 @@
 
     if (groups) {
       groups.addEventListener('input', () => {
-        ex.groupCount = clampInt(groups.value, 2, 6, 2);
+        ex.groupCount = clampInt(groups.value, 2, 12, 2);
         ex._groupCountManual = true; // user explicitly set group count
         // grupper stale
         state.groupsCache.delete(`${bid}:${track}`);
@@ -2120,12 +2131,12 @@
     }
 
     const groupMode = String(ex.groupMode || 'even');
-    let groupCount = clampInt(ex.groupCount, 2, 6, 2);
+    let groupCount = clampInt(ex.groupCount, 2, 12, 2);
 
     // Auto-calculate group count from suggestedGroupSize if available
     const meta = EX_BY_KEY.get(ex.exerciseKey);
     if (meta && meta.suggestedGroupSize && meta.suggestedGroupSize >= 2) {
-      const autoCount = Math.max(2, Math.min(6, Math.ceil(participants.length / meta.suggestedGroupSize)));
+      const autoCount = autoExerciseGroupCount(participants.length, meta.suggestedGroupSize);
       // Only auto-set if user hasn't manually overridden (groupCount still at default 2)
       // or if groupCount * suggestedGroupSize is way off from participant count
       if (!ex._groupCountManual) {
@@ -2571,7 +2582,7 @@ function normalizeImportedExercise(ex) {
   out.minutes = clampInt(out.minutes, 0, 300, d.minutes);
 
   // Group settings
-  out.groupCount = clampInt(out.groupCount, 2, 6, d.groupCount);
+  out.groupCount = clampInt(out.groupCount, 2, 12, d.groupCount);
   out.groupMode = (out.groupMode === 'diff' || out.groupMode === 'even') ? out.groupMode : d.groupMode;
 
   // Exercise key — migrate old keys first
