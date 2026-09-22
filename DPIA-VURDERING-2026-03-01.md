@@ -1,9 +1,9 @@
 # DPIA-vurdering: barnehandballtrener.no
 
-**Dato:** 1. mars 2026
-**Behandlingsansvarlig:** Holmvik Utvikling ENK, org.nr. [fyll inn]
+**Dato:** 1. mars 2026 (oppdatert 22. september 2026)
+**Behandlingsansvarlig:** Holmvik Utvikling ENK, org.nr. 937 128 746
 **Kontakt:** barnehandballtrener@gmail.com
-**Versjon:** 1.0
+**Versjon:** 1.1
 
 ---
 
@@ -24,8 +24,9 @@ eller opplysninger om barn.
 ## 2. Tjenestens art
 
 barnehandballtrener.no er et digitalt treningsverktøy for frivillige trenere
-i norsk barnehåndball (6-12 år). Tjenesten genererer bytteplaner for kamper,
-håndterer treningsgrupper, og fører sesongstatistikk (oppmøte, spilletid).
+i norsk håndball. Hovedmålgruppen er barnehåndball (6-12 år), men appen støtter
+også aldersklasser til og med 16 år. Tjenesten genererer bytteplaner for kamper,
+håndterer treningsgrupper og treningsøkter, og fører sesongstatistikk (oppmøte, spilletid).
 
 ---
 
@@ -48,10 +49,12 @@ reidentifiseringsrisikoen lav.
 
 **Nei.**
 
-- Ca. 200 aktive brukere (trenere)
-- Anslagsvis 2000-3000 spillerfornavn totalt
+- Tjenesten er ikke lansert. Per 22. september 2026 er det ingen betalende brukere, og
+  bare utviklers egne testlag og et lite antall trenere som prøver den ut
+- Forventet omfang etter lansering (1. oktober 2026): noen titalls til noen hundre
+  trenere, med anslagsvis 15 spillerfornavn per lag
 - Ingen systematisk innsamling fra offentlige kilder
-- Geografisk begrenset til norsk barnehåndball
+- Geografisk begrenset til norsk barne- og ungdomshåndball
 
 Datatilsynets veiledning definerer ikke eksakt grense for "stor skala", men
 behandlingen er klart under terskelen som gjelder for eksempel
@@ -92,8 +95,8 @@ med Row Level Security i databasen.
 | Rett til sletting | Fullstendig kontosletting inkl. alle tabeller, Stripe-anonymisering |
 | Dataportabilitet | JSON-eksport av all brukerdata |
 | Informasjonsplikt | Detaljert personvernerklæring (privacy.html) |
-| Tredjeparter | Supabase (EU/Frankfurt), Stripe (SCCs), Vercel (SCCs), Umami (EU) |
-| Statistikk-gate | Sesongstatistikk krever bekreftelse om NFF-compliance |
+| Tredjeparter | Supabase (eu-central-2, Zürich i Sveits), Stripe (SCCs), Vercel (SCCs), Umami (EU) |
+| Statistikk-gate | Sesongstatistikk krever at treneren bekrefter NHFs retningslinjer om lik spilletid |
 | Medansvar | Trener informeres eksplisitt om ansvar for spillerdata (Art. 26) |
 | Foresatte | Trener oppfordres til å informere foresatte om verktøybruk |
 
@@ -112,8 +115,9 @@ Behandlingen tilfredsstiller **ikke** kriteriene for obligatorisk DPIA:
 De tekniske og organisatoriske tiltakene i seksjon 4 reduserer restrisikoen
 til et nivå som ikke krever ytterligere konsekvensvurdering.
 
-**Denne vurderingen bør gjennomgås årlig** eller ved vesentlige endringer i
-tjenestens funksjonalitet, omfang eller brukerbase.
+**Denne vurderingen bør gjennomgås årlig**, neste gang innen 1. september 2027, eller
+ved vesentlige endringer i tjenestens funksjonalitet, omfang eller brukerbase. Ved
+vesentlig vekst i antall brukere skal punkt 3.2 vurderes på nytt.
 
 ---
 
@@ -122,3 +126,4 @@ tjenestens funksjonalitet, omfang eller brukerbase.
 | Dato | Versjon | Endring |
 |---|---|---|
 | 2026-03-01 | 1.0 | Førstegangs vurdering |
+| 2026-09-22 | 1.1 | Organisasjonsnummer lagt inn. Omfang rettet: tjenesten er ikke lansert ennå. Aldersspenn rettet til 6-16 år. Datalagring presisert til Supabase eu-central-2 (Zürich, Sveits). Feilskrevet «NFF» rettet til NHF |

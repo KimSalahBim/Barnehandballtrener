@@ -1,8 +1,8 @@
 # Databehandleravtaler (DPA-logg)
 
-**Behandlingsansvarlig:** Holmvik Utvikling ENK
+**Behandlingsansvarlig:** Holmvik Utvikling ENK, org.nr. 937 128 746
 **Tjeneste:** barnehandballtrener.no
-**Sist oppdatert:** 1. mars 2026
+**Sist oppdatert:** 22. september 2026
 
 ---
 
@@ -21,10 +21,10 @@ underleverandører som behandler personopplysninger på vegne av virksomheten.
 |---|---|
 | Tjeneste | Database (PostgreSQL), autentisering (Google OAuth), Row Level Security |
 | Data som behandles | Brukerkontoer (e-post, user_id), spillerfornavn, lagdata, sesongdata, oppmøte |
-| Dataregion | EU (eu-west-2, Frankfurt) |
+| Dataregion | Sveits (eu-central-2, Zürich) |
 | DPA | https://supabase.com/legal/dpa |
 | Akseptert dato | 23. januar 2026 (prosjekt opprettet) |
-| Overføringsgrunnlag | Data forblir i EU. Supabase Inc. (USA) har tilgang til infrastruktur under SCCs |
+| Overføringsgrunnlag | Data lagres i Sveits, som EU har truffet adekvansbeslutning for og som Norge følger gjennom EØS. Supabase Inc. (USA) har tilgang til infrastruktur under SCCs |
 | Sub-processors | https://supabase.com/legal/subprocessors |
 | Merknader | RLS sikrer at brukere kun ser egne data |
 
@@ -86,13 +86,14 @@ underleverandører som behandler personopplysninger på vegne av virksomheten.
 - [ ] Verifiser at Supabase DPA er akseptert i Dashboard → Settings → Legal
 - [ ] Verifiser at Vercel DPA er akseptert i Dashboard → Settings
 - [ ] Last ned og arkiver kopi av alle DPA-er lokalt
-- [ ] Sett årlig påminnelse for gjennomgang (1. mars 2027)
+- [ ] Sett årlig påminnelse for gjennomgang (1. september 2027)
+- [ ] Bekreft at adekvansgrunnlaget for Sveits er dokumentert i personvernerklæringen
 
 ---
 
 ## Tidligere databehandlere (ikke lenger i bruk)
 
-*Ingen per 1. mars 2026.*
+*Ingen per 22. september 2026.*
 
 ---
 
@@ -101,3 +102,4 @@ underleverandører som behandler personopplysninger på vegne av virksomheten.
 | Dato | Endring |
 |---|---|
 | 2026-03-01 | Førstegangs dokumentasjon |
+| 2026-09-22 | Organisasjonsnummer lagt inn. Supabase-region rettet fra «EU (eu-west-2, Frankfurt)» til Sveits (eu-central-2, Zürich), verifisert mot prosjektet fzwxcicpuaqzggpyjvkr. Overføringsgrunnlag presisert |
