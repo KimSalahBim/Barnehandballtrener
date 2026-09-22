@@ -1823,9 +1823,9 @@
             <div class="player-tags">${state.settings.useSkill ? `<span class="tag">Nivå ${p.skill}</span>` : ''}${p.goalie ? `<span class="tag">🧤</span>` : `<span class="tag">🤾</span>`}</div>
           </div>
           ${showPositions ? `<div class="player-positions" title="Posisjonspreferanse">
-    <button type="button" class="pos-btn${pos.includes('F') ? ' pos-f-on' : ''}" data-zone="F">B</button>
-    <button type="button" class="pos-btn${pos.includes('A') ? ' pos-a-on' : ''}" data-zone="A">V</button>
-    <button type="button" class="pos-btn${pos.includes('M') ? ' pos-m-on' : ''}" data-zone="M">L</button>
+    <button type="button" class="pos-btn${pos.includes('F') ? ' pos-f-on' : ''}" data-zone="F" title="Bakspiller">B</button>
+    <button type="button" class="pos-btn${pos.includes('A') ? ' pos-a-on' : ''}" data-zone="A" title="Kant">K</button>
+    <button type="button" class="pos-btn${pos.includes('M') ? ' pos-m-on' : ''}" data-zone="M" title="Linje">L</button>
   </div>` : ''}
           <button class="icon-btn edit" type="button" title="Rediger">✏️</button>
         </div>
@@ -2052,9 +2052,9 @@
         '<div style="margin-bottom:20px;">' +
           '<label style="font-size:13px;font-weight:700;color:var(--text-600,#666);display:block;margin-bottom:4px;">Posisjoner</label>' +
           '<div style="display:flex;gap:6px;">' +
-            '<button type="button" class="profilePosBtn" data-pos="F" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posF ? 'rgba(34,197,94,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posF ? 'rgba(34,197,94,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posF ? '#16a34a' : 'var(--text-500,#888)') + ';font-family:inherit;">Forsvar</button>' +
-            '<button type="button" class="profilePosBtn" data-pos="M" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posM ? 'rgba(59,130,246,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posM ? 'rgba(59,130,246,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posM ? '#2563eb' : 'var(--text-500,#888)') + ';font-family:inherit;">Midtbane</button>' +
-            '<button type="button" class="profilePosBtn" data-pos="A" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posA ? 'rgba(239,68,68,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posA ? 'rgba(239,68,68,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posA ? '#dc2626' : 'var(--text-500,#888)') + ';font-family:inherit;">Angrep</button>' +
+            '<button type="button" class="profilePosBtn" data-pos="F" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posF ? 'rgba(34,197,94,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posF ? 'rgba(34,197,94,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posF ? '#16a34a' : 'var(--text-500,#888)') + ';font-family:inherit;">Bak</button>' +
+            '<button type="button" class="profilePosBtn" data-pos="M" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posM ? 'rgba(59,130,246,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posM ? 'rgba(59,130,246,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posM ? '#2563eb' : 'var(--text-500,#888)') + ';font-family:inherit;">Linje</button>' +
+            '<button type="button" class="profilePosBtn" data-pos="A" style="flex:1;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ' + (posA ? 'rgba(239,68,68,0.4)' : 'var(--border,#d8e4da)') + ';background:' + (posA ? 'rgba(239,68,68,0.1)' : 'var(--bg,#f3f6f3)') + ';color:' + (posA ? '#dc2626' : 'var(--text-500,#888)') + ';font-family:inherit;">Kant</button>' +
           '</div>' +
         '</div>' +
 

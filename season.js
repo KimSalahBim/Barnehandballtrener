@@ -5002,9 +5002,9 @@
           '<div class="form-group">' +
             '<label>Posisjoner</label>' +
             '<div style="display:flex; gap:6px;">' +
-              '<button class="sn-toggle-btn snManualPos active" data-pos="F" type="button" style="flex:1; border-radius:var(--radius-sm);">Forsvar</button>' +
-              '<button class="sn-toggle-btn snManualPos active" data-pos="M" type="button" style="flex:1; border-radius:var(--radius-sm);">Midtbane</button>' +
-              '<button class="sn-toggle-btn snManualPos active" data-pos="A" type="button" style="flex:1; border-radius:var(--radius-sm);">Angrep</button>' +
+              '<button class="sn-toggle-btn snManualPos active" data-pos="F" type="button" style="flex:1; border-radius:var(--radius-sm);">Bak</button>' +
+              '<button class="sn-toggle-btn snManualPos active" data-pos="M" type="button" style="flex:1; border-radius:var(--radius-sm);">Linje</button>' +
+              '<button class="sn-toggle-btn snManualPos active" data-pos="A" type="button" style="flex:1; border-radius:var(--radius-sm);">Kant</button>' +
             '</div>' +
           '</div>' +
           '<div class="sn-actions" style="margin-top:16px;">' +
@@ -5310,9 +5310,9 @@
           '<div class="form-group">' +
             '<label>Posisjoner</label>' +
             '<div style="display:flex; gap:6px;">' +
-              '<button class="sn-toggle-btn snEditPos' + (posF ? ' active' : '') + '" data-pos="F" type="button" style="flex:1; border-radius:var(--radius-sm);">Forsvar</button>' +
-              '<button class="sn-toggle-btn snEditPos' + (posM ? ' active' : '') + '" data-pos="M" type="button" style="flex:1; border-radius:var(--radius-sm);">Midtbane</button>' +
-              '<button class="sn-toggle-btn snEditPos' + (posA ? ' active' : '') + '" data-pos="A" type="button" style="flex:1; border-radius:var(--radius-sm);">Angrep</button>' +
+              '<button class="sn-toggle-btn snEditPos' + (posF ? ' active' : '') + '" data-pos="F" type="button" style="flex:1; border-radius:var(--radius-sm);">Bak</button>' +
+              '<button class="sn-toggle-btn snEditPos' + (posM ? ' active' : '') + '" data-pos="M" type="button" style="flex:1; border-radius:var(--radius-sm);">Linje</button>' +
+              '<button class="sn-toggle-btn snEditPos' + (posA ? ' active' : '') + '" data-pos="A" type="button" style="flex:1; border-radius:var(--radius-sm);">Kant</button>' +
             '</div>' +
           '</div>' +
           '<div class="sn-actions" style="margin-top:16px;">' +
