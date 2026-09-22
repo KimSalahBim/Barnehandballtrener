@@ -234,8 +234,7 @@
       ? '<span class="sw-meta-age">' + esc(_swMeta.ageGroup) + ' år</span>' : '';
     return '<div class="sw-header">' +
       '<div class="sw-header-top">' +
-        '<button type="button" class="sw-back-btn" id="swBackBtn" title="Tilbake">' +
-          '<i class="fas fa-arrow-left"></i></button>' +
+        '<button type="button" class="app-back" id="swBackBtn">Trening</button>' +
         '<div class="sw-header-info">' +
           '<div class="sw-header-title">' + esc(_swMeta.title || 'Treningsøkt') + '</div>' +
           '<div class="sw-header-sub">' +

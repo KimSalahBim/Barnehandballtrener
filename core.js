@@ -1987,7 +1987,7 @@
     var html =
       '<div class="settings-card" style="margin-top:8px;">' +
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">' +
-          '<button type="button" id="profileBack" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--primary,#1a82c4);font-weight:700;font-family:inherit;padding:4px 0;">‹ Spillere</button>' +
+          '<button type="button" id="profileBack" class="app-back">Spillere</button>' +
           '<span style="font-size:17px;font-weight:800;color:var(--text-900,#1a1a1a);">' + escapeHtml(p.name) + '</span>' +
         '</div>' +
 

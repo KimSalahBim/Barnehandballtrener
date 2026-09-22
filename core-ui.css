@@ -98,3 +98,44 @@
   background:var(--bg-card);
   padding:14px;
 }
+
+/* Shared back button — not scoped to #mainApp (also used on #pricingPage) */
+.app-back,
+.sn-back {
+  display: inline-flex;
+  align-items: center;
+  background: #1777b3;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 16px;
+  min-height: 44px;
+  padding: 8px 18px 8px 12px;
+  box-shadow: 0 2px 6px rgba(23, 119, 179, 0.35);
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.app-back::before,
+.sn-back::before {
+  content: "‹";
+  font-size: 24px;
+  margin-right: 6px;
+  font-weight: 700;
+  line-height: 1;
+}
+.app-back:hover,
+.sn-back:hover {
+  background: #14689c;
+}
+.app-back:focus-visible,
+.sn-back:focus-visible {
+  outline: none;
+  box-shadow: 0 2px 6px rgba(23, 119, 179, 0.35), 0 0 0 3px #bfdbfe;
+}
+
+#closePricingBtn.app-back {
+  margin: 0 0 20px;
+}

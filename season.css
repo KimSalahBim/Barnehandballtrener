@@ -11,14 +11,21 @@
 
 /* Dashboard */
 .sn-dash-header { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
-.sn-back { display:inline-flex; align-items:center; gap:4px; background:none; border:none; font-size:15px; font-weight:500; cursor:pointer; padding:6px 12px 6px 6px; color:var(--primary); border-radius:var(--radius-md); font-family:inherit; white-space:nowrap; }
-.sn-back:hover { background:var(--bg-hover, #f1f5f9); }
-.sn-back i { font-size:12px; }
-.sn-dash-title { font-size:20px; font-weight:700; color:var(--text-800); }
+/* .sn-back aliases .app-back in core-ui.css */
+.sn-dash-title { font-size:20px; font-weight:700; color:var(--text-800); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sn-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg, #f3f6f3);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  margin: 0 0 12px;
+}
 .sn-live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--text-300, #cbd5e1); margin-left:6px; vertical-align:middle; transition:background 0.3s; }
 .sn-live-dot.sn-live-active { background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.2); animation:sn-pulse 2s ease-in-out infinite; }
 @keyframes sn-pulse { 0%,100% { box-shadow:0 0 0 3px rgba(34,197,94,0.2); } 50% { box-shadow:0 0 0 6px rgba(34,197,94,0.05); } }
-.sn-dash-meta { font-size:13px; color:var(--text-500); margin-bottom:16px; margin-left:38px; }
+.sn-dash-meta { font-size:13px; color:var(--text-500); margin-bottom:16px; }
 .sn-actions { display:flex; gap:8px; margin-bottom:20px; }
 .sn-actions button { flex:1; }
 
@@ -277,3 +284,35 @@
 .sn-loan-suggestion { background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.2); border-radius:var(--radius-md); padding:10px 14px; margin-top:10px; font-size:13px; color:#92400e; }
 .sn-loan-suggestion strong { color:#78350f; }
 .sn-loan-suggestion button { margin-top:6px; padding:4px 10px; font-size:12px; }
+
+/* Five-button season nav must fit at 320px */
+#seasonNav .bottom-nav-btn {
+  min-width: 0;
+  flex: 1;
+  padding: 6px 2px;
+}
+#seasonNav .bottom-nav-btn span {
+  font-size: 9px;
+}
+
+/* Embedded Kampdag header — same sticky treatment as .sw-header */
+.skd-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg, #f3f6f3);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.skd-sticky-title {
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

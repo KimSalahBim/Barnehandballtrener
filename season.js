@@ -24,6 +24,7 @@
   var embeddedWorkoutEvent = null; // event for embedded workout
   var embeddedWorkoutPlayers = null; // players for embedded workout
   var subTeamFilter = null; // null = all, 1-5 = specific sub-team (for roster/stats tabs)
+  var createEventPresetType = null; // 'match' | 'training' | null — title when type is preset
 
   // Realtime sync state
   var _rtChannel = null;   // aktiv Supabase Realtime channel (per event)
@@ -130,6 +131,32 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  function seasonNameLabel() {
+    return (currentSeason && currentSeason.name) ? currentSeason.name : 'Sesonger';
+  }
+
+  function eventTitleLabel(ev) {
+    if (!ev) return seasonNameLabel();
+    var isMatch = (ev.type === 'match' || ev.type === 'cup_match');
+    var title = ev.title || ev.opponent || typeLabel(ev.type);
+    if (isMatch && ev.opponent && !ev.title) {
+      title = (ev.is_home ? 'Hjemme' : 'Borte') + ' vs ' + ev.opponent;
+    }
+    return title;
+  }
+
+  function snBackBtn(id, label) {
+    return '<button type="button" class="sn-back app-back" id="' + id + '">' + escapeHtml(label) + '</button>';
+  }
+
+  function snStickyHeader(backId, backLabel, titleHtml, extraHtml) {
+    return '<div class="sn-dash-header sn-sticky-header">' +
+      snBackBtn(backId, backLabel) +
+      (titleHtml ? '<span class="sn-dash-title">' + titleHtml + '</span>' : '') +
+      (extraHtml || '') +
+    '</div>';
   }
 
   // Format: '7-er', '5-er' etc.
@@ -629,6 +656,14 @@
       document.addEventListener('DOMContentLoaded', wireSeasonNav);
       return;
     }
+    var listBtn = document.getElementById('seasonNavList');
+    if (listBtn) {
+      listBtn.addEventListener('click', function() {
+        goToList();
+        try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch (_) { window.scrollTo(0, 0); }
+      });
+    }
+
     var tabBtns = nav.querySelectorAll('.bottom-nav-btn[data-stab]');
     for (var i = 0; i < tabBtns.length; i++) {
       tabBtns[i].addEventListener('click', (function(btn) {
@@ -2061,12 +2096,17 @@
     var nav = document.getElementById('seasonNav');
     if (!nav) return;
 
-    var btns = nav.querySelectorAll('.bottom-nav-btn[data-stab]');
+    var btns = nav.querySelectorAll('.bottom-nav-btn');
     for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
 
     // Map current view to parent tab
     var activeTab = null;
-    if (snView === 'dashboard') {
+    var listActive = (snView === 'list' || snView === 'create-season' || snView === 'edit-season');
+    if (listActive) {
+      var listBtn = document.getElementById('seasonNavList');
+      if (listBtn) listBtn.classList.add('active');
+      return;
+    } else if (snView === 'dashboard') {
       activeTab = dashTab;
     } else if (snView === 'event-detail' || snView === 'create-event' || snView === 'edit-event' || snView === 'embedded-kampdag' || snView === 'embedded-workout' || snView === 'create-series' || snView === 'fotball-import') {
       activeTab = 'calendar';
@@ -2075,7 +2115,6 @@
     } else if (snView === 'roster-edit-player' || snView === 'player-stats') {
       activeTab = dashTab; // came from roster or stats tab
     }
-    // list, create-season, edit-season → no tab active
 
     if (activeTab) {
       var btn = nav.querySelector('.bottom-nav-btn[data-stab="' + activeTab + '"]');
@@ -2191,11 +2230,8 @@
 
   function renderCreateSeason(root) {
     root.innerHTML =
+      snStickyHeader('snBackFromCreate', 'Sesonger', 'Ny sesong') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromCreate"><i class="fas fa-chevron-left"></i> Avbryt</button>' +
-          '<span class="sn-dash-title">Ny sesong</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div class="form-group">' +
             '<label for="snSeasonName">Navn</label>' +
@@ -2390,11 +2426,8 @@
     }
 
     root.innerHTML =
+      snStickyHeader('snBackFromEditSeason', 'Sesonger', 'Rediger sesong') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromEditSeason"><i class="fas fa-chevron-left"></i> Tilbake</button>' +
-          '<span class="sn-dash-title">Rediger sesong</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div class="form-group">' +
             '<label for="snEditSeasonName">Navn</label>' +
@@ -2795,9 +2828,7 @@
     var announcements = settings.announcements || [];
     var url = _lagsideToken ? 'https://barnehandballtrener.no/lag/' + _lagsideToken : '';
 
-    var html = '<div style="margin-bottom:16px;">' +
-      '<a href="#" id="snLagsideBack" style="font-size:13px;color:var(--primary);">\u2190 Dashboard</a>' +
-      '</div>' +
+    var html = snStickyHeader('snLagsideBack', seasonNameLabel(), 'Lagside for foreldre') +
       '<h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Lagside for foreldre</h2>' +
       '<p style="font-size:13px;color:var(--text-400);margin-bottom:16px;">' +
         'Administrer hva foreldrene ser. Endringer vises umiddelbart.' +
@@ -3091,12 +3122,13 @@
     }
 
     var html =
+      snStickyHeader(
+        'snBackFromDash',
+        'Sesonger',
+        escapeHtml(s.name),
+        '<button style="background:none; border:none; font-size:16px; color:var(--text-400); cursor:pointer; padding:6px 8px; margin-left:auto; border-radius:var(--radius-sm);" id="snEditSeason" title="Rediger sesong"><i class="fas fa-pen"></i></button>'
+      ) +
       '<div class="settings-card" style="margin-bottom:12px;">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromDash"><i class="fas fa-chevron-left"></i> Sesonger</button>' +
-          '<button style="background:none; border:none; font-size:16px; color:var(--text-400); cursor:pointer; padding:6px 8px; margin-left:auto; border-radius:var(--radius-sm);" id="snEditSeason" title="Rediger sesong"><i class="fas fa-pen"></i></button>' +
-        '</div>' +
-        '<div class="sn-dash-title" style="font-size:22px; font-weight:700; margin:4px 0 2px;">' + escapeHtml(s.name) + '</div>' +
         '<div class="sn-dash-meta">' + escapeHtml(metaParts.join(' \u00B7 ')) + '</div>' +
       '</div>';
 
@@ -3219,17 +3251,17 @@
     var addMatch = $('snAddMatch');
     if (addMatch) addMatch.addEventListener('click', function() {
       editingEvent = null;
+      createEventPresetType = 'match';
       snView = 'create-event';
       render();
-      setTimeout(function() { var el = $('snEventType'); if (el) { el.value = 'match'; el.dispatchEvent(new Event('change')); } }, 20);
     });
 
     var addTraining = $('snAddTraining');
     if (addTraining) addTraining.addEventListener('click', function() {
       editingEvent = null;
+      createEventPresetType = 'training';
       snView = 'create-event';
       render();
-      setTimeout(function() { var el = $('snEventType'); if (el) { el.value = 'training'; el.dispatchEvent(new Event('change')); } }, 20);
     });
 
     var addSeries = $('snAddSeries');
@@ -3645,11 +3677,8 @@
     var method = assignDraft.method;
 
     var html =
+      snStickyHeader('snBackFromAssign', 'Stall', 'Fordel spillere') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromAssign"><i class="fas fa-chevron-left"></i> Stall</button>' +
-          '<span class="sn-dash-title">Fordel spillere</span>' +
-        '</div>' +
 
         // Method toggle
         '<div class="sn-assign-method" id="snAssignMethod">' +
@@ -4563,11 +4592,8 @@
     var psAvatar = isImportedPS ? getPlayerAvatar(sp.player_id) : null;
 
     var html =
+      snStickyHeader('snBackFromPlayerStats', (dashTab === 'roster' ? 'Stall' : 'Statistikk'), escapeHtml(sp.name)) +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromPlayerStats"><i class="fas fa-chevron-left"></i> ' + (dashTab === 'roster' ? 'Stall' : 'Statistikk') + '</button>' +
-          '<span class="sn-dash-title">' + escapeHtml(sp.name) + '</span>' +
-        '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:center;margin:12px 0 4px;">' +
           (psAvatar
             ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;"><img src="/avatars/' + psAvatar + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
@@ -4809,11 +4835,8 @@
     var players = window.players || [];
     if (!players.length) {
       root.innerHTML =
+        snStickyHeader('snBackFromImport', 'Stall', 'Importer spillere') +
         '<div class="settings-card">' +
-          '<div class="sn-dash-header">' +
-            '<button class="sn-back" id="snBackFromImport"><i class="fas fa-chevron-left"></i> Stall</button>' +
-            '<span class="sn-dash-title">Importer spillere</span>' +
-          '</div>' +
           '<div class="sn-roster-empty" style="padding:24px;">' +
             '<div>Ingen spillere funnet. G\u00e5 til <b>Spillere</b>-fanen og legg til spillere f\u00f8rst.</div>' +
           '</div>' +
@@ -4833,11 +4856,8 @@
     }
 
     var html =
+      snStickyHeader('snBackFromImport', 'Stall', 'Importer spillere') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromImport"><i class="fas fa-chevron-left"></i> Stall</button>' +
-          '<span class="sn-dash-title">Importer spillere</span>' +
-        '</div>' +
         '<div style="padding:4px 0 12px; color:var(--text-400); font-size:13px;">' +
           'Velg spillere fra <b>' + escapeHtml(document.querySelector('.team-name')?.textContent || 'aktivt lag') + '</b> (' + players.length + ' spillere)' +
         '</div>' +
@@ -4933,11 +4953,8 @@
 
   function renderManualPlayerAdd(root) {
     var html =
+      snStickyHeader('snBackFromManual', 'Stall', 'Legg til spiller') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromManual"><i class="fas fa-chevron-left"></i> Stall</button>' +
-          '<span class="sn-dash-title">Legg til spiller</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div class="form-group">' +
             '<label for="snManualName">Navn</label>' +
@@ -5062,11 +5079,8 @@
     var defaultEnd = currentSeason.end_date || '';
 
     var html =
+      snStickyHeader('snBackFromSeries', seasonNameLabel(), 'Opprett treningsserie') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromSeries"><i class="fas fa-chevron-left"></i> Kalender</button>' +
-          '<span class="sn-dash-title">Opprett treningsserie</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div class="form-group">' +
             '<label for="snSeriesTitle">Tittel</label>' +
@@ -5237,11 +5251,8 @@
     var currentAvatar = isImported ? getPlayerAvatar(sp.player_id) : null;
 
     var html =
+      snStickyHeader('snBackFromEdit', 'Stall', 'Rediger spiller') +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromEdit"><i class="fas fa-chevron-left"></i> Tilbake</button>' +
-          '<span class="sn-dash-title">Rediger spiller</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">' +
             '<div id="snEditAvatarPreview" style="width:80px;height:80px;border-radius:50%;overflow:hidden;' + (isImported ? 'cursor:pointer;' : '') + '">' +
@@ -5655,11 +5666,8 @@
 
   function renderFotballImport(root) {
     var html =
-      '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromImport"><i class="fas fa-chevron-left"></i> Tilbake</button>' +
-          '<span class="sn-dash-title">Importer fra fotball.no</span>' +
-        '</div>';
+      snStickyHeader('snBackFromImport', seasonNameLabel(), 'Importer fra fotball.no') +
+      '<div class="settings-card">';
 
     if (!importState.parsed) {
       // Step 1: File upload
@@ -6156,10 +6164,16 @@
   function renderEventForm(root, existing) {
     var isEdit = !!existing;
     var ev = existing || {};
-    var type = ev.type || 'match';
+    var type = ev.type || createEventPresetType || 'match';
     var isMatch = (type === 'match' || type === 'cup_match');
 
-    var title = isEdit ? 'Rediger hendelse' : 'Ny hendelse';
+    var title;
+    if (isEdit) title = 'Rediger hendelse';
+    else if (createEventPresetType === 'training') title = 'Ny trening';
+    else if (createEventPresetType === 'match' || createEventPresetType === 'cup_match') title = 'Ny kamp';
+    else title = 'Ny hendelse';
+
+    var backLabel = (isEdit && editingEvent) ? eventTitleLabel(editingEvent) : seasonNameLabel();
 
     // Build sub-team dropdown if season has multiple sub-teams
     var stCount = (currentSeason && currentSeason.sub_team_count) || 1;
@@ -6188,11 +6202,8 @@
     }
 
     var html =
+      snStickyHeader('snBackFromEvent', backLabel, title) +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromEvent"><i class="fas fa-chevron-left"></i> Tilbake</button>' +
-          '<span class="sn-dash-title">' + title + '</span>' +
-        '</div>' +
         '<div class="sn-form">' +
           '<div class="form-group">' +
             '<label for="snEventType">Type</label>' +
@@ -6371,13 +6382,13 @@
     }
 
     var html =
+      snStickyHeader(
+        'snBackFromDetail',
+        seasonNameLabel(),
+        typeIcon(ev.type) + ' ' + escapeHtml(title) +
+          (isMatch && isSharedTeam() ? ' <span id="snLiveIndicator" class="sn-live-dot" title="Kobler til\u2026"></span>' : '')
+      ) +
       '<div class="settings-card">' +
-        '<div class="sn-dash-header">' +
-          '<button class="sn-back" id="snBackFromDetail"><i class="fas fa-chevron-left"></i> Kalender</button>' +
-          '<span class="sn-dash-title">' + typeIcon(ev.type) + ' ' + escapeHtml(title) +
-            (isMatch && isSharedTeam() ? ' <span id="snLiveIndicator" class="sn-live-dot" title="Kobler til\u2026"></span>' : '') +
-          '</span>' +
-        '</div>' +
         '<div style="margin-top:12px;">';
 
     // Detail rows
@@ -7742,6 +7753,7 @@
     registeredEventIds = {};
     subTeamFilter = null;
     dashTab = 'calendar';
+    createEventPresetType = null;
     snView = 'list';
     loadSeasons();
   }
@@ -7750,6 +7762,7 @@
     stopMatchSync();
     editingEvent = null;
     eventDistDraft = null;
+    createEventPresetType = null;
     snView = 'dashboard';
     // Ensure stats data is fresh if returning to stats tab
     if (dashTab === 'stats' && currentSeason) {

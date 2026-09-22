@@ -1196,7 +1196,7 @@
 .sw-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 40;
   background: var(--card-bg, #fff);
   border-bottom: 1px solid var(--border, #e2e8f0);
   padding: 10px 14px 8px;

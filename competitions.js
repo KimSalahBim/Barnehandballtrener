@@ -658,7 +658,7 @@
             <div class="comp-meta">${escapeHtml(new Date(comp.createdAt).toLocaleString('nb-NO'))} • ${comp.scoring === 'rank' ? 'Plasseringspoeng' : '3–2–1'}</div>
           </div>
           <div class="comp-actions">
-            <button class="btn-secondary comp-btn" data-comp-action="backToHistory">Tilbake</button>
+            <button class="app-back" data-comp-action="backToHistory">Konkurranser</button>
           </div>
         </div>
 

@@ -2966,9 +2966,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     }).join('');
 
     return '' +
-      '<div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">' +
-        '<button id="skdBackBtn" class="btn-secondary" style="padding:6px 10px; font-size:13px;"><i class="fas fa-arrow-left" style="margin-right:4px;"></i>Tilbake</button>' +
-        '<div style="font-weight:700; font-size:16px;">' + title + '</div>' +
+      '<div class="skd-sticky-header">' +
+        '<button type="button" id="skdBackBtn" class="app-back">Kamp</button>' +
+        '<div class="skd-sticky-title">' + title + '</div>' +
       '</div>' +
 
       '<div class="settings-card">' +
@@ -3054,7 +3054,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
         '<div id="skdMeta" class="small-text" style="margin-top:10px; opacity:0.85;"></div>' +
       '</div>' +
 
-      '<div id="skdTimerWrap" style="display:none; position:sticky; top:0; z-index:50;">' +
+      '<div id="skdTimerWrap" style="display:none; position:sticky; top:60px; z-index:39;">' +
         '<div class="settings-card" style="margin-top:0; border-top-left-radius:0; border-top-right-radius:0; background:var(--card); border-bottom:2px solid var(--brand,#1a82c4);">' +
           '<div style="display:flex; justify-content:space-between; align-items:center;">' +
             '<div><div id="skdTimerClock" style="font-size:28px; font-weight:500; font-variant-numeric:tabular-nums;">00:00</div>' +
