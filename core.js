@@ -989,7 +989,10 @@
   function showNewTeamModal() {
     // Fjern eventuell eksisterende modal
     var existing = $('newTeamModal');
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('newTeam');
+    }
 
     var usedColors = state.teams.map(function(t) { return t.color; });
     var defaultColor = TEAM_COLORS.find(function(c) { return usedColors.indexOf(c) === -1; }) || TEAM_COLORS[0];
@@ -1017,6 +1020,11 @@
       '</div>';
 
     document.body.appendChild(modal);
+    if (window.AppHistory) window.AppHistory.openOverlay('newTeam', function () { if (modal.parentNode) modal.remove(); });
+    function closeNewTeam() {
+      if (modal.parentNode) modal.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('newTeam');
+    }
 
     var selectedColor = defaultColor;
 
@@ -1031,7 +1039,7 @@
 
     // Cancel
     modal.querySelector('.team-modal-cancel').addEventListener('click', function() {
-      modal.remove();
+      closeNewTeam();
     });
 
     // Create
@@ -1047,7 +1055,7 @@
       var team = await createTeam(name, selectedColor);
       if (team) {
         state.teams.push(team);
-        modal.remove();
+        closeNewTeam();
         switchTeam(team.id);
         showNotification('Lag "' + name + '" opprettet!', 'success');
       }
@@ -1055,7 +1063,7 @@
 
     // Close on overlay click
     modal.addEventListener('click', function(e) {
-      if (e.target === modal) modal.remove();
+      if (e.target === modal) closeNewTeam();
     });
 
     // Focus input
@@ -1114,7 +1122,10 @@
     }
 
     var existing = $('editTeamModal');
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('editTeam');
+    }
 
     var modal = document.createElement('div');
     modal.id = 'editTeamModal';
@@ -1137,6 +1148,11 @@
       '</div>';
 
     document.body.appendChild(modal);
+    if (window.AppHistory) window.AppHistory.openOverlay('editTeam', function () { if (modal.parentNode) modal.remove(); });
+    function closeEditTeam() {
+      if (modal.parentNode) modal.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('editTeam');
+    }
 
     var selectedColor = team.color;
 
@@ -1149,7 +1165,7 @@
     });
 
     modal.querySelector('.team-modal-cancel').addEventListener('click', function() {
-      modal.remove();
+      closeEditTeam();
     });
 
     modal.querySelector('.team-modal-create').addEventListener('click', async function() {
@@ -1163,7 +1179,7 @@
 
       var sb = getSupabaseClient();
       var uid = getUserId();
-      if (!sb || !uid) { modal.remove(); return; }
+      if (!sb || !uid) { closeEditTeam(); return; }
 
       try {
         var updateData = { name: newName, color: selectedColor };
@@ -1177,7 +1193,7 @@
         // Oppdater lokal state
         team.name = newName;
         team.color = selectedColor;
-        modal.remove();
+        closeEditTeam();
         renderTeamSwitcher();
         showNotification('Laget er oppdatert.', 'success');
       } catch (e) {
@@ -1187,7 +1203,7 @@
     });
 
     modal.addEventListener('click', function(e) {
-      if (e.target === modal) modal.remove();
+      if (e.target === modal) closeEditTeam();
     });
 
     setTimeout(function() {
@@ -1243,7 +1259,10 @@
     if (!team || team._isShared) return;
 
     var existing = $('inviteModal');
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('invite');
+    }
 
     var modal = document.createElement('div');
     modal.id = 'inviteModal';
@@ -1262,13 +1281,18 @@
       '</div>';
 
     document.body.appendChild(modal);
+    if (window.AppHistory) window.AppHistory.openOverlay('invite', function () { if (modal.parentNode) modal.remove(); });
+    function closeInvite() {
+      if (modal.parentNode) modal.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('invite');
+    }
 
     modal.querySelector('.team-modal-cancel').addEventListener('click', function() {
-      modal.remove();
+      closeInvite();
     });
 
     modal.addEventListener('click', function(e) {
-      if (e.target === modal) modal.remove();
+      if (e.target === modal) closeInvite();
     });
 
     var sendBtn = $('inviteSendBtn');
@@ -1315,7 +1339,7 @@
           return;
         }
 
-        modal.remove();
+        closeInvite();
         showNotification('Invitasjon sendt til ' + email + '. Treneren ser invitasjonen neste gang de logger inn.', 'success');
       } catch (e) {
         errorDiv.textContent = e.message || 'Noe gikk galt';
@@ -1928,6 +1952,7 @@
   // ------------------------------
   function showPlayerProfile(playerId) {
     _profilePlayerId = playerId;
+    if (window.AppHistory) window.AppHistory.syncDepth(1);
     // Hide list UI
     var listEls = ['playerList', 'posHelpCard'];
     listEls.forEach(function(id) { var el = $(id); if (el) el.style.display = 'none'; });
@@ -1946,6 +1971,7 @@
   }
 
   function hidePlayerProfile() {
+    if (window.AppHistory && _profilePlayerId) window.AppHistory.syncDepth(0);
     _profilePlayerId = null;
     var profileView = $('playerProfileView');
     if (profileView) { profileView.style.display = 'none'; profileView.innerHTML = ''; }
@@ -2337,16 +2363,31 @@
     // Robust mobil-håndtering for iOS/Safari
     // Mål: ingen "tomt felt" øverst i Liga eller andre faner
 
+    var merHistoryOpen = false;
+    function closeMerPopupRaw() {
+      const popup = document.getElementById('merPopup');
+      if (popup) popup.style.display = 'none';
+    }
     function toggleMerPopup() {
       const popup = document.getElementById('merPopup');
       if (!popup) return;
-      popup.style.display = (popup.style.display === 'none' || !popup.style.display) ? 'block' : 'none';
+      var opening = (popup.style.display === 'none' || !popup.style.display);
+      if (opening) {
+        popup.style.display = 'block';
+        merHistoryOpen = true;
+        if (window.AppHistory) window.AppHistory.openOverlay('mer', function () {
+          merHistoryOpen = false;
+          closeMerPopupRaw();
+        });
+      } else {
+        closeMerPopup();
+      }
     }
 
     function closeMerPopup() {
-      const popup = document.getElementById('merPopup');
-      if (!popup) return;
-      popup.style.display = 'none';
+      closeMerPopupRaw();
+      if (merHistoryOpen && window.AppHistory) window.AppHistory.closeOverlay('mer');
+      merHistoryOpen = false;
     }
 
     function switchTab(tabId) {
@@ -2354,6 +2395,9 @@
 
       // Close player profile if open
       if (_profilePlayerId) hidePlayerProfile();
+
+      // Rydd bort historikk-steg fra fanen vi forlater
+      if (window.AppHistory) window.AppHistory.resetTo(0);
 
       // STEG 0: Sidetittel
       const titleMap = {
@@ -2554,6 +2598,9 @@
 
     // Expose for other modules if needed
     window.__BF_switchTab = switchTab;
+    if (window.AppHistory) {
+      window.AppHistory.registerBack(function () { return !!_profilePlayerId; }, function () { hidePlayerProfile(); });
+    }
     window.__BF_getTeamId = function() { return state.currentTeamId; };
     window.__BF_getOwnerUid = function() { return getOwnerUid(); };
     window.__BF_isSharedTeam = function() { return isSharedTeam(); };
@@ -3435,4 +3482,98 @@
     })();
   };
 
+})();
+
+/* ============================================================
+   AppHistory — telefonens tilbakeknapp (ett nivå per trykk)
+   ============================================================ */
+(function () {
+  var sid = 'ah_' + Math.random().toString(36).slice(2);
+  var depth = 0;
+  var overlays = [];      // { name, close }
+  var ignoreNext = 0;     // popstate-hendelser vi selv utløste
+  var inPop = false;      // sant mens vi kjører appens egen tilbake
+  var handlers = [];      // { match, back }
+  var started = false;
+
+  function snapshot(extra) {
+    var s = { app: true, sid: sid, depth: depth, ov: overlays.length };
+    if (extra) for (var k in extra) s[k] = extra[k];
+    return s;
+  }
+  function start() {
+    if (started) return;
+    started = true;
+    try { history.replaceState(snapshot(), ''); } catch (e) {}
+  }
+  function syncDepth(d) {
+    start();
+    d = Math.max(0, d | 0);
+    if (d > depth) {
+      while (depth < d) { depth++; try { history.pushState(snapshot(), ''); } catch (e) {} }
+    } else if (d < depth) {
+      var n = depth - d;
+      depth = d;
+      ignoreNext++;
+      try { history.go(-n); } catch (e) { ignoreNext--; }
+    } else {
+      try { history.replaceState(snapshot(), ''); } catch (e) {}
+    }
+  }
+  // Overlegg legger IKKE inn egne steg. Et tilbake-trykk lukker det øverste
+  // overlegget, og vi legger inn igjen steget vi brukte, slik at nivået holdes.
+  function openOverlay(name, close) {
+    start();
+    overlays.push({ name: name, close: close });
+  }
+  function closeOverlay(name) {
+    if (!overlays.length) return;
+    var i = overlays.length - 1;
+    if (name) { for (var j = overlays.length - 1; j >= 0; j--) { if (overlays[j].name === name) { i = j; break; } } }
+    overlays.splice(i, 1);
+  }
+  function registerBack(match, back) { handlers.push({ match: match, back: back }); }
+  function resetTo(d) {  // brukes ved fanebytte
+    start();
+    if (depth > d) { var n = depth - d; depth = d; ignoreNext++; try { history.go(-n); } catch (e) { ignoreNext--; } }
+    else { depth = d; try { history.replaceState(snapshot(), ''); } catch (e) {} }
+    overlays.length = 0;
+  }
+
+  window.addEventListener('popstate', function (e) {
+    if (ignoreNext > 0) { ignoreNext--; return; }
+    var s = e.state;
+    if (s && s.app && s.sid !== sid) return;   // rester fra før en oppdatering
+    var prevDepth = depth;
+    // Nivået følger av steget vi landet på, ikke av tellingen vår.
+    depth = (s && typeof s.depth === 'number') ? s.depth : Math.max(0, depth - 1);
+    if (overlays.length) {
+      var o = overlays.pop();
+      try { o.close(); } catch (err) {}
+      depth = prevDepth;                                          // vi ble stående på samme side
+      try { history.pushState(snapshot(), ''); } catch (err) {}   // gi tilbake steget vi brukte
+      return;
+    }
+    for (var i = 0; i < handlers.length; i++) {
+      var h = handlers[i];
+      var m = false;
+      try { m = h.match(); } catch (err) {}
+      if (m) {
+        inPop = true;
+        try { h.back(); } catch (err) {}
+        inPop = false;
+        return;
+      }
+    }
+  });
+
+  window.AppHistory = {
+    syncDepth: syncDepth,
+    openOverlay: openOverlay,
+    closeOverlay: closeOverlay,
+    registerBack: registerBack,
+    resetTo: resetTo,
+    isInPop: function () { return inPop; },
+    _debug: function () { return { depth: depth, overlays: overlays.map(function (o) { return o.name; }), ignoreNext: ignoreNext, sid: sid }; }
+  };
 })();

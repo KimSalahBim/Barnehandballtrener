@@ -229,6 +229,34 @@
     return $('competitionsRoot') || $('competitions');
   }
 
+  function compIsActive() {
+    var el = document.getElementById('competitions');
+    return !!(el && el.classList.contains('active'));
+  }
+  function compDepth() {
+    if (ui.view === 'detail') return 2;
+    if (ui.view === 'running' || ui.view === 'history') return 1;
+    return 0;
+  }
+  function compGoBack() {
+    if (ui.view === 'detail') {
+      ui.view = 'history';
+      ui.detailId = null;
+      render();
+      return;
+    }
+    if (ui.view === 'running') {
+      ui.view = 'history';
+      ui.detailId = null;
+      render();
+    }
+  }
+  if (window.AppHistory) {
+    window.AppHistory.registerBack(function () {
+      return compIsActive() && (ui.view === 'detail' || ui.view === 'running');
+    }, compGoBack);
+  }
+
   function render() {
     console.log('[Competitions] render() kalles');
     const root = getRoot();
@@ -275,6 +303,7 @@
     bindUI(store, players);
 
     if (prevForm && ui.view === 'setup') restoreSetupForm(root, prevForm);
+    if (window.AppHistory && compIsActive()) window.AppHistory.syncDepth(compDepth());
   }
 
   function renderNoPlayers() {

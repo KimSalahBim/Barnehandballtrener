@@ -41,9 +41,12 @@
   // =====================================================
   // AVATAR PICKER WITH FILTERS
   // =====================================================
-  function openAvatarPicker(currentAvatar, playerName, onSelect) {
+    function openAvatarPicker(currentAvatar, playerName, onSelect) {
     var existing = document.getElementById(PICKER_ID);
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('avatarPicker');
+    }
 
     var filterGender = null;
     var filterAge = null;
@@ -179,7 +182,12 @@
 
     rebuildGrid();
 
-    function close() { modal.remove(); }
+    function closeRaw() { if (modal.parentNode) modal.remove(); }
+    function close() {
+      closeRaw();
+      if (window.AppHistory) window.AppHistory.closeOverlay('avatarPicker');
+    }
+    if (window.AppHistory) window.AppHistory.openOverlay('avatarPicker', closeRaw);
     modal.addEventListener('click', function(e) { if (e.target === modal) close(); });
     document.getElementById('avPickerClose').addEventListener('click', close);
     document.getElementById('avPickerRemove').addEventListener('click', function() {

@@ -460,6 +460,89 @@
   // -------------------------------
   // Back button
   // -------------------------------
+  async function handleClosePricing(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    }
+
+    log('🔙 Back button klikket');
+
+    try {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        log('ℹ️ Ingen bruker - går til login');
+        if (window.AppHistory && window.__bf_pricingVoluntary && !window.AppHistory.isInPop()) {
+          window.AppHistory.syncDepth(0);
+        }
+        window.__bf_pricingVoluntary = false;
+        if (window.authService && typeof window.authService.showLoginScreen === 'function') {
+          window.authService.showLoginScreen();
+        }
+        return;
+      }
+
+      const svc = getSubscriptionService();
+      if (!svc || typeof svc.checkSubscription !== 'function') {
+        log('⚠️ Subscription service mangler - logger ut og går til login');
+        try {
+          if (window.authService?.supabase?.auth?.signOut) {
+            await window.authService.supabase.auth.signOut();
+          }
+        } catch (signOutErr) {
+          console.warn('⚠️ Sign out failed:', signOutErr);
+        }
+        if (window.AppHistory && window.__bf_pricingVoluntary && !window.AppHistory.isInPop()) {
+          window.AppHistory.syncDepth(0);
+        }
+        window.__bf_pricingVoluntary = false;
+        if (window.authService && typeof window.authService.showLoginScreen === 'function') {
+          window.authService.showLoginScreen();
+        }
+        return;
+      }
+
+      const status = await svc.checkSubscription();
+      const hasAccess = !!(status && (status.active || status.trial || status.lifetime));
+
+      if (window.AppHistory && window.__bf_pricingVoluntary && !window.AppHistory.isInPop()) {
+        window.AppHistory.syncDepth(0);
+      }
+      window.__bf_pricingVoluntary = false;
+
+      if (hasAccess) {
+        log('✅ Bruker har tilgang - går til hovedapp');
+        if (window.authService && typeof window.authService.showMainApp === 'function') {
+          window.authService.showMainApp();
+        }
+      } else {
+        log('ℹ️ Bruker mangler tilgang - logger ut for å tillate kontobytte');
+        try {
+          if (window.authService?.supabase?.auth?.signOut) {
+            await window.authService.supabase.auth.signOut();
+            log('✅ Signed out successfully');
+          }
+        } catch (signOutErr) {
+          console.warn('⚠️ Sign out failed:', signOutErr);
+        }
+        if (window.authService && typeof window.authService.showLoginScreen === 'function') {
+          window.authService.showLoginScreen();
+        }
+      }
+    } catch (err) {
+      console.error('❌ Back button error:', err);
+      if (window.AppHistory && window.__bf_pricingVoluntary && !window.AppHistory.isInPop()) {
+        window.AppHistory.syncDepth(0);
+      }
+      window.__bf_pricingVoluntary = false;
+      if (window.authService && typeof window.authService.showLoginScreen === 'function') {
+        window.authService.showLoginScreen();
+      }
+    }
+  }
+
   function bindBackButton() {
     const btn = document.getElementById('closePricingBtn');
     if (!btn) {
@@ -473,78 +556,21 @@
     }
     btn.__bf_bound_back = true;
 
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // CRITICAL: Stop other handlers from running (auth.js used to have a duplicate handler)
-      if (e.stopImmediatePropagation) {
-        e.stopImmediatePropagation();
+    btn.addEventListener('click', handleClosePricing);
+
+    function registerPricingHistory() {
+      if (!window.AppHistory) {
+        setTimeout(registerPricingHistory, 50);
+        return;
       }
-
-      log('🔙 Back button klikket');
-
-      try {
-        const user = await getCurrentUser();
-        
-        if (!user) {
-          // Ikke innlogget: gå til login
-          log('ℹ️ Ingen bruker - går til login');
-          if (window.authService && typeof window.authService.showLoginScreen === 'function') {
-            window.authService.showLoginScreen();
-          }
-          return;
-        }
-
-        // Innlogget: sjekk subscription
-        const svc = getSubscriptionService();
-        if (!svc || typeof svc.checkSubscription !== 'function') {
-          log('⚠️ Subscription service mangler - logger ut og går til login');
-          // Sign out så bruker kan prøve med annen konto
-          try {
-            if (window.authService?.supabase?.auth?.signOut) {
-              await window.authService.supabase.auth.signOut();
-            }
-          } catch (signOutErr) {
-            console.warn('⚠️ Sign out failed:', signOutErr);
-          }
-          if (window.authService && typeof window.authService.showLoginScreen === 'function') {
-            window.authService.showLoginScreen();
-          }
-          return;
-        }
-
-        const status = await svc.checkSubscription();
-        const hasAccess = !!(status && (status.active || status.trial || status.lifetime));
-
-        if (hasAccess) {
-          log('✅ Bruker har tilgang - går til hovedapp');
-          if (window.authService && typeof window.authService.showMainApp === 'function') {
-            window.authService.showMainApp();
-          }
-        } else {
-          // VIKTIG: "Tilbake" betyr bruker vil escape - ikke holde dem fanget
-          // Sign out slik at de kan logge inn med en annen konto
-          log('ℹ️ Bruker mangler tilgang - logger ut for å tillate kontobytte');
-          try {
-            if (window.authService?.supabase?.auth?.signOut) {
-              await window.authService.supabase.auth.signOut();
-              log('✅ Signed out successfully');
-            }
-          } catch (signOutErr) {
-            console.warn('⚠️ Sign out failed:', signOutErr);
-          }
-          if (window.authService && typeof window.authService.showLoginScreen === 'function') {
-            window.authService.showLoginScreen();
-          }
-        }
-      } catch (err) {
-        console.error('❌ Back button error:', err);
-        // Fallback: gå til login
-        if (window.authService && typeof window.authService.showLoginScreen === 'function') {
-          window.authService.showLoginScreen();
-        }
-      }
-    });
+      if (registerPricingHistory._done) return;
+      registerPricingHistory._done = true;
+      window.AppHistory.registerBack(function () {
+        var page = document.getElementById('pricingPage');
+        return !!(window.__bf_pricingVoluntary && page && page.style.display !== 'none');
+      }, function () { handleClosePricing(); });
+    }
+    registerPricingHistory();
 
     log('✅ Back button bundet (#closePricingBtn)');
   }
@@ -574,8 +600,12 @@ function isElVisible(el) {
 
 function openModal(modalEl) {
   if (!modalEl) return;
+  var already = modalEl.classList.contains('modal-visible');
   modalEl.classList.add('modal-visible');
   document.body.classList.add('modal-open');
+  if (!already && modalEl.id === 'teamContactModal' && window.AppHistory) {
+    window.AppHistory.openOverlay('teamContact', function () { hideModal(modalEl); });
+  }
   if (window.bfModalA11y && typeof window.bfModalA11y.activate === 'function') {
     window.bfModalA11y.activate(modalEl, {
       focusRootSelector: '.modal-content',
@@ -589,15 +619,23 @@ function openModal(modalEl) {
   }
 }
 
-function closeModal(modalEl) {
+function hideModal(modalEl) {
   if (!modalEl) return;
   if (window.bfModalA11y && typeof window.bfModalA11y.deactivate === 'function') {
     window.bfModalA11y.deactivate(modalEl);
   }
   modalEl.classList.remove('modal-visible');
-  // If no other visible modals, unlock body scroll
   const anyOpen = document.querySelector('.modal.modal-visible');
   if (!anyOpen) document.body.classList.remove('modal-open');
+}
+
+function closeModal(modalEl) {
+  if (!modalEl) return;
+  var wasVisible = modalEl.classList.contains('modal-visible');
+  hideModal(modalEl);
+  if (wasVisible && modalEl.id === 'teamContactModal' && window.AppHistory) {
+    window.AppHistory.closeOverlay('teamContact');
+  }
 }
 
 function buildMailto(formEl, kind) {

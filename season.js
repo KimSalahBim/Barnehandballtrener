@@ -2122,6 +2122,29 @@
     }
   }
 
+  // --- Telefonens tilbakeknapp: nivå per visning ---
+  function snDepth() {
+    switch (snView) {
+      case 'list': return 0;
+      case 'dashboard': case 'create-season': return 1;
+      case 'embedded-workout': case 'embedded-kampdag': return 3;
+      case 'edit-event': return (editingEvent ? 3 : 2);
+      default: return 2;
+    }
+  }
+  function snIsActive() {
+    var el = document.getElementById('sesong');
+    return !!(el && el.classList.contains('active'));
+  }
+  function snGoBack() {
+    var btn = document.querySelector('#snRoot .sn-sticky-header .sn-back, #snRoot #swBackBtn, #snRoot #skdBackBtn');
+    if (btn) { btn.click(); return true; }
+    return false;
+  }
+  if (window.AppHistory) {
+    window.AppHistory.registerBack(function () { return snIsActive() && snView !== 'list'; }, snGoBack);
+  }
+
   function render() {
     var root = $('snRoot');
     if (!root) return;
@@ -2144,6 +2167,7 @@
     }
 
     updateSeasonNav();
+    if (window.AppHistory && snIsActive()) window.AppHistory.syncDepth(snDepth());
 
     switch (snView) {
       case 'list':           renderSeasonList(root);   break;
@@ -3156,11 +3180,15 @@
     // Show NFF disclaimer overlay if stats tab and not yet accepted
     if (dashTab === 'stats' && !hasAcceptedNffDisclaimer()) {
       root.insertAdjacentHTML('beforeend', renderNffDisclaimer());
+      if (window.AppHistory) window.AppHistory.openOverlay('nffDisclaimer', function() {
+        var ov = $('snNffOverlay'); if (ov) ov.remove();
+      });
       var acceptBtn = $('snNffAccept');
       if (acceptBtn) acceptBtn.addEventListener('click', function() {
         acceptNffDisclaimer();
         var overlay = $('snNffOverlay');
         if (overlay) overlay.remove();
+        if (window.AppHistory) window.AppHistory.closeOverlay('nffDisclaimer');
       });
     }
 

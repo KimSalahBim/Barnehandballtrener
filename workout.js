@@ -584,6 +584,8 @@
     _bs.search.value = '';
     _bsFilterSearch();
 
+    if (window.AppHistory) window.AppHistory.openOverlay('picker', function () { closeBottomSheet(true); });
+
     // Save scroll position before body lock (iOS fix)
     _bs._savedScrollY = window.scrollY;
     document.body.style.top = '-' + window.scrollY + 'px';
@@ -601,8 +603,9 @@
   }
 
   /** Close the bottom sheet */
-  function closeBottomSheet() {
+  function closeBottomSheet(fromHistory) {
     if (!_bs.el) return;
+    if (!fromHistory && window.AppHistory) window.AppHistory.closeOverlay('picker');
     _bs.el.classList.remove('wo-bs-open');
     document.body.classList.remove('wo-bs-body-lock');
 
@@ -3747,7 +3750,10 @@ function serializeWorkoutFromState() {
   function _woShowHelpDialog(type) {
     // Remove any existing dialog
     const existing = document.querySelector('.wo-help-dialog');
-    if (existing) existing.remove();
+    if (existing) {
+      existing.remove();
+      if (window.AppHistory) window.AppHistory.closeOverlay('woHelp');
+    }
 
     const actionsEl = document.querySelector('.wo-actions');
     if (!actionsEl) return;
@@ -3771,10 +3777,11 @@ function serializeWorkoutFromState() {
         '</div>';
 
       actionsEl.after(dialog);
+      wireHelpHistory(dialog);
 
-      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => closeHelpDialog(dialog));
       dialog.querySelector('.wo-help-go').addEventListener('click', () => {
-        dialog.remove();
+        closeHelpDialog(dialog);
         // Use Web Share if available, otherwise download
         if (navigator.share) {
           shareWorkoutFile();
@@ -3799,13 +3806,25 @@ function serializeWorkoutFromState() {
         '</div>';
 
       actionsEl.after(dialog);
+      wireHelpHistory(dialog);
 
-      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => dialog.remove());
+      dialog.querySelector('.wo-help-cancel').addEventListener('click', () => closeHelpDialog(dialog));
       dialog.querySelector('.wo-help-go').addEventListener('click', () => {
-        dialog.remove();
+        closeHelpDialog(dialog);
         importWorkoutFileFromPicker();
       });
     }
+  }
+
+  function closeHelpDialogRaw(dialog) {
+    if (dialog && dialog.parentNode) dialog.remove();
+  }
+  function closeHelpDialog(dialog) {
+    closeHelpDialogRaw(dialog);
+    if (window.AppHistory) window.AppHistory.closeOverlay('woHelp');
+  }
+  function wireHelpHistory(dialog) {
+    if (window.AppHistory) window.AppHistory.openOverlay('woHelp', function () { closeHelpDialogRaw(dialog); });
   }
 
   // -------------------------

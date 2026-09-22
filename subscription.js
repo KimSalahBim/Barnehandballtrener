@@ -542,13 +542,23 @@ function setModalTexts(status) {
 }
 
 
+  let _subHistoryOpen = false;
+
   async function openSubscriptionModal() {
     const modal = document.getElementById("subscriptionModal");
     if (!modal) return;
 
     // Fjern hidden-klasse og sett display
+    const wasHidden = modal.classList.contains("hidden") || modal.style.display === "none";
     modal.classList.remove("hidden");
     modal.style.display = "block";
+    if (wasHidden && window.AppHistory) {
+      _subHistoryOpen = true;
+      window.AppHistory.openOverlay("subscription", function () {
+        _subHistoryOpen = false;
+        hideSubscriptionModal();
+      });
+    }
 
     const status = await subscriptionService.checkSubscription();
     setModalTexts(status);
@@ -634,7 +644,7 @@ if (cancelBtn && !cancelBtn.__bound) {
         e.stopPropagation();
         if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
         closeSubscriptionModal();
-        window.authService?.showPricingPage?.();
+        window.authService?.showPricingPage?.({ voluntary: true });
       }, { capture: true });
     }
 
@@ -807,7 +817,7 @@ if (cancelBtn && !cancelBtn.__bound) {
     }
   }
 
-  function closeSubscriptionModal() {
+  function hideSubscriptionModal() {
     const modal = document.getElementById("subscriptionModal");
     if (!modal) return;
     if (window.bfModalA11y && typeof window.bfModalA11y.deactivate === "function") {
@@ -815,6 +825,12 @@ if (cancelBtn && !cancelBtn.__bound) {
     }
     modal.style.display = "none";
     modal.classList.add("hidden");
+  }
+
+  function closeSubscriptionModal() {
+    hideSubscriptionModal();
+    if (_subHistoryOpen && window.AppHistory) window.AppHistory.closeOverlay("subscription");
+    _subHistoryOpen = false;
   }
 
   function bind() {

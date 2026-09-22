@@ -724,7 +724,10 @@ console.log('✅ Supabase client opprettet (window.supabase = client)');
     if (r.mainApp) r.mainApp.style.display = 'none';
   };
 
-  AuthService.prototype.showPricingPage = function () {
+  AuthService.prototype.showPricingPage = function (opts) {
+    var voluntary = !!(opts && opts.voluntary);
+    window.__bf_pricingVoluntary = voluntary;
+
     document.body.classList.add('gated');
     window.scrollTo(0, 0);
     lockScroll();
@@ -735,6 +738,8 @@ console.log('✅ Supabase client opprettet (window.supabase = client)');
     if (r.loginScreen) r.loginScreen.style.display = 'none';
     if (r.pricingPage) r.pricingPage.style.display = 'block';
     if (r.mainApp) r.mainApp.style.display = 'none';
+
+    if (voluntary && window.AppHistory) window.AppHistory.syncDepth(1);
   };
 
   AuthService.prototype.showMainApp = function () {

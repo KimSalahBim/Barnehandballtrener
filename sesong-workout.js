@@ -345,7 +345,10 @@
 
   function askConfirm(message, onYes) {
     var old = document.getElementById('swConfirmOverlay');
-    if (old && old.parentNode) old.parentNode.removeChild(old);
+    if (old && old.parentNode) {
+      old.parentNode.removeChild(old);
+      if (window.AppHistory) window.AppHistory.closeOverlay('swConfirm');
+    }
     var overlay = document.createElement('div');
     overlay.id = 'swConfirmOverlay';
     overlay.setAttribute('role', 'dialog');
@@ -359,7 +362,9 @@
         '</div>' +
       '</div>';
     document.body.appendChild(overlay);
-    function close() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    if (window.AppHistory) window.AppHistory.openOverlay('swConfirm', function () { closeRaw(); });
+    function closeRaw() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    function close() { closeRaw(); if (window.AppHistory) window.AppHistory.closeOverlay('swConfirm'); }
     overlay.querySelector('#swConfirmNo').addEventListener('click', close);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
     overlay.querySelector('#swConfirmYes').addEventListener('click', function() {
