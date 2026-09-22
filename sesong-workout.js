@@ -345,10 +345,8 @@
 
   function askConfirm(message, onYes) {
     var old = document.getElementById('swConfirmOverlay');
-    if (old && old.parentNode) {
-      old.parentNode.removeChild(old);
-      if (window.AppHistory) window.AppHistory.closeOverlay('swConfirm');
-    }
+    // Fjern bare DOM-en. Steget gjenbrukes av openOverlay (samme navn).
+    if (old && old.parentNode) old.parentNode.removeChild(old);
     var overlay = document.createElement('div');
     overlay.id = 'swConfirmOverlay';
     overlay.setAttribute('role', 'dialog');

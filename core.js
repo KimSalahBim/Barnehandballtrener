@@ -3520,17 +3520,26 @@
       try { history.replaceState(snapshot(), ''); } catch (e) {}
     }
   }
-  // Overlegg legger IKKE inn egne steg. Et tilbake-trykk lukker det øverste
-  // overlegget, og vi legger inn igjen steget vi brukte, slik at nivået holdes.
+  // Hvert overlegg legger inn ETT steg, slik at tilbake lukker overlegget
+  // selv når du står på øverste nivå. Nivået leses alltid av steget vi lander på.
   function openOverlay(name, close) {
     start();
+    // Åpnes samme overlegg på nytt (f.eks. et vindu som erstatter seg selv),
+    // gjenbruker vi steget i stedet for å legge inn et nytt.
+    if (overlays.length && overlays[overlays.length - 1].name === name) {
+      overlays[overlays.length - 1].close = close;
+      return;
+    }
     overlays.push({ name: name, close: close });
+    try { history.pushState(snapshot({ overlay: name }), ''); } catch (e) {}
   }
   function closeOverlay(name) {
     if (!overlays.length) return;
     var i = overlays.length - 1;
     if (name) { for (var j = overlays.length - 1; j >= 0; j--) { if (overlays[j].name === name) { i = j; break; } } }
     overlays.splice(i, 1);
+    ignoreNext++;
+    try { history.go(-1); } catch (e) { ignoreNext--; }
   }
   function registerBack(match, back) { handlers.push({ match: match, back: back }); }
   function resetTo(d) {  // brukes ved fanebytte
@@ -3550,9 +3559,7 @@
     if (overlays.length) {
       var o = overlays.pop();
       try { o.close(); } catch (err) {}
-      depth = prevDepth;                                          // vi ble stående på samme side
-      try { history.pushState(snapshot(), ''); } catch (err) {}   // gi tilbake steget vi brukte
-      return;
+      return;   // steget til overlegget er brukt opp; nivået står som før
     }
     for (var i = 0; i < handlers.length; i++) {
       var h = handlers[i];
