@@ -1105,10 +1105,26 @@
               <span class="kd-chip-icon">⚖️</span>
               <span class="kd-chip-text">Lik spilletid<span class="kd-chip-sub">Rettferdig</span></span>
             </button>
+            <button type="button" class="kd-mode-chip kd-freq-btn" data-freq="interval">
+              <span class="kd-chip-icon">⏱️</span>
+              <span class="kd-chip-text">Fast intervall<span class="kd-chip-sub">Forutsigbar</span></span>
+            </button>
             <button type="button" class="kd-mode-chip kd-freq-btn" data-freq="calm">
               <span class="kd-chip-icon">🧘</span>
               <span class="kd-chip-text">Rolig plan<span class="kd-chip-sub">Færre bytter</span></span>
             </button>
+          </div>
+
+          <!-- Fast intervall-panel (vises kun når intervallmodus er aktiv) -->
+          <div id="kdIntervalPanel" class="kd-interval-panel" style="display:none;">
+            <label for="kdIntervalMin">Bytt hvert</label>
+            <input id="kdIntervalMin" type="number" class="input kd-interval-input" min="3" max="60" value="8" inputmode="numeric">
+            <span class="small-text kd-interval-unit">min</span>
+            <label class="kd-interval-adjust">
+              <input id="kdIntervalAdjust" type="checkbox">
+              <span>Jevn ut spilletid</span>
+            </label>
+            <div id="kdIntervalPreview" class="small-text kd-interval-preview"></div>
           </div>
 
           <!-- VELG/FJERN -->

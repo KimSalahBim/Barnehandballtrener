@@ -430,6 +430,50 @@
   color: var(--primary, #1a82c4);
 }
 .kd-mode-chip.kd-freq-active .kd-chip-sub { color: var(--primary, #1a82c4); opacity: 0.7; }
+/* .kd-freq-active over setter bakgrunnen til solid --primary med !important,
+   saa underteksten maa vaere lys for aa vaere lesbar paa den aktive brikken. */
+.kd-mode-chip.kd-freq-active .kd-chip-sub {
+  color: rgba(255,255,255,0.88);
+  opacity: 1;
+}
+
+/* Fast intervall-panel. Egen klasse, ikke .settings-row: den stables
+   vertikalt under 768px, som ville gitt inputfelt i full bredde og
+   "min" alene paa egen linje. */
+.kd-interval-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bg, #f8fafc);
+  border-radius: 10px;
+}
+.kd-interval-panel > label[for] { font-weight: 700; font-size: 13px; white-space: nowrap; }
+.kd-interval-panel .kd-interval-input {
+  width: 64px;
+  flex: 0 0 64px;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 15px;
+}
+.kd-interval-panel .kd-interval-unit { font-size: 13px; }
+.kd-interval-panel .kd-interval-adjust {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; margin-left: auto; cursor: pointer; white-space: nowrap;
+}
+.kd-interval-panel .kd-interval-adjust input { flex: 0 0 auto; margin: 0; }
+.kd-interval-preview {
+  flex-basis: 100%;
+  font-size: 11px;
+  opacity: 0.9;
+  min-height: 14px;
+  line-height: 1.35;
+}
+@media (max-width: 380px) {
+  .kd-interval-panel .kd-interval-adjust { margin-left: 0; flex-basis: 100%; }
+}
 
 /* Keeper counter */
 .kd-counter {

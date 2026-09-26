@@ -145,7 +145,9 @@
   }
 
   // Frequency state
-  let kdFrequency = 'equal';   // 'equal' or 'calm'
+  let kdFrequency = 'equal';   // 'equal', 'interval' or 'calm'
+  let kdIntervalMin = 8;       // Minutes between subs (interval mode only)
+  let kdIntervalAdjust = false; // Opt-in: let algo adjust n_segs +/-2 for fairness
 
   // Timer state
   let kdTimerInterval = null;
@@ -231,9 +233,12 @@
   // "calm" = Rolig bytteplan: fewer substitutions and longer stints.
   //   Strong stickiness -> holds players on field/bench longer.
   //   High splitHalf -> avoids creating short segments.
+  // "interval" = Fast intervall: fixed boundaries every N minutes.
+  //   No stickiness and no individual swaps -> the interval promise holds.
   const FREQ_PARAMS = {
-    equal: { mode: 'equal', sticky: 'mild',   swapSplitHalf: 4 },
-    calm:  { mode: 'calm',  sticky: 'strong', swapSplitHalf: 5 },
+    equal:    { mode: 'equal',    sticky: 'mild',   swapSplitHalf: 4 },
+    interval: { mode: 'interval', sticky: null,     swapSplitHalf: 0 },
+    calm:     { mode: 'calm',     sticky: 'strong', swapSplitHalf: 5 },
   };
 
   function bindKampdagUI() {
@@ -365,14 +370,56 @@
 
     // Frequency buttons
     const freqContainer = $('skdFreqOptions');
+    const intervalPanel = $('skdIntervalPanel');
     if (freqContainer) {
       freqContainer.querySelectorAll('.kd-freq-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           freqContainer.querySelectorAll('.kd-freq-btn').forEach(b => b.classList.remove('kd-freq-active'));
           btn.classList.add('kd-freq-active');
           kdFrequency = btn.getAttribute('data-freq') || 'equal';
+          if (intervalPanel) intervalPanel.style.display = (kdFrequency === 'interval') ? 'flex' : 'none';
+          updateIntervalPreview();
         });
       });
+    }
+
+    // Interval inputs (Fast intervall mode)
+    const intervalInput = $('skdIntervalMin');
+    if (intervalInput) {
+      const curT = parseInt($('skdMinutes')?.value, 10) || 48;
+      const smartDefault = Math.max(4, Math.min(12, Math.round(curT / 8)));
+      intervalInput.value = smartDefault;
+      kdIntervalMin = smartDefault;
+      intervalInput.addEventListener('input', () => {
+        const v = parseInt(intervalInput.value, 10);
+        if (!isNaN(v) && v >= 3) {
+          kdIntervalMin = clamp(v, 3, 60);
+        }
+        updateIntervalPreview();
+      });
+    }
+    const intervalAdjust = $('skdIntervalAdjust');
+    if (intervalAdjust) {
+      intervalAdjust.checked = false;
+      kdIntervalAdjust = false;
+      intervalAdjust.addEventListener('change', () => {
+        kdIntervalAdjust = !!intervalAdjust.checked;
+        updateIntervalPreview();
+      });
+    }
+
+    // Keep preview in sync when kamptid or keeper settings change
+    const minutesElForPreview = $('skdMinutes');
+    if (minutesElForPreview) {
+      minutesElForPreview.addEventListener('input', updateIntervalPreview);
+    }
+    const keeperCountForPreview = $('skdKeeperCount');
+    if (keeperCountForPreview) {
+      keeperCountForPreview.addEventListener('change', updateIntervalPreview);
+    }
+    for (let i = 1; i <= 4; i++) {
+      const kmin = $(`skdKeeperMin${i}`);
+      if (kmin) kmin.addEventListener('input', updateIntervalPreview);
     }
 
     // Formation always on: hide toggle switch, show panel for non-3v3
@@ -469,6 +516,9 @@
     if (info) {
       info.textContent = `${kdSelected.size} p\u00e5 oppm\u00f8te \u2022 ${onField} p\u00e5 banen \u2022 ${minutes} min`;
     }
+
+    // The interval preview depends on attendance and format, so refresh it here.
+    if (typeof updateIntervalPreview === 'function') updateIntervalPreview();
   }
 
   // ------------------------------
@@ -1792,6 +1842,273 @@
   }
 
   // ------------------------------
+  // Fast intervall
+  // ------------------------------
+
+  /**
+   * Build segment boundaries by distributing evenly within each keeper period.
+   * Keeper-swap times are mandatory boundaries.
+   *
+   * When adjustForBalance is true, for each period tries n_segs in
+   * [target-2 .. target+2] and keeps the one giving best estimated fairness
+   * (via quick sim with 6 seeds), with a small deviation penalty.
+   */
+  function intervalPeriods(T, keeperTimeline) {
+    return (keeperTimeline && keeperTimeline.length)
+      ? keeperTimeline
+      : [{ start: 0, end: T, keeperId: null }];
+  }
+
+  function baseNsegsPerPeriod(periods, intervalMin) {
+    return periods.map(p => {
+      const L = p.end - p.start;
+      return L > 0 ? Math.max(1, Math.round(L / intervalMin)) : 0;
+    });
+  }
+
+  /**
+   * Coverage guard: make sure the plan has room for every present player.
+   *
+   * A segment offers P places, one of which is taken by the keeper when the
+   * period has one. A long interval on a short match can therefore leave a
+   * child on the bench for the whole match -- e.g. 5-er, 10 players, 30 min,
+   * 12 min interval gives 2 segments of 15 min, which is 8 outfield places
+   * for 9 outfield players. When that happens we add segments (shortening the
+   * actual interval) until everyone fits. Never goes below 3 min per segment.
+   *
+   * Mutates nsegsPerPeriod in place. No-op for normal interval choices.
+   */
+  function applyIntervalCoverageGuard(periods, nsegsPerPeriod, P, N, T) {
+    if (!P || !N) return nsegsPerPeriod;
+
+    // Players who keep for the whole match never need an outfield place.
+    const keeperTotals = {};
+    for (const p of periods) {
+      if (!p.keeperId) continue;
+      keeperTotals[p.keeperId] = (keeperTotals[p.keeperId] || 0) + (p.end - p.start);
+    }
+    const fullMatchKeepers = Object.keys(keeperTotals)
+      .filter(id => keeperTotals[id] >= T - 0.001).length;
+    const demand = Math.max(0, N - fullMatchKeepers);
+
+    const capacity = () => periods.reduce((sum, p, i) => {
+      if (p.end - p.start <= 0) return sum;
+      const slots = Math.max(1, P - (p.keeperId ? 1 : 0));
+      return sum + (nsegsPerPeriod[i] || 0) * slots;
+    }, 0);
+
+    let guard = 0;
+    let fired = false;
+    while (capacity() < demand && guard++ < 60) {
+      // Split the period whose segments are currently longest.
+      let bi = -1, longest = -1;
+      for (let i = 0; i < periods.length; i++) {
+        const L = periods[i].end - periods[i].start;
+        if (L <= 0) continue;
+        const n = nsegsPerPeriod[i] || 0;
+        if (L / (n + 1) < 3) continue;          // would go under 3 min
+        const segLen = L / Math.max(1, n);
+        if (segLen > longest) { longest = segLen; bi = i; }
+      }
+      if (bi < 0) break;                         // cannot split further
+      nsegsPerPeriod[bi] = (nsegsPerPeriod[bi] || 0) + 1;
+      fired = true;
+    }
+
+    // Even out afterwards. Without this the guard can leave one period as a
+    // single long block next to a period of short ones (15 min + 7/8 min),
+    // which reads as a mistake to the coach.
+    if (fired) {
+      const segLens = periods
+        .map((p, i) => (p.end - p.start) / Math.max(1, nsegsPerPeriod[i] || 1))
+        .filter(x => x > 0);
+      if (segLens.length) {
+        const shortest = Math.min(...segLens);
+        for (let i = 0; i < periods.length; i++) {
+          const L = periods[i].end - periods[i].start;
+          if (L <= 0) continue;
+          let n = nsegsPerPeriod[i] || 1;
+          while (L / n > shortest * 1.34 && L / (n + 1) >= 3) n++;
+          nsegsPerPeriod[i] = n;
+        }
+      }
+    }
+    return nsegsPerPeriod;
+  }
+
+  function buildIntervalSegmentTimes(T, intervalMin, keeperTimeline, players, P, N, adjustForBalance) {
+    const periods = intervalPeriods(T, keeperTimeline);
+    const nsegsPerPeriod = baseNsegsPerPeriod(periods, intervalMin);
+
+    if (adjustForBalance && players && players.length && P && N) {
+      for (let pi = 0; pi < periods.length; pi++) {
+        const target = nsegsPerPeriod[pi];
+        if (target < 1) continue;
+        const L = periods[pi].end - periods[pi].start;
+        if (L <= 0) continue;
+
+        const minN = Math.max(1, target - 2);
+        const maxN = target + 2;
+        let bestN = target;
+        let bestScore = Infinity;
+
+        for (let candN = minN; candN <= maxN; candN++) {
+          if (candN > 0 && L / candN < 3) continue; // min segment length
+
+          const testNsegs = nsegsPerPeriod.slice();
+          testNsegs[pi] = candN;
+          const testTimes = buildIntervalBoundariesFromNsegs(T, periods, testNsegs);
+          const estDiff = estimateIntervalFairness(players, testTimes, P, keeperTimeline);
+          const deviation = Math.abs(candN - target);
+          const score = estDiff + deviation * 0.5;
+          if (score < bestScore) {
+            bestScore = score;
+            bestN = candN;
+          }
+        }
+        nsegsPerPeriod[pi] = bestN;
+      }
+    }
+
+    applyIntervalCoverageGuard(periods, nsegsPerPeriod, P, N, T);
+
+    return buildIntervalBoundariesFromNsegs(T, periods, nsegsPerPeriod);
+  }
+
+  // Build sorted boundary list given nsegs-per-period.
+  function buildIntervalBoundariesFromNsegs(T, periods, nsegsPerPeriod) {
+    const boundaries = new Set([0, T]);
+    for (const p of periods) {
+      boundaries.add(p.start);
+      boundaries.add(p.end);
+    }
+    for (let i = 0; i < periods.length; i++) {
+      const p = periods[i];
+      const L = p.end - p.start;
+      const n = nsegsPerPeriod[i];
+      if (L <= 0 || n <= 1) continue;
+      for (let k = 1; k < n; k++) {
+        boundaries.add(Math.round(p.start + L * k / n));
+      }
+    }
+    return Array.from(boundaries).sort((a, b) => a - b);
+  }
+
+  // Quick fairness estimator for adjustForBalance loop. 6 seeds, median nkDiff.
+  function estimateIntervalFairness(players, times, P, keeperTimeline) {
+    const SEEDS = 6;
+    const diffs = [];
+    const baseSeed = 1731 * (times.length + 1);
+    for (let s = 0; s < SEEDS; s++) {
+      const res = greedyAssign(players, times, P, keeperTimeline,
+                               baseSeed + s * 100003, null);
+      const nonKeepers = players.map(p => p.id).filter(id => !res.keeperSet.has(id));
+      const vals = nonKeepers.map(id => res.minutes[id]);
+      if (vals.length) diffs.push(Math.max(...vals) - Math.min(...vals));
+    }
+    if (!diffs.length) return 0;
+    diffs.sort((a, b) => a - b);
+    return diffs[Math.floor(diffs.length / 2)];
+  }
+
+  /**
+   * Compute actual interval(s) that will be used given requested interval,
+   * match duration, and keeper timeline. Mirrors buildIntervalSegmentTimes'
+   * nsegsPerPeriod logic but returns just the resulting segment lengths.
+   *
+   * Returns { minLen, maxLen, uniform } where uniform=true means all periods
+   * have the same effective interval.
+   */
+  function computeActualInterval(T, intervalMin, keeperTimeline, P, N) {
+    const periods = intervalPeriods(T, keeperTimeline);
+    const nsegsPerPeriod = baseNsegsPerPeriod(periods, intervalMin);
+    const before = nsegsPerPeriod.slice();
+    applyIntervalCoverageGuard(periods, nsegsPerPeriod, P, N, T);
+    const forced = nsegsPerPeriod.some((n, i) => n !== before[i]);
+
+    const sortedBounds = buildIntervalBoundariesFromNsegs(T, periods, nsegsPerPeriod);
+    const lengths = [];
+    for (let i = 0; i < sortedBounds.length - 1; i++) {
+      const dt = sortedBounds[i + 1] - sortedBounds[i];
+      if (dt > 0) lengths.push(dt);
+    }
+
+    if (!lengths.length) return { minLen: intervalMin, maxLen: intervalMin, uniform: true, forced: false, spread: 0 };
+
+    const minLen = Math.min(...lengths);
+    const maxLen = Math.max(...lengths);
+    const uniform = (maxLen - minLen) < 0.5;
+
+    // Expected difference in playing time. With C outfield places across the
+    // plan and D outfield players, each player gets floor(C/D) or ceil(C/D)
+    // segments. When C does not divide evenly, that is one segment's worth of
+    // difference -- on a short match with a long interval that can be 15 min,
+    // which the coach should see before generating.
+    let spread = 0;
+    if (P && N) {
+      const keeperTotals = {};
+      for (const p of periods) {
+        if (!p.keeperId) continue;
+        keeperTotals[p.keeperId] = (keeperTotals[p.keeperId] || 0) + (p.end - p.start);
+      }
+      const fullMatchKeepers = Object.keys(keeperTotals)
+        .filter(id => keeperTotals[id] >= T - 0.001).length;
+      const D = Math.max(0, N - fullMatchKeepers);
+      const C = periods.reduce((sum, p, i) => {
+        if (p.end - p.start <= 0) return sum;
+        return sum + (nsegsPerPeriod[i] || 0) * Math.max(1, P - (p.keeperId ? 1 : 0));
+      }, 0);
+      if (D > 0 && C > 0 && C % D !== 0) spread = maxLen;
+    }
+
+    return { minLen, maxLen, uniform, forced, spread };
+  }
+
+  /**
+   * Update the live preview text in skdIntervalPreview.
+   * Called reactively on input/change events.
+   */
+  function updateIntervalPreview() {
+    const previewEl = $('skdIntervalPreview');
+    if (!previewEl) return;
+
+    if (kdFrequency !== 'interval') {
+      previewEl.textContent = '';
+      return;
+    }
+
+    const T = clamp(parseInt($('skdMinutes')?.value, 10) || 48, 10, 200);
+    const requested = Math.max(3, Math.min(Math.floor(T / 2), kdIntervalMin || 8));
+    const keeperTimeline = buildKeeperTimeline(T);
+    const P = parseInt($('skdFormat')?.value, 10) || 7;
+    const N = (typeof getPresentPlayers === 'function' ? getPresentPlayers().length : 0);
+
+    const { minLen, maxLen, uniform, forced, spread } = computeActualInterval(T, requested, keeperTimeline, P, N);
+
+    const fmt = (n) => String(Math.round(n));
+    const span = uniform ? `${fmt(minLen)} min` : `${fmt(minLen)}–${fmt(maxLen)} min`;
+    // Only worth saying when the gap is big enough to matter to a parent.
+    const advarsel = spread >= 6 ? ` · opptil ${fmt(spread)} min forskjell i spilletid` : '';
+    // With balance adjustment on, the algorithm may move the boundaries, so
+    // the figures above are what it starts from, not a promise.
+    const justert = kdIntervalAdjust ? ' · intervallet kan justeres for jevnere spilletid' : '';
+
+    if (forced) {
+      previewEl.textContent = `Faktisk intervall: ${span} – kortet ned så alle ${N} får spilletid${advarsel}${justert}`;
+      previewEl.style.color = 'var(--text-600)';
+    } else if (uniform && Math.abs(minLen - requested) < 0.5) {
+      previewEl.textContent = `Intervall: ${fmt(minLen)} min ✓${advarsel}${justert}`;
+      previewEl.style.color = (advarsel || justert) ? 'var(--text-600)' : 'var(--success)';
+    } else if (uniform || (maxLen - minLen) <= 1.5) {
+      previewEl.textContent = `Faktisk intervall: ${span} (tilpasses keeperbytter)${advarsel}${justert}`;
+      previewEl.style.color = 'var(--text-600)';
+    } else {
+      previewEl.textContent = `Faktisk intervall: ${span} (varierer mellom omganger)${advarsel}${justert}`;
+      previewEl.style.color = 'var(--text-600)';
+    }
+  }
+
+  // ------------------------------
   // MAIN
   // ------------------------------
   function generateKampdagPlan() {
@@ -1944,6 +2261,50 @@
             if (isBetter(candidate, best)) best = candidate;
           }
         }
+      }
+    } else if (fp.mode === 'interval') {
+      // Fast intervall: fixed boundaries per keeper period, no stickyMode,
+      // no addIndividualSwaps (preserves the interval promise).
+      const clampedInterval = Math.max(3, Math.min(Math.floor(T / 2), kdIntervalMin || 8));
+      const times = buildIntervalSegmentTimes(
+        T, clampedInterval, keeperTimeline, present, P, N, kdIntervalAdjust
+      );
+
+      for (let attempt = 0; attempt < NUM_ATTEMPTS; attempt++) {
+        const runSeed = seed + attempt * 99991;
+        const res = greedyAssign(present, times, P, keeperTimeline, runSeed, null);
+
+        const segClone = res.segments.map(s => ({
+          start: s.start, end: s.end, dt: s.dt,
+          lineup: s.lineup.slice(), keeperId: s.keeperId
+        }));
+        const minClone = Object.assign({}, res.minutes);
+        // NOTE: intentionally NOT calling addIndividualSwaps here
+
+        const nonKeepers = present.map(p => p.id).filter(id => !res.keeperSet.has(id));
+        const nkVals = nonKeepers.map(id => minClone[id]);
+        const nkDiff = nkVals.length ? Math.max(...nkVals) - Math.min(...nkVals) : 0;
+        const kIds = present.map(p => p.id).filter(id => res.keeperSet.has(id));
+        const kVals = kIds.map(id => minClone[id]);
+        const kDiff = kVals.length >= 2 ? Math.max(...kVals) - Math.min(...kVals) : 0;
+        const allTimes = uniqSorted(segClone.map(s => s.start).concat([T]));
+
+        const candidate = {
+          segments: segClone,
+          minutes: minClone,
+          keeperMinutes: res.keeperMinutes,
+          times: allTimes,
+          nkDiff,
+          kDiff,
+          swaps: []
+        };
+
+        const candidateScore = kDiff * 2 + nkDiff;
+        const bestScore = best ? (best.kDiff || 0) * 2 + best.nkDiff : Infinity;
+        if (!best || candidateScore < bestScore) {
+          best = candidate;
+        }
+        if (kDiff <= 2 && nkDiff <= 2) break;
       }
     } else {
       // Calm mode: keep existing logic unchanged
@@ -2990,8 +3351,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
           '<div style="font-weight:500; font-size:13px; min-width:100px;">Byttemodus</div>' +
           '<div id="skdFreqOptions" style="display:flex; gap:6px; flex:1;">' +
             '<button type="button" class="btn-secondary kd-freq-btn kd-freq-active" data-freq="equal" style="flex:1; font-size:12px; padding:7px 4px;">\u2696\ufe0f Lik spilletid<br><span class="small-text" style="opacity:0.9;">Rettferdig</span></button>' +
+            '<button type="button" class="btn-secondary kd-freq-btn" data-freq="interval" style="flex:1; font-size:12px; padding:7px 4px;">\u23f1\ufe0f Fast intervall<br><span class="small-text" style="opacity:1; color:var(--text-600);">Forutsigbar</span></button>' +
             '<button type="button" class="btn-secondary kd-freq-btn" data-freq="calm" style="flex:1; font-size:12px; padding:7px 4px;">\ud83e\uddd8 Rolig bytteplan<br><span class="small-text" style="opacity:1; color:var(--text-600);">F\u00e6rre bytter</span></button>' +
           '</div>' +
+        '</div>' +
+        '<div id="skdIntervalPanel" class="kd-interval-panel" style="display:none;">' +
+          '<label for="skdIntervalMin">Bytt hvert</label>' +
+          '<input id="skdIntervalMin" type="number" class="input kd-interval-input" min="3" max="60" value="8" inputmode="numeric">' +
+          '<span class="small-text kd-interval-unit">min</span>' +
+          '<label class="kd-interval-adjust">' +
+            '<input id="skdIntervalAdjust" type="checkbox">' +
+            '<span>Jevn ut spilletid</span>' +
+          '</label>' +
+          '<div id="skdIntervalPreview" class="small-text kd-interval-preview"></div>' +
         '</div>' +
         '<div class="settings-row" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">' +
           '<button id="skdSelectAll" class="btn-secondary" type="button">Velg alle</button>' +
@@ -3092,6 +3464,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
       lastFormation = null; lastFormationKey = ''; lastUseFormation = false; lastPositions = {};
       kdSlotOverrides = {};
       kdFormationOn = true; kdFrequency = 'equal';
+      kdIntervalMin = 8; kdIntervalAdjust = false;
       if (kdTimerInterval) { clearInterval(kdTimerInterval); kdTimerInterval = null; }
       kdTimerStart = null; kdTimerPaused = false; kdTimerPausedElapsed = 0;
 
