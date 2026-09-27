@@ -4058,10 +4058,18 @@ function serializeWorkoutFromState() {
     (function rehydrateAfterAuth() {
       const initialPrefix = getUserKeyPrefix();
       let attempts = 0;
+      // Klar = bruker og lag er kjent, altsaa de samme kravene _woLoadFromDb stiller.
+      // Ved refresh av en paalogget sesjon er alt klart allerede naar dette kjoerer,
+      // prefikset endrer seg aldri, og uten denne sjekken ble skyen aldri lest.
+      const erKlar = () => {
+        const u = _woGetUid();
+        const t = _woGetTeamId();
+        return !!u && u !== 'anon' && !!t && t !== 'default';
+      };
       const timer = setInterval(() => {
         attempts++;
         const currentPrefix = getUserKeyPrefix();
-        if (currentPrefix !== initialPrefix) {
+        if (currentPrefix !== initialPrefix || erKlar()) {
           // Auth resolved with real uid — re-render with correct keys
           clearInterval(timer);
           console.log('[workout.js] auth resolved, rehydrating storage from', initialPrefix, '→', currentPrefix);

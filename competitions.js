@@ -1136,10 +1136,19 @@
   (function rehydrateAfterAuth() {
     const initialPrefix = getUserKeyPrefix();
     let attempts = 0;
+    // Ved refresh av en paalogget sesjon er bruker og lag kjent allerede naar
+    // dette kjoerer. Da endrer prefikset seg aldri, og uten denne sjekken ble
+    // skydataene aldri lest. Samme feil som i workout.js.
+    const erKlar = () => {
+      const u = (window.authService && typeof window.authService.getUserId === 'function')
+        ? window.authService.getUserId() : null;
+      const t = window._bftTeamId || null;
+      return !!u && u !== 'anon' && !!t && t !== 'default';
+    };
     const timer = setInterval(() => {
       attempts++;
       const currentPrefix = getUserKeyPrefix();
-      if (currentPrefix !== initialPrefix) {
+      if (currentPrefix !== initialPrefix || erKlar()) {
         clearInterval(timer);
         console.log('[Competitions] auth resolved, rehydrating storage from', initialPrefix, '→', currentPrefix);
         migrateAnonData();
