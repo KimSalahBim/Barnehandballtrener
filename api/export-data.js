@@ -135,7 +135,7 @@ export default async function handler(req, res) {
     try {
       const { data: errorData, error: errorErr } = await supabaseAdmin
         .from('error_logs')
-        .select('id, message, source, lineno, colno, user_agent, url, created_at')
+        .select('id, message, page, filename, line_number, browser, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(200);
@@ -182,10 +182,10 @@ export default async function handler(req, res) {
             const eventIds = evData.map(e => e.id);
 
             if (eventIds.length > 0) {
-              // Event players (attendance, minutes, goalkeeper)
+              // Event players (attendance, minutes)
               const { data: epData } = await supabaseAdmin
                 .from('event_players')
-                .select('id, event_id, season_id, player_id, attended, minutes_played, is_goalkeeper, absence_reason, in_squad, player_name')
+                .select('id, event_id, season_id, player_id, attended, minutes_played, absence_reason, in_squad, player_name')
                 .eq('user_id', userId)
                 .in('event_id', eventIds);
               if (epData) exportData.app_data.event_players = epData;

@@ -5434,7 +5434,7 @@
       if (ok && name !== sp.name && currentSeason) {
         try {
           var syncSb = getSb();
-          var syncUid = getUserId();
+          var syncUid = getOwnerUid();
           // Get all event IDs for this season
           var evRes = await syncSb.from('events').select('id').eq('season_id', currentSeason.id).eq('user_id', syncUid);
           var evIds = (evRes.data || []).map(function(e) { return e.id; });
