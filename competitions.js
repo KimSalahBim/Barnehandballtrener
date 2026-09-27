@@ -1140,10 +1140,13 @@
     // dette kjoerer. Da endrer prefikset seg aldri, og uten denne sjekken ble
     // skydataene aldri lest. Samme feil som i workout.js.
     const erKlar = () => {
+      // Maa speile forutsetningene loadCompetitionsCloudData krever, inkludert
+      // at skybroen finnes. Fyrer vi foer den er paa plass, avbrytes lesingen
+      // og loekka er alt stoppet. Samme feil som i workout.js.
       const u = (window.authService && typeof window.authService.getUserId === 'function')
         ? window.authService.getUserId() : null;
       const t = window._bftTeamId || null;
-      return !!u && u !== 'anon' && !!t && t !== 'default';
+      return !!window._bftCloud && !!u && u !== 'anon' && !!t && t !== 'default';
     };
     const timer = setInterval(() => {
       attempts++;
@@ -1156,8 +1159,8 @@
 
         // Last cloud-data for konkurranser
         loadCompetitionsCloudData();
-      } else if (attempts >= 40) {
-        // 40 × 150ms = 6s — give up
+      } else if (attempts >= 100) {
+        // 100 × 150ms = 15s — give up. Rausere fordi vi ogsaa venter paa skybroen.
         clearInterval(timer);
       }
     }, 150);

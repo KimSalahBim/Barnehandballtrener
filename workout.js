@@ -4062,9 +4062,13 @@ function serializeWorkoutFromState() {
       // Ved refresh av en paalogget sesjon er alt klart allerede naar dette kjoerer,
       // prefikset endrer seg aldri, og uten denne sjekken ble skyen aldri lest.
       const erKlar = () => {
+        // Maa speile ALLE forutsetningene _woLoadFromDb selv krever. Spesielt
+        // klienten: window.supabase er biblioteket inntil auth.js bytter den ut
+        // med en ekte klient, og _woLoadFromDb avbryter paa !sb uten aa proeve
+        // igjen. Fyrer vi foer klienten finnes, er sjansen brukt opp.
         const u = _woGetUid();
         const t = _woGetTeamId();
-        return !!u && u !== 'anon' && !!t && t !== 'default';
+        return !!_woGetSb() && !!u && u !== 'anon' && !!t && t !== 'default';
       };
       const timer = setInterval(() => {
         attempts++;
@@ -4079,8 +4083,9 @@ function serializeWorkoutFromState() {
 
           // Last cloud-data for treningsøkter
           loadWorkoutCloudData();
-        } else if (attempts >= 40) {
-          // 40 × 150ms = 6s — give up, auth likely stuck or user is genuinely anon
+        } else if (attempts >= 100) {
+          // 100 × 150ms = 15s — give up. Rausere enn foer, fordi vi naa ogsaa
+          // venter paa at Supabase-klienten skal bli bygget.
           clearInterval(timer);
         }
       }, 150);
