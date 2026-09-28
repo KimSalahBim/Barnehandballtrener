@@ -4092,6 +4092,23 @@ function serializeWorkoutFromState() {
     })();
   }
 
+  // Last skydata paa nytt naar Treningsoekt-fanen aapnes.
+  //
+  // De to andre inngangene (team:changed og vaktloekka ved oppstart) avhenger
+  // begge av timing under sidelasting: bruker, lag OG Supabase-klienten maa
+  // vaere paa plass i samme oeyeblikk. Naar brukeren klikker seg inn paa fanen
+  // er alt garantert klart. competitions.js har hatt denne kroken hele tiden;
+  // workout.js har ikke hatt den.
+  //
+  // _woCache.loading og migrasjonsflagget hindrer dobbeltarbeid.
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest
+      ? e.target.closest('.nav-btn[data-tab="workout"], .bottom-nav-btn[data-tab="workout"], .mer-item[data-tab="workout"]')
+      : null;
+    if (!btn) return;
+    try { loadWorkoutCloudData(); } catch (_) {}
+  });
+
   // Load workouts from Supabase (replaces old user_data cloud sync)
   async function loadWorkoutCloudData() {
     try {
