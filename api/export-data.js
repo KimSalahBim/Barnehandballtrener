@@ -135,7 +135,7 @@ export default async function handler(req, res) {
     try {
       const { data: errorData, error: errorErr } = await supabaseAdmin
         .from('error_logs')
-        .select('id, message, page, filename, line_number, browser, created_at')
+        .select('id, message, source, lineno, colno, user_agent, url, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(200);

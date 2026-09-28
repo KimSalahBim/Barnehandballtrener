@@ -32,11 +32,15 @@
     // Dedup: samme melding + linje = skip
     var key = (message || '') + ':' + (lineno || 0);
     if (seen[key]) return;
-    seen[key] = true;
-    errorCount++;
 
+    // Klienten maa finnes FOER vi bruker av kvoten. Ellers spiste tidlige
+    // feil hele budsjettet og ble permanent merket som sett, uten at noe
+    // ble sendt - og oppstartsfeil er nettopp de mest verdifulle.
     var sb = getSupabase();
     if (!sb) return;
+
+    seen[key] = true;
+    errorCount++;
 
     try {
       sb.from('error_logs').insert({
@@ -47,7 +51,8 @@
         colno: colno || null,
         stack: String(stack || '').slice(0, 4000),
         user_agent: String(navigator.userAgent || '').slice(0, 500),
-        url: String(location.href || '').slice(0, 500)
+        // Uten spoerrestreng: den kan inneholde lagside-token
+        url: String((location.origin || '') + (location.pathname || '')).slice(0, 500)
       }).then(function () {}).catch(function () {});
     } catch (_) {}
   }
