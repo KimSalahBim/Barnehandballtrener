@@ -5455,21 +5455,25 @@
         } catch (syncErr) {
           console.warn('[season.js] player_name sync:', syncErr.message || syncErr);
         }
+      }
 
-        // Reverse sync: update core.js player (Spillere-fanen) if this is an imported player
-        if (sp.player_id && sp.player_id.indexOf('p_') === 0) {
-          var corePlayers = window.players || [];
-          for (var ci = 0; ci < corePlayers.length; ci++) {
-            if (corePlayers[ci].id === sp.player_id) {
-              corePlayers[ci].name = name;
-              corePlayers[ci].goalie = goalie;
-              corePlayers[ci].skill = skill;
-              // Persist to localStorage + Supabase
-              if (window.__BF_saveState) window.__BF_saveState();
-              // Defer publish to avoid mid-handler DOM replacement
-              setTimeout(function() { if (window.__BF_publishPlayers) window.__BF_publishPlayers(); }, 0);
-              break;
-            }
+      // Reverse sync (Sesong -> Spillere): runs on ANY save of an imported player, not only on rename.
+      if (ok && sp.player_id && sp.player_id.indexOf('p_') === 0) {
+        var corePlayers = window.players || [];
+        for (var ci = 0; ci < corePlayers.length; ci++) {
+          if (corePlayers[ci].id === sp.player_id) {
+            corePlayers[ci].name = name;
+            corePlayers[ci].goalie = goalie;
+            corePlayers[ci].skill = skill;
+            corePlayers[ci].positions = positions.slice();
+            // Persist to localStorage + Supabase
+            if (window.__BF_saveState) window.__BF_saveState();
+            // Defer publish + re-render to avoid mid-handler DOM replacement
+            setTimeout(function() {
+              if (window.__BF_publishPlayers) window.__BF_publishPlayers();
+              if (window.__BF_renderAll) window.__BF_renderAll();
+            }, 0);
+            break;
           }
         }
       }

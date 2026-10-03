@@ -1953,20 +1953,20 @@
   function showPlayerProfile(playerId) {
     _profilePlayerId = playerId;
     if (window.AppHistory) window.AppHistory.syncDepth(1);
-    // Hide list UI
+    // Hide list UI. Inline !important beats the mobile .player-list { display: flex !important } rule.
     var listEls = ['playerList', 'posHelpCard'];
-    listEls.forEach(function(id) { var el = $(id); if (el) el.style.display = 'none'; });
+    listEls.forEach(function(id) { var el = $(id); if (el) el.style.setProperty('display', 'none', 'important'); });
     // Also hide form, stats, actions
     var formEl = document.querySelector('#players .player-form');
     var statsEl = document.querySelector('#players .stats-container');
     var actionsEl = document.querySelector('#players .actions-container');
     var headerEl = document.querySelector('#players .tab-header');
     var skillCard = document.querySelector('#players .settings-card');
-    if (formEl) formEl.style.display = 'none';
-    if (statsEl) statsEl.style.display = 'none';
-    if (actionsEl) actionsEl.style.display = 'none';
-    if (headerEl) headerEl.style.display = 'none';
-    if (skillCard) skillCard.style.display = 'none';
+    if (formEl) formEl.style.setProperty('display', 'none', 'important');
+    if (statsEl) statsEl.style.setProperty('display', 'none', 'important');
+    if (actionsEl) actionsEl.style.setProperty('display', 'none', 'important');
+    if (headerEl) headerEl.style.setProperty('display', 'none', 'important');
+    if (skillCard) skillCard.style.setProperty('display', 'none', 'important');
     renderPlayerProfile();
   }
 
@@ -2606,6 +2606,7 @@
     window.__BF_isSharedTeam = function() { return isSharedTeam(); };
     window.__BF_saveState = saveState;
     window.__BF_publishPlayers = publishPlayers;
+    window.__BF_renderAll = renderAll;
 
     // Onboarding wizard bridge API (used by onboarding.js)
     window.__BF_onboarding = {
